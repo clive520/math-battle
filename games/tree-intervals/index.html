@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>小學六年級數學：植樹與間隔問題 雙人搶答對決</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- =======================================================================
+       1. 老師主選單 (選擇比賽題型與設定)
+       ======================================================================= -->
+  <div id="menu-screen" class="screen active">
+    <!-- 選單專用右上角工具列 -->
+    <div class="menu-top-tools">
+      <a href="../../index.html" class="tool-btn" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;" title="返回遊戲大廳">🏠 遊戲大廳</a>
+      <button class="tool-btn sound-toggle-btn" title="切換音效 (快捷鍵 M)">🔊 音效開</button>
+      <button class="tool-btn fullscreen-btn" title="全螢幕模式 (快捷鍵 F)">⛶ 全螢幕</button>
+    </div>
+
+    <div class="menu-header">
+      <h1 class="game-title">🌲 植樹與間隔問題 雙人搶答大對決 🌲</h1>
+      <p class="game-subtitle">國小六年級核心觀念：路燈編號・兩端設置・求間距與全長・封閉圖形</p>
+    </div>
+
+    <div class="section-label">👇 請點選本次比賽的題目類型（每次題目數值皆動態隨機生成、至少10組不同數字）</div>
+
+    <!-- 五大比賽類型卡片 -->
+    <div class="category-grid">
+      <!-- 1. 路燈編號問題 -->
+      <div class="category-card selected" data-category="numbering">
+        <div class="card-icon">🔢</div>
+        <div class="card-title">路燈編號問題</div>
+        <div class="card-desc">第 A 號到第 B 號相距<br>間隔數 ＝ 後號 － 前號</div>
+      </div>
+
+      <!-- 2. 直線求數量 -->
+      <div class="category-card" data-category="linear_count">
+        <div class="card-icon">🌲</div>
+        <div class="card-title">直線求數量</div>
+        <div class="card-desc">兩端都設(+1)、一有一無<br>兩端皆無(-1)、兩側(×2)</div>
+      </div>
+
+      <!-- 3. 求間距與全長 -->
+      <div class="category-card" data-category="linear_dist">
+        <div class="card-icon">📏</div>
+        <div class="card-title">求間距與全長</div>
+        <div class="card-desc">綁氣球、插國旗、放盆栽<br>總長 ÷ 間隔數 ＝ 間距</div>
+      </div>
+
+      <!-- 4. 封閉圖形植樹 -->
+      <div class="category-card" data-category="closed_loop">
+        <div class="card-icon">🔄</div>
+        <div class="card-title">封閉圖形植樹</div>
+        <div class="card-desc">圓形水池、正方形花園<br>棵數 ＝ 間隔數 ＝ 周長÷間距</div>
+      </div>
+
+      <!-- 5. 綜合大亂鬥 -->
+      <div class="category-card" data-category="mixed">
+        <div class="card-icon">🔥</div>
+        <div class="card-title">四合一綜合</div>
+        <div class="card-desc">四種題型各抽考 1 題<br>每回合 4 題全能考驗</div>
+      </div>
+    </div>
+
+    <!-- 抽籤參數設定列 -->
+    <div class="lottery-settings-bar">
+      <div class="setting-item">
+        <label for="lottery-max-input">🎯 班級座號範圍：1 號 ～ </label>
+        <input type="number" id="lottery-max-input" class="lottery-num-input" value="26" min="5" max="50">
+        <span>號</span>
+      </div>
+      <div class="setting-item">
+        <label class="checkbox-label">
+          <input type="checkbox" id="no-repeat-checkbox" checked>
+          <span>避免抽到重複號碼（每位同學都有機會上台）</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- 隊伍自訂名稱與隨機抽籤卡片 -->
+    <div class="team-setup">
+      <!-- 左側：紅隊 -->
+      <div class="team-input-group p1">
+        <label for="p1-name-input">🔴 左側隊伍（紅隊）</label>
+        <div class="team-name-row">
+          <input type="text" id="p1-name-input" class="team-input" value="紅隊" maxlength="8">
+        </div>
+        <div class="lottery-action-row">
+          <button type="button" id="p1-menu-lottery-btn" class="lottery-btn p1-lottery-btn">
+            🎲 紅隊抽籤 (1~26號)
+          </button>
+          <div id="p1-menu-lottery-display" class="lottery-tag p1-tag">
+            派出選手：<strong id="p1-menu-number">--</strong> 號
+          </div>
+        </div>
+      </div>
+
+      <!-- 右側：藍隊 -->
+      <div class="team-input-group p2">
+        <label for="p2-name-input">🔵 右側隊伍（藍隊）</label>
+        <div class="team-name-row">
+          <input type="text" id="p2-name-input" class="team-input" value="藍隊" maxlength="8">
+        </div>
+        <div class="lottery-action-row">
+          <button type="button" id="p2-menu-lottery-btn" class="lottery-btn p2-lottery-btn">
+            🎲 藍隊抽籤 (1~26號)
+          </button>
+          <div id="p2-menu-lottery-display" class="lottery-tag p2-tag">
+            派出選手：<strong id="p2-menu-number">--</strong> 號
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 進入比賽按鈕 -->
+    <button id="start-game-btn" class="start-btn">
+      ⚔️ 開始 4 題搶答對決 ⚔️
+    </button>
+  </div>
+
+  <!-- =======================================================================
+       2. 正式對戰比賽畫面 (Game Arena)
+       ======================================================================= -->
+  <div id="game-screen" class="screen">
+    <!-- 頂部資訊與計時看板 -->
+    <header class="game-header">
+      <div class="round-info">
+        <span id="round-badge" class="round-badge">第 1 / 4 題</span>
+        <span id="category-badge" class="category-badge">題型載入中</span>
+      </div>
+
+      <div class="timer-container">
+        <div class="timer-bar-bg">
+          <div id="timer-bar-fill" class="timer-bar-fill"></div>
+        </div>
+        <div id="timer-text" class="timer-text">45s</div>
+      </div>
+
+      <div class="score-board">
+        <div class="team-score p1">
+          <span id="p1-name-display" class="team-label">紅隊</span>
+          <span id="p1-arena-rep-display" class="arena-rep-tag">座號: -- 號</span>
+          <span id="p1-score-display" class="score-num">0</span>
+        </div>
+        <div class="score-vs">VS</div>
+        <div class="team-score p2">
+          <span id="p2-score-display" class="score-num">0</span>
+          <span id="p2-arena-rep-display" class="arena-rep-tag">座號: -- 號</span>
+          <span id="p2-name-display" class="team-label">藍隊</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 中間題目看板 (特大字體投影顯示) -->
+    <div class="question-container">
+      <div id="question-text" class="question-text">題目載入中...</div>
+    </div>
+
+    <!-- 下方雙人對決作答區 (紅隊左、藍隊右，各 8 個大按鈕選項) -->
+    <main class="battle-arena">
+      <!-- 左側：紅隊作答區 -->
+      <section class="player-panel p1">
+        <div class="panel-header">
+          <span class="panel-title">🔴 紅隊作答區 (快捷鍵 1~4 / Q~R)</span>
+          <div class="panel-lottery-box">
+            <span class="panel-num-tag">選手: <b id="p1-panel-num">--</b> 號</span>
+            <button type="button" id="p1-arena-lottery-btn" class="quick-lottery-btn" title="本題換人抽籤">🎲 換人</button>
+          </div>
+        </div>
+        <div id="p1-options" class="options-grid"></div>
+
+        <!-- 答錯冰凍懲罰遮罩 -->
+        <div id="p1-lock-overlay" class="lock-overlay">
+          <div class="lock-icon">❄️</div>
+          <div class="lock-text">答錯冰凍懲罰</div>
+          <div id="p1-lock-countdown" class="lock-countdown">5</div>
+          <div class="lock-sub">秒後解除鎖定</div>
+        </div>
+      </section>
+
+      <!-- 右側：藍隊作答區 -->
+      <section class="player-panel p2">
+        <div class="panel-header">
+          <span class="panel-title">🔵 藍隊作答區 (快捷鍵 7~0 / U~P)</span>
+          <div class="panel-lottery-box">
+            <span class="panel-num-tag">選手: <b id="p2-panel-num">--</b> 號</span>
+            <button type="button" id="p2-arena-lottery-btn" class="quick-lottery-btn" title="本題換人抽籤">🎲 換人</button>
+          </div>
+        </div>
+        <div id="p2-options" class="options-grid"></div>
+
+        <!-- 答錯冰凍懲罰遮罩 -->
+        <div id="p2-lock-overlay" class="lock-overlay">
+          <div class="lock-icon">❄️</div>
+          <div class="lock-text">答錯冰凍懲罰</div>
+          <div id="p2-lock-countdown" class="lock-countdown">5</div>
+          <div class="lock-sub">秒後解除鎖定</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- =======================================================================
+       3. 觀念解析彈窗 (動態 SVG 向量圖解與算式詳解)
+       ======================================================================= -->
+  <div id="explanation-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div id="exp-result-title" class="exp-title">搶先答對！</div>
+        <div id="exp-badge" class="exp-badge">題型重點</div>
+      </div>
+
+      <div class="modal-body">
+        <div id="exp-answer-text" class="exp-answer">正確答案：--</div>
+
+        <!-- 動態 SVG 向量圖解區 -->
+        <div id="exp-diagram-box" class="exp-diagram-container"></div>
+
+        <!-- 逐步算式與觀念重點 -->
+        <div id="exp-body" class="exp-content"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="next-question-btn" class="next-btn">下一題 ➔ (空白鍵)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       4. 最終結算與勝利頒獎畫面
+       ======================================================================= -->
+  <div id="victory-screen" class="screen">
+    <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
+
+    <div class="victory-card">
+      <div class="trophy-icon">🏆</div>
+      <h2 id="winner-title" class="winner-title">紅隊 榮獲冠軍！</h2>
+      <p id="winner-sub" class="winner-sub">恭喜在 4 題植樹與間隔問題搶答中大獲全勝！</p>
+
+      <div class="final-score-box">
+        <div class="final-score-label">最終比分</div>
+        <div id="final-score-text" class="final-score-num">紅隊 3 : 1 藍隊</div>
+      </div>
+
+      <div class="victory-actions">
+        <button id="play-again-btn" class="action-btn primary-btn">🔄 再來一局 (全新數字)</button>
+        <button id="back-to-menu-btn" class="action-btn secondary-btn">📋 回題型選單</button>
+        <a href="../../index.html" class="action-btn" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.12);color:#fff;border-radius:40px;font-size:1.1rem;font-weight:700;padding:14px 28px;">🏠 回遊戲大廳</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 引用 JavaScript -->
+  <script src="js/audio.js"></script>
+  <script src="js/generator.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

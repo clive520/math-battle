@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>小學六年級數學：和差積商不變量 雙人搶答對決</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- =======================================================================
+       1. 老師主選單 (選擇比賽類型與設定)
+       ======================================================================= -->
+  <div id="menu-screen" class="screen active">
+    <!-- 選單專用右上角工具列 -->
+    <div class="menu-top-tools">
+      <a href="../../index.html" class="tool-btn" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;" title="返回遊戲大廳">🏠 遊戲大廳</a>
+      <button class="tool-btn sound-toggle-btn" title="切換音效 (快捷鍵 M)">🔊 音效開</button>
+      <button class="tool-btn fullscreen-btn" title="全螢幕模式 (快捷鍵 F)">⛶ 全螢幕</button>
+    </div>
+
+    <div class="menu-header">
+      <h1 class="game-title">⚡ 不變量雙人搶答大對決 ⚡</h1>
+      <p class="game-subtitle">國小六年級核心思維：和不變・差不變・積不變・商不變</p>
+    </div>
+
+    <div class="section-label">👇 請老師點選本次比賽的題目類型（每次題目數值皆動態隨機生成）</div>
+
+    <!-- 五大比賽類型卡片 -->
+    <div class="category-grid">
+      <!-- 1. 和不變 -->
+      <div class="category-card selected" data-category="sum">
+        <div class="card-icon">🤝</div>
+        <div class="card-title">和不變</div>
+        <div class="card-desc">白晝黑夜、互贈移轉<br>總數量永遠固定</div>
+      </div>
+
+      <!-- 2. 差不變 -->
+      <div class="category-card" data-category="diff">
+        <div class="card-icon">⏳</div>
+        <div class="card-title">差不變</div>
+        <div class="card-desc">年齡成長、同增同減<br>兩者差距永遠固定</div>
+      </div>
+
+      <!-- 3. 積不變 -->
+      <div class="category-card" data-category="product">
+        <div class="card-icon">📐</div>
+        <div class="card-title">積不變</div>
+        <div class="card-desc">碾米分裝、路程工程<br>乘積固定成反比</div>
+      </div>
+
+      <!-- 4. 商不變 -->
+      <div class="category-card" data-category="quotient">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">商不變</div>
+        <div class="card-desc">杯子蛋糕、劃零餘數<br>固定單價成正比</div>
+      </div>
+
+      <!-- 5. 綜合大亂鬥 -->
+      <div class="category-card" data-category="mixed">
+        <div class="card-icon">🔥</div>
+        <div class="card-title">四合一綜合</div>
+        <div class="card-desc">和差積商各抽 1 題<br>每回合 4 題全能考驗</div>
+      </div>
+    </div>
+
+    <!-- 抽籤參數設定列 -->
+    <div class="lottery-settings-bar">
+      <div class="setting-item">
+        <label for="lottery-max-input">🎯 班級座號範圍：1 號 ～ </label>
+        <input type="number" id="lottery-max-input" class="lottery-num-input" value="26" min="5" max="50">
+        <span>號</span>
+      </div>
+      <div class="setting-item">
+        <label class="checkbox-label">
+          <input type="checkbox" id="no-repeat-checkbox" checked>
+          <span>避免抽到重複號碼（每位同學都有機會上台）</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- 隊伍自訂名稱與隨機抽籤卡片 -->
+    <div class="team-setup">
+      <!-- 左側：紅隊 -->
+      <div class="team-input-group p1">
+        <label for="p1-name-input">🔴 左側隊伍（紅隊）</label>
+        <div class="team-name-row">
+          <input type="text" id="p1-name-input" class="team-input" value="紅隊" maxlength="8">
+        </div>
+        <div class="lottery-action-row">
+          <button type="button" id="p1-menu-lottery-btn" class="lottery-btn p1-lottery-btn">
+            🎲 紅隊抽籤 (1~26號)
+          </button>
+          <div id="p1-menu-lottery-display" class="lottery-tag p1-tag">
+            派出選手：<strong id="p1-menu-number">--</strong> 號
+          </div>
+        </div>
+      </div>
+
+      <!-- 右側：藍隊 -->
+      <div class="team-input-group p2">
+        <label for="p2-name-input">🔵 右側隊伍（藍隊）</label>
+        <div class="team-name-row">
+          <input type="text" id="p2-name-input" class="team-input" value="藍隊" maxlength="8">
+        </div>
+        <div class="lottery-action-row">
+          <button type="button" id="p2-menu-lottery-btn" class="lottery-btn p2-lottery-btn">
+            🎲 藍隊抽籤 (1~26號)
+          </button>
+          <div id="p2-menu-lottery-display" class="lottery-tag p2-tag">
+            派出選手：<strong id="p2-menu-number">--</strong> 號
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 開始對決按鈕 (每輪 4 題) -->
+    <button id="start-game-btn" class="primary-btn">🚀 開始對決 (每輪 4 題)</button>
+  </div>
+
+
+  <!-- =======================================================================
+       2. 電子白板雙人對戰畫面
+       ======================================================================= -->
+  <div id="game-screen" class="screen">
+    <!-- 頂部計分與倒數列 -->
+    <header class="match-header">
+      <!-- 左方：紅隊得分 -->
+      <div class="player-score-card p1">
+        <div class="score-meta">
+          <span id="p1-name-display" class="score-name">紅隊</span>
+          <span id="p1-arena-rep-display" class="score-rep">座號: --</span>
+        </div>
+        <span id="p1-score-display" class="score-num">0</span>
+      </div>
+
+      <!-- 中央：題號與倒數 -->
+      <div class="match-center-info">
+        <div class="badge-group">
+          <span id="round-badge" class="info-badge">第 1 / 4 題</span>
+          <span id="category-badge" class="info-badge category-tag">和不變</span>
+        </div>
+        <div class="timer-box">
+          <div class="timer-bar-bg">
+            <div id="timer-bar-fill" class="timer-bar-fill"></div>
+          </div>
+          <span id="timer-text" class="timer-num">45s</span>
+        </div>
+      </div>
+
+      <!-- 右方：藍隊得分 + 工具列 (Flex 排列，絕不重疊遮擋) -->
+      <div class="match-header-right">
+        <div class="player-score-card p2">
+          <span id="p2-score-display" class="score-num">0</span>
+          <div class="score-meta right">
+            <span id="p2-name-display" class="score-name">藍隊</span>
+            <span id="p2-arena-rep-display" class="score-rep">座號: --</span>
+          </div>
+        </div>
+
+        <div class="header-tools">
+          <button id="sound-toggle-btn" class="tool-btn sound-toggle-btn" title="切換音效 (快捷鍵 M)">🔊 音效開</button>
+          <button id="fullscreen-btn" class="tool-btn fullscreen-btn" title="全螢幕模式 (快捷鍵 F)">⛶ 全螢幕</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主對抗區 (左側紅隊選項 + 中央題目 + 右側藍隊選項) -->
+    <main class="battle-arena">
+      <!-- 左側：紅隊作答區 -->
+      <section class="player-panel p1">
+        <div class="panel-header-bar">
+          <div class="panel-title">🔴 紅隊作答區</div>
+          <div class="panel-lottery-control">
+            <span id="p1-panel-seat" class="seat-badge">選手：<strong id="p1-panel-num">--</strong> 號</span>
+            <button type="button" id="p1-arena-lottery-btn" class="mini-roll-btn" title="抽下一位同學上台">🎲 換人抽籤</button>
+          </div>
+        </div>
+
+        <div id="p1-options" class="options-list">
+          <!-- 8 個選項動態產生 -->
+        </div>
+
+        <!-- 答錯 5 秒冰凍遮罩 -->
+        <div id="p1-lock-overlay" class="lock-overlay">
+          <div class="lock-icon">❄️</div>
+          <div class="lock-title">答錯懲罰！暫停回答</div>
+          <div id="p1-lock-countdown" class="lock-countdown">5</div>
+          <div class="lock-subtext">冰凍解除倒數中，請仔細思考...</div>
+        </div>
+      </section>
+
+      <!-- 中央：大螢幕題目區 -->
+      <section class="question-board">
+        <div id="question-text" class="question-text">
+          題目讀取中...
+        </div>
+      </section>
+
+      <!-- 右側：藍隊作答區 -->
+      <section class="player-panel p2">
+        <div class="panel-header-bar">
+          <div class="panel-title">🔵 藍隊作答區</div>
+          <div class="panel-lottery-control">
+            <span id="p2-panel-seat" class="seat-badge">選手：<strong id="p2-panel-num">--</strong> 號</span>
+            <button type="button" id="p2-arena-lottery-btn" class="mini-roll-btn" title="抽下一位同學上台">🎲 換人抽籤</button>
+          </div>
+        </div>
+
+        <div id="p2-options" class="options-list">
+          <!-- 8 個選項動態產生 -->
+        </div>
+
+        <!-- 答錯 5 秒冰凍遮罩 -->
+        <div id="p2-lock-overlay" class="lock-overlay">
+          <div class="lock-icon">❄️</div>
+          <div class="lock-title">答錯懲罰！暫停回答</div>
+          <div id="p2-lock-countdown" class="lock-countdown">5</div>
+          <div class="lock-subtext">冰凍解除倒數中，請仔細思考...</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+
+  <!-- =======================================================================
+       3. 觀念解析卡彈窗 (每題作答後顯示，方便老師帶領覆盤)
+       ======================================================================= -->
+  <div id="explanation-modal" class="modal-overlay">
+    <div class="explanation-card">
+      <div class="exp-header">
+        <h2 id="exp-result-title" class="exp-title">🎯 紅隊 搶先答對！</h2>
+        <span id="exp-badge" class="exp-badge">和不變觀念</span>
+      </div>
+
+      <div id="exp-answer-text" class="exp-answer-box">
+        正確答案：100 本
+      </div>
+
+      <!-- 幾何與線段圖視覺化講解區 -->
+      <div id="exp-diagram-box" class="exp-diagram-box">
+        <!-- 動態 SVG 圖解由 JS 注入 -->
+      </div>
+
+      <div id="exp-body" class="exp-body">
+        <!-- 解析步驟由 JS 注入 -->
+      </div>
+
+      <div class="exp-actions">
+        <button id="next-question-btn" class="next-btn">下一題 ➜ (或按空白鍵)</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =======================================================================
+       4. 結算頒獎台畫面 (滿 4 題後)
+       ======================================================================= -->
+  <div id="victory-screen" class="screen">
+    <canvas id="confetti-canvas"></canvas>
+    <div class="victory-content">
+      <div class="trophy-icon">🏆</div>
+      <h1 id="winner-title" class="winner-title">紅隊 榮獲冠軍！</h1>
+      <p id="winner-sub" class="winner-sub">恭喜在不變量對決中大獲全勝！</p>
+
+      <div class="final-score-card">
+        <div class="score-label">最終比分（全 4 題）</div>
+        <div id="final-score-text" class="final-score-val">紅隊 3 : 1 藍隊</div>
+      </div>
+
+      <div class="victory-actions">
+        <button id="play-again-btn" class="primary-btn">🔄 再戰一輪 (同類型新題目)</button>
+        <button id="back-to-menu-btn" class="secondary-btn">🏠 返回主選單 (更換題型)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 引入模組腳本 -->
+  <script src="js/audio.js"></script>
+  <script src="js/generator.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

@@ -1,0 +1,1095 @@
+/* style.css - 專為教室電子白板設計的高對比觸控風格 */
+:root {
+  --bg-dark: #0f172a;
+  --bg-card: #1e293b;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+
+  --p1-color: #f43f5e;
+  --p1-glow: rgba(244, 63, 94, 0.4);
+  --p1-bg: #881337;
+
+  --p2-color: #06b6d4;
+  --p2-glow: rgba(6, 182, 212, 0.4);
+  --p2-bg: #164e63;
+
+  --accent-gold: #f59e0b;
+  --accent-green: #10b981;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", "PingFang TC", Roboto, sans-serif;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 主選單右上角工具列 */
+.menu-top-tools {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  display: flex;
+  gap: 12px;
+  z-index: 50;
+}
+
+.tool-btn {
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-main);
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.tool-btn:hover, .tool-btn:active {
+  background: rgba(51, 65, 85, 0.95);
+  transform: scale(1.05);
+}
+
+.tool-btn.muted {
+  color: #f87171;
+  border-color: #f87171;
+}
+
+/* 畫面切換 */
+.screen {
+  display: none;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* =========================================================================
+   1. 老師選單畫面 (Menu Screen)
+   ========================================================================= */
+#menu-screen {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+  overflow-y: auto;
+}
+
+.menu-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.game-title {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, #38bdf8, #818cf8, #f472b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+}
+
+.game-subtitle {
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  color: var(--text-muted);
+}
+
+.section-label {
+  font-size: 1.2rem;
+  color: #cbd5e1;
+  margin-bottom: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* 比賽類型卡片網格 */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  max-width: 1100px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.category-card {
+  background: rgba(30, 41, 59, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.category-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.category-card.selected {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(129, 140, 248, 0.2));
+  border-color: #38bdf8;
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
+  transform: scale(1.03);
+}
+
+.card-icon {
+  font-size: 2.8rem;
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #fff;
+}
+
+.card-desc {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* 抽籤參數設定列 */
+.lottery-settings-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  background: rgba(30, 41, 59, 0.75);
+  padding: 10px 24px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.95rem;
+  backdrop-filter: blur(6px);
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.lottery-num-input {
+  background: #0f172a;
+  border: 2px solid rgba(245, 158, 11, 0.6);
+  color: #facc15;
+  font-weight: 800;
+  font-size: 1.15rem;
+  width: 58px;
+  text-align: center;
+  border-radius: 8px;
+  padding: 4px 6px;
+  outline: none;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #94a3b8;
+  transition: color 0.2s ease;
+}
+
+.checkbox-label:hover {
+  color: #f8fafc;
+}
+
+.checkbox-label input {
+  accent-color: #f59e0b;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* 隊伍名稱與抽籤設定 */
+.team-setup {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 26px;
+  width: 100%;
+  max-width: 720px;
+  justify-content: center;
+}
+
+.team-input-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+}
+
+.team-input-group.p1 { border-color: rgba(244, 63, 94, 0.35); }
+.team-input-group.p2 { border-color: rgba(6, 182, 212, 0.35); }
+
+.team-input-group label {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.team-input-group.p1 label { color: var(--p1-color); }
+.team-input-group.p2 label { color: var(--p2-color); }
+
+.team-name-row {
+  display: flex;
+  width: 100%;
+}
+
+.team-input {
+  width: 100%;
+  background: #1e293b;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #fff;
+  font-size: 1.15rem;
+  outline: none;
+  text-align: center;
+  font-weight: 700;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.team-input-group.p1 .team-input { border-color: rgba(244, 63, 94, 0.5); }
+.team-input-group.p2 .team-input { border-color: rgba(6, 182, 212, 0.5); }
+
+.lottery-action-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.lottery-btn {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.lottery-btn:hover {
+  transform: scale(1.03);
+  filter: brightness(1.15);
+}
+
+.lottery-btn:active {
+  transform: scale(0.97);
+}
+
+.p1-lottery-btn {
+  background: linear-gradient(135deg, #f43f5e, #be123c);
+  box-shadow: 0 4px 14px rgba(244, 63, 94, 0.35);
+}
+
+.p2-lottery-btn {
+  background: linear-gradient(135deg, #06b6d4, #0e7490);
+  box-shadow: 0 4px 14px rgba(6, 182, 212, 0.35);
+}
+
+.lottery-tag {
+  padding: 6px 14px;
+  background: rgba(15, 23, 42, 0.85);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.lottery-tag strong {
+  font-size: 1.35rem;
+  color: #facc15;
+  margin: 0 3px;
+  display: inline-block;
+}
+
+.num-pop {
+  animation: numPop 0.4s ease-out;
+}
+
+@keyframes numPop {
+  0% { transform: scale(1.8); color: #ec4899; }
+  60% { transform: scale(0.9); }
+  100% { transform: scale(1); color: #facc15; }
+}
+
+/* 主按鈕 */
+.primary-btn {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  border: none;
+  padding: 16px 48px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+  transition: all 0.2s ease;
+  letter-spacing: 1px;
+}
+
+.primary-btn:hover, .primary-btn:active {
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.6);
+}
+
+/* =========================================================================
+   2. 雙人對戰畫面 (Game Screen)
+   ========================================================================= */
+#game-screen {
+  flex-direction: column;
+  height: 100vh;
+  position: relative;
+}
+
+/* 頂部比賽狀態列 */
+.match-header {
+  height: 85px;
+  background: #1e293b;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: relative;
+}
+
+/* 左右得分板 */
+.player-score-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 18px;
+  border-radius: 14px;
+  font-weight: 800;
+}
+
+.player-score-card.p1 {
+  background: rgba(244, 63, 94, 0.15);
+  border-left: 6px solid var(--p1-color);
+}
+
+.player-score-card.p2 {
+  background: rgba(6, 182, 212, 0.15);
+  border-right: 6px solid var(--p2-color);
+}
+
+.score-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.score-meta.right {
+  align-items: flex-end;
+}
+
+.score-name {
+  font-size: 1.3rem;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.score-rep {
+  font-size: 0.85rem;
+  color: #facc15;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.player-score-card.p1 .score-name { color: var(--p1-color); }
+.player-score-card.p2 .score-name { color: var(--p2-color); }
+
+.score-num {
+  font-size: 2.4rem;
+  font-family: Impact, "Arial Black", sans-serif;
+  line-height: 1;
+}
+
+/* 中央題號與倒數：絕對水平置中，兩側內容完全不干擾 */
+.match-center-info {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+}
+
+/* 右側組合區：藍隊得分 ＋ 工具按鈕 (Flex 水平並排，絕不重疊) */
+.match-header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-tools .tool-btn {
+  padding: 7px 14px;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.badge-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.info-badge {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.category-tag {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+}
+
+.timer-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 220px;
+}
+
+.timer-bar-bg {
+  flex: 1;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.timer-bar-fill {
+  height: 100%;
+  width: 100%;
+  background: #10b981;
+  border-radius: 5px;
+  transition: width 1s linear, background-color 0.3s;
+}
+
+.timer-bar-fill.warning {
+  background: #ef4444;
+}
+
+.timer-num {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #facc15;
+  min-width: 38px;
+  text-align: right;
+}
+
+/* 主對戰區 (左右兩側 + 中央題目) */
+.battle-arena {
+  flex: 1;
+  display: flex;
+  padding: 20px 24px;
+  gap: 20px;
+  height: calc(100vh - 85px);
+  overflow: hidden;
+}
+
+/* 中央大題目看板 */
+.question-board {
+  flex: 1.2;
+  background: rgba(30, 41, 59, 0.85);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  position: relative;
+}
+
+.question-text {
+  font-size: clamp(1.4rem, 2.2vw, 2.1rem);
+  line-height: 1.6;
+  font-weight: 600;
+  color: #f8fafc;
+  word-break: break-word;
+}
+
+/* 左右兩隊選項面板 */
+.player-panel {
+  flex: 1.15;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-radius: var(--radius-xl);
+  padding: 14px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+}
+
+.player-panel.p1 {
+  border-color: rgba(244, 63, 94, 0.3);
+}
+
+.player-panel.p2 {
+  border-color: rgba(6, 182, 212, 0.3);
+}
+
+.panel-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
+.panel-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.player-panel.p1 .panel-title { color: var(--p1-color); }
+.player-panel.p2 .panel-title { color: var(--p2-color); }
+
+.panel-lottery-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.seat-badge {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.seat-badge strong {
+  color: #facc15;
+  font-size: 1.15rem;
+}
+
+.mini-roll-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.mini-roll-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.06);
+}
+
+.mini-roll-btn:active {
+  transform: scale(0.95);
+}
+
+/* 選項按鈕容器 (2 欄 4 列，共 8 項) */
+.options-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 10px;
+  flex: 1;
+  align-content: center;
+}
+
+.option-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-lg);
+  border: 3px solid transparent;
+  background: #1e293b;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.15s ease, border-color 0.15s ease;
+  min-height: 62px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.option-btn:hover {
+  background: #334155;
+}
+
+.option-btn:active {
+  transform: scale(0.97);
+}
+
+/* 紅隊按鈕樣式 */
+.option-btn.p1-btn {
+  border-color: rgba(244, 63, 94, 0.4);
+}
+.option-btn.p1-btn:active {
+  background: var(--p1-bg);
+  border-color: var(--p1-color);
+}
+
+/* 藍隊按鈕樣式 */
+.option-btn.p2-btn {
+  border-color: rgba(6, 182, 212, 0.4);
+}
+.option-btn.p2-btn:active {
+  background: var(--p2-bg);
+  border-color: var(--p2-color);
+}
+
+.option-tag {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.option-content {
+  font-size: clamp(1rem, 1.35vw, 1.25rem);
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: left;
+  word-break: break-word;
+}
+
+/* 答對反饋動畫 */
+.option-btn.correct-glow {
+  background: #059669 !important;
+  border-color: #34d399 !important;
+  box-shadow: 0 0 35px rgba(52, 211, 153, 0.8) !important;
+  transform: scale(1.04);
+}
+
+/* 答錯反饋動畫 */
+.option-btn.wrong-shake {
+  background: #b91c1c !important;
+  border-color: #f87171 !important;
+  animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+
+/* 答錯冰凍遮罩 (Lock Overlay) */
+.lock-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.94);
+  border-radius: var(--radius-xl);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  backdrop-filter: blur(8px);
+  border: 4px solid #ef4444;
+  gap: 8px;
+  box-shadow: 0 0 40px rgba(239, 68, 68, 0.4);
+}
+
+.lock-overlay.active {
+  display: flex;
+  animation: fadeIn 0.2s ease;
+}
+
+.lock-icon {
+  font-size: 3.6rem;
+  animation: pulseLock 0.8s infinite alternate ease-in-out;
+}
+
+@keyframes pulseLock {
+  from { transform: scale(1); }
+  to { transform: scale(1.15); }
+}
+
+.lock-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fca5a5;
+  letter-spacing: 1px;
+}
+
+.lock-countdown {
+  font-size: 5rem;
+  font-family: Impact, "Arial Black", sans-serif;
+  font-weight: 900;
+  color: #ef4444;
+  text-shadow: 0 0 25px rgba(239, 68, 68, 0.8);
+  line-height: 1;
+  margin: 4px 0;
+}
+
+.lock-subtext {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* =========================================================================
+   3. 觀念解析卡彈窗 (Explanation Modal)
+   ========================================================================= */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 30px;
+}
+
+.modal-overlay.active {
+  display: flex;
+  animation: zoomIn 0.25s ease;
+}
+
+.explanation-card {
+  background: #1e293b;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-xl);
+  padding: 28px 36px;
+  max-width: 900px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.exp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+}
+
+.exp-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.exp-title.p1-win { color: var(--p1-color); }
+.exp-title.p2-win { color: var(--p2-color); }
+.exp-title.no-win { color: #facc15; }
+
+.exp-badge {
+  background: #3b82f6;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.exp-answer-box {
+  background: rgba(16, 185, 129, 0.15);
+  border: 2px solid var(--accent-green);
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #6ee7b7;
+}
+
+/* 幾何與線段圖視覺化看板 */
+.exp-diagram-box {
+  background: #0f172a;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.exp-diagram-box svg {
+  width: 100%;
+  max-width: 780px;
+  height: auto;
+  display: block;
+}
+
+.exp-body {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: #e2e8f0;
+}
+
+.exp-body p {
+  margin-bottom: 8px;
+}
+
+.exp-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.next-btn {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: #fff;
+  border: none;
+  padding: 14px 36px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  border-radius: 40px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  transition: all 0.2s ease;
+}
+
+.next-btn:hover, .next-btn:active {
+  transform: scale(1.05);
+}
+
+/* =========================================================================
+   4. 勝利結算畫面 (Victory Screen)
+   ========================================================================= */
+#victory-screen {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+  z-index: 50;
+}
+
+#confetti-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.victory-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 30px;
+  max-width: 700px;
+}
+
+.trophy-icon {
+  font-size: 6rem;
+  margin-bottom: 16px;
+  animation: bounce 1.2s infinite alternate ease-in-out;
+}
+
+@keyframes bounce {
+  from { transform: translateY(0) scale(1); }
+  to { transform: translateY(-14px) scale(1.05); }
+}
+
+.winner-title {
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.winner-title.p1-text { color: var(--p1-color); }
+.winner-title.p2-text { color: var(--p2-color); }
+.winner-title.tie-text { color: #facc15; }
+
+.winner-sub {
+  font-size: 1.3rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.final-score-card {
+  background: rgba(30, 41, 59, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-xl);
+  padding: 20px 48px;
+  margin-bottom: 32px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.score-label {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.final-score-val {
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #fff;
+}
+
+.victory-actions {
+  display: flex;
+  gap: 18px;
+}
+
+.secondary-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 14px 32px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 動畫效果 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* =========================================================================
+   植樹與間隔問題 專用解析樣式
+   ========================================================================= */
+.exp-step {
+  background: rgba(15, 23, 42, 0.6);
+  border-left: 4px solid #38bdf8;
+  padding: 12px 18px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: #f1f5f9;
+}
+
+.step-num {
+  display: inline-block;
+  background: #0284c7;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 20px;
+  margin-right: 8px;
+}
+
+.exp-step code {
+  background: rgba(2, 132, 199, 0.25);
+  color: #facc15;
+  font-family: Consolas, Monaco, monospace;
+  font-size: 1.25rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.exp-key-rule {
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.05) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  color: #fde68a;
+  margin-top: 14px;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15);
+}
+

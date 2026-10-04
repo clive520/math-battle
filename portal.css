@@ -1,0 +1,293 @@
+/* portal.css - 國小數學雙人對決遊戲大廳樣式 */
+:root {
+  --bg-dark: #0b1120;
+  --bg-card: #1e293b;
+  --card-hover: #273549;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --accent-cyan: #06b6d4;
+  --accent-emerald: #10b981;
+  --accent-rose: #f43f5e;
+  --accent-amber: #f59e0b;
+  --accent-purple: #8b5cf6;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", "PingFang TC", Roboto, sans-serif;
+}
+
+body {
+  background: radial-gradient(circle at 50% 10%, #1e293b 0%, #0b1120 100%);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 20px;
+}
+
+.portal-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* 頂部標題 */
+.portal-header {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.badge-tag {
+  display: inline-block;
+  background: rgba(14, 165, 233, 0.2);
+  border: 1px solid rgba(14, 165, 233, 0.5);
+  color: #38bdf8;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 30px;
+  margin-bottom: 14px;
+  letter-spacing: 1px;
+}
+
+.portal-title {
+  font-size: 2.8rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, #f8fafc 0%, #38bdf8 50%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 12px;
+  text-shadow: 0 4px 20px rgba(56, 189, 248, 0.25);
+}
+
+.portal-subtitle {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* 遊戲卡片網格 */
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 28px;
+  margin-bottom: 40px;
+}
+
+.game-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xl);
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  color: inherit;
+}
+
+.game-card:hover {
+  transform: translateY(-8px);
+  background: var(--card-hover);
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 20px 45px rgba(14, 165, 233, 0.25);
+}
+
+/* 卡片邊緣頂部光暈 */
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #38bdf8, #818cf8);
+}
+
+.game-card.theme-tree::before {
+  background: linear-gradient(90deg, #10b981, #06b6d4);
+}
+
+.game-card.theme-invariant::before {
+  background: linear-gradient(90deg, #f59e0b, #f43f5e);
+}
+
+.game-card.theme-future::before {
+  background: linear-gradient(90deg, #64748b, #475569);
+}
+
+/* 卡片頂部資訊列 */
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.card-icon {
+  font-size: 3.2rem;
+  line-height: 1;
+}
+
+.unit-tag {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.card-title {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-desc {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 24px;
+  flex: 1;
+}
+
+/* 亮點特性清單 */
+.feature-list {
+  list-style: none;
+  margin-bottom: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.feature-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  color: #cbd5e1;
+}
+
+.feature-list li .f-icon {
+  color: #38bdf8;
+  font-weight: bold;
+}
+
+/* 進入按鈕 */
+.play-btn {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: none;
+  padding: 16px 24px;
+  border-radius: var(--radius-lg);
+  font-size: 1.15rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+}
+
+.game-card:hover .play-btn {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  transform: scale(1.02);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.6);
+}
+
+.theme-tree .play-btn {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+}
+.game-card.theme-tree:hover .play-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.55);
+}
+
+.theme-invariant .play-btn {
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+  box-shadow: 0 4px 15px rgba(244, 63, 94, 0.35);
+}
+.game-card.theme-invariant:hover .play-btn {
+  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+  box-shadow: 0 6px 20px rgba(244, 63, 94, 0.55);
+}
+
+/* 預留卡片 */
+.game-card.theme-future {
+  border-style: dashed;
+  background: rgba(30, 41, 59, 0.5);
+  opacity: 0.85;
+}
+.game-card.theme-future:hover {
+  transform: none;
+  background: rgba(30, 41, 59, 0.7);
+  box-shadow: none;
+}
+.future-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  cursor: default;
+  box-shadow: none;
+}
+
+/* 底部教學說明區 */
+.portal-footer-tips {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  padding: 24px 30px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.tip-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.95rem;
+  color: #cbd5e1;
+}
+
+.tip-icon {
+  font-size: 1.4rem;
+}
+
+@media (max-width: 768px) {
+  .portal-title {
+    font-size: 2.1rem;
+  }
+  .games-grid {
+    grid-template-columns: 1fr;
+  }
+  .portal-footer-tips {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

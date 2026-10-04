@@ -1,0 +1,15 @@
+# 教材與版權大型 PDF 檔案（不推送到 GitHub）
+*.pdf
+*PDF*
+*pdf*
+國小_*
+
+# 暫存與快取檔案
+scratch/
+.cache/
+*.log
+
+# 系統檔案
+.DS_Store
+Thumbs.db
+desktop.ini

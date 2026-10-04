@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>國小數學互動學習館・雙人搶答對決競技場</title>
+  <link rel="stylesheet" href="portal.css">
+</head>
+<body>
+
+  <div class="portal-container">
+    <!-- 頂部大標題 -->
+    <header class="portal-header">
+      <div class="badge-tag">🎓 國小六年級數學・課堂互動教學競技平台</div>
+      <h1 class="portal-title">數學概念雙人搶答大對決</h1>
+      <p class="portal-subtitle">專為電子白板、電腦與平板設計的雙人競賽對抗遊戲！即時題目隨機生成、班級座號抽籤與動態向量圖解覆盤。</p>
+    </header>
+
+    <!-- 遊戲卡片列表 (今後可持續新增) -->
+    <main class="games-grid">
+
+      <!-- 遊戲 1：植樹與間隔問題 -->
+      <a href="games/tree-intervals/index.html" class="game-card theme-tree">
+        <div class="card-top">
+          <span class="card-icon">🌲</span>
+          <span class="unit-tag">第 03 單元 3-3</span>
+        </div>
+        <h2 class="card-title">植樹與間隔問題 雙人搶答對決</h2>
+        <p class="card-desc">涵蓋路燈編號、兩端設置（兩端都設、一有一無、兩端皆無）、求間距與全長、封閉水池花園等核心情境。</p>
+        
+        <ul class="feature-list">
+          <li><span class="f-icon">✦</span> 同類型題動態替換 10 組以上生活化數字</li>
+          <li><span class="f-icon">✦</span> 精準鎖定「忘記+1/多加1/兩側乘2」迷思選項</li>
+          <li><span class="f-icon">✦</span> 每題提供動態向量 SVG 數線與封閉圖形解析</li>
+          <li><span class="f-icon">✦</span> 答錯冰凍 5 秒防亂猜、班級座號隨機抽籤</li>
+        </ul>
+
+        <div class="play-btn">
+          <span>進入遊戲對決</span>
+          <span>➔</span>
+        </div>
+      </a>
+
+      <!-- 遊戲 2：和差積商不變量 -->
+      <a href="games/invariant-quantities/index.html" class="game-card theme-invariant">
+        <div class="card-top">
+          <span class="card-icon">⚡</span>
+          <span class="unit-tag">第 03 單元 3-2</span>
+        </div>
+        <h2 class="card-title">和差積商不變量 雙人搶答對決</h2>
+        <p class="card-desc">掌握四年不變量思維：和不變（晝夜24hr/互贈）、差不變（年齡/同增減）、積不變（反比）、商不變（正比/餘數）。</p>
+        
+        <ul class="feature-list">
+          <li><span class="f-icon">✦</span> 全數值由答案反推保證整除無誤</li>
+          <li><span class="f-icon">✦</span> 8 個精心設計之教學干擾選項</li>
+          <li><span class="f-icon">✦</span> 包含「四合一綜合大亂鬥」全能考驗</li>
+          <li><span class="f-icon">✦</span> 課堂座號隨機抽籤與雙音和弦音效</li>
+        </ul>
+
+        <div class="play-btn">
+          <span>進入遊戲對決</span>
+          <span>➔</span>
+        </div>
+      </a>
+
+      <!-- 預留擴充卡片 (未來隨時新增) -->
+      <div class="game-card theme-future">
+        <div class="card-top">
+          <span class="card-icon">🎲</span>
+          <span class="unit-tag">擴充槽預留</span>
+        </div>
+        <h2 class="card-title">更多數學單元對決 (規劃中)</h2>
+        <p class="card-desc">預計陸續加入：第 1 單元 最大公因數與公倍數、第 2 單元 分數除法、第 4 單元 圓周長與圓面積、第 8 單元 速率等。</p>
+        
+        <ul class="feature-list">
+          <li><span class="f-icon">✦</span> 統一的大廳導航與返回機制</li>
+          <li><span class="f-icon">✦</span> 支援自訂新單元快速接入</li>
+          <li><span class="f-icon">✦</span> 完全相容於 GitHub Pages 雲端免安裝遊玩</li>
+        </ul>
+
+        <div class="play-btn future-btn">
+          <span>敬請期待</span>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- 底部課堂教學建議 -->
+    <footer class="portal-footer-tips">
+      <div class="tip-item">
+        <span class="tip-icon">🖥️</span>
+        <span><strong>投影白板最佳化：</strong>支援鍵盤快捷鍵 <kbd>F</kbd> 切換全螢幕、<kbd>M</kbd> 切換音效。</span>
+      </div>
+      <div class="tip-item">
+        <span class="tip-icon">🎲</span>
+        <span><strong>公平抽籤：</strong>內建座號隨機輪播系統，避免重複抽中，讓全班每位同學都有機會上台。</span>
+      </div>
+      <div class="tip-item">
+        <span class="tip-icon">⚡</span>
+        <span><strong>防亂猜機制：</strong>雙方搶答，答錯者冰凍 5 秒，另一隊可抓緊機會冷靜推導。</span>
+      </div>
+    </footer>
+  </div>
+
+</body>
+</html>
