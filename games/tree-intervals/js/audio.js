@@ -208,6 +208,11 @@ class SoundManager {
     osc.stop(now + 0.05);
   }
 
+  // 抽籤滾動相容別名
+  playLotteryTick() {
+    this.playLotteryRoll();
+  }
+
   // 8. 抽籤中選音效 (亮麗三連音)
   playLotterySuccess() {
     if (this.muted) return;

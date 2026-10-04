@@ -274,7 +274,9 @@ class IntervalBattleGame {
       rollCount++;
       const tempNum = Math.floor(Math.random() * maxNum) + 1;
       this.updateLotteryDisplay(teamKey, tempNum, true);
-      window.soundManager.playLotteryTick();
+      try {
+        if (window.soundManager) window.soundManager.playLotteryRoll();
+      } catch (e) {}
 
       if (rollCount >= maxRolls) {
         clearInterval(rollInterval);
@@ -290,7 +292,9 @@ class IntervalBattleGame {
     this.setLotteryButtonsDisabled(teamKey, false);
 
     this.updateLotteryDisplay(teamKey, selectedNum, false);
-    window.soundManager.playLotterySuccess();
+    try {
+      if (window.soundManager) window.soundManager.playLotterySuccess();
+    } catch (e) {}
 
     const displays = [
       teamKey === 'p1' ? this.p1MenuNumber : this.p2MenuNumber,

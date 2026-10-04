@@ -124,79 +124,101 @@
        2. 正式對戰比賽畫面 (Game Arena)
        ======================================================================= -->
   <div id="game-screen" class="screen">
-    <!-- 頂部資訊與計時看板 -->
-    <header class="game-header">
-      <div class="round-info">
-        <span id="round-badge" class="round-badge">第 1 / 4 題</span>
-        <span id="category-badge" class="category-badge">題型載入中</span>
+    <!-- 頂部計分與倒數列 -->
+    <header class="match-header">
+      <!-- 左方：紅隊得分 -->
+      <div class="player-score-card p1">
+        <div class="score-meta">
+          <span id="p1-name-display" class="score-name">紅隊</span>
+          <span id="p1-arena-rep-display" class="score-rep">座號: --</span>
+        </div>
+        <span id="p1-score-display" class="score-num">0</span>
       </div>
 
-      <div class="timer-container">
-        <div class="timer-bar-bg">
-          <div id="timer-bar-fill" class="timer-bar-fill"></div>
+      <!-- 中央：題號與倒數 -->
+      <div class="match-center-info">
+        <div class="badge-group">
+          <span id="round-badge" class="info-badge">第 1 / 4 題</span>
+          <span id="category-badge" class="info-badge category-tag">路燈編號</span>
         </div>
-        <div id="timer-text" class="timer-text">45s</div>
+        <div class="timer-box">
+          <div class="timer-bar-bg">
+            <div id="timer-bar-fill" class="timer-bar-fill"></div>
+          </div>
+          <span id="timer-text" class="timer-num">45s</span>
+        </div>
       </div>
 
-      <div class="score-board">
-        <div class="team-score p1">
-          <span id="p1-name-display" class="team-label">紅隊</span>
-          <span id="p1-arena-rep-display" class="arena-rep-tag">座號: -- 號</span>
-          <span id="p1-score-display" class="score-num">0</span>
-        </div>
-        <div class="score-vs">VS</div>
-        <div class="team-score p2">
+      <!-- 右方：藍隊得分 + 工具列 -->
+      <div class="match-header-right">
+        <div class="player-score-card p2">
           <span id="p2-score-display" class="score-num">0</span>
-          <span id="p2-arena-rep-display" class="arena-rep-tag">座號: -- 號</span>
-          <span id="p2-name-display" class="team-label">藍隊</span>
+          <div class="score-meta right">
+            <span id="p2-name-display" class="score-name">藍隊</span>
+            <span id="p2-arena-rep-display" class="score-rep">座號: --</span>
+          </div>
+        </div>
+
+        <div class="header-tools">
+          <a href="../../index.html" class="tool-btn" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;" title="返回遊戲大廳">🏠 大廳</a>
+          <button class="tool-btn sound-toggle-btn" title="切換音效 (快捷鍵 M)">🔊 音效開</button>
+          <button class="tool-btn fullscreen-btn" title="全螢幕模式 (快捷鍵 F)">⛶ 全螢幕</button>
         </div>
       </div>
     </header>
 
-    <!-- 中間題目看板 (特大字體投影顯示) -->
-    <div class="question-container">
-      <div id="question-text" class="question-text">題目載入中...</div>
-    </div>
-
-    <!-- 下方雙人對決作答區 (紅隊左、藍隊右，各 8 個大按鈕選項) -->
+    <!-- 主對抗區 (左側紅隊選項 + 中央題目 + 右側藍隊選項) -->
     <main class="battle-arena">
       <!-- 左側：紅隊作答區 -->
       <section class="player-panel p1">
-        <div class="panel-header">
-          <span class="panel-title">🔴 紅隊作答區 (快捷鍵 1~4 / Q~R)</span>
-          <div class="panel-lottery-box">
-            <span class="panel-num-tag">選手: <b id="p1-panel-num">--</b> 號</span>
-            <button type="button" id="p1-arena-lottery-btn" class="quick-lottery-btn" title="本題換人抽籤">🎲 換人</button>
+        <div class="panel-header-bar">
+          <div class="panel-title">🔴 紅隊作答區 (1~4/Q~R)</div>
+          <div class="panel-lottery-control">
+            <span id="p1-panel-seat" class="seat-badge">選手：<strong id="p1-panel-num">--</strong> 號</span>
+            <button type="button" id="p1-arena-lottery-btn" class="mini-roll-btn" title="抽下一位同學上台">🎲 換人抽籤</button>
           </div>
         </div>
-        <div id="p1-options" class="options-grid"></div>
 
-        <!-- 答錯冰凍懲罰遮罩 -->
+        <div id="p1-options" class="options-list">
+          <!-- 8 個選項以 2 欄 4 列排版 -->
+        </div>
+
+        <!-- 答錯 5 秒冰凍遮罩 -->
         <div id="p1-lock-overlay" class="lock-overlay">
           <div class="lock-icon">❄️</div>
-          <div class="lock-text">答錯冰凍懲罰</div>
+          <div class="lock-title">答錯懲罰！暫停回答</div>
           <div id="p1-lock-countdown" class="lock-countdown">5</div>
-          <div class="lock-sub">秒後解除鎖定</div>
+          <div class="lock-subtext">冰凍解除倒數中，請仔細思考...</div>
+        </div>
+      </section>
+
+      <!-- 中央：大螢幕題目區 -->
+      <section class="question-board">
+        <div id="question-text" class="question-text">
+          題目讀取中...
         </div>
       </section>
 
       <!-- 右側：藍隊作答區 -->
       <section class="player-panel p2">
-        <div class="panel-header">
-          <span class="panel-title">🔵 藍隊作答區 (快捷鍵 7~0 / U~P)</span>
-          <div class="panel-lottery-box">
-            <span class="panel-num-tag">選手: <b id="p2-panel-num">--</b> 號</span>
-            <button type="button" id="p2-arena-lottery-btn" class="quick-lottery-btn" title="本題換人抽籤">🎲 換人</button>
+        <div class="panel-header-bar">
+          <div class="panel-title">🔵 藍隊作答區 (7~0/U~P)</div>
+          <div class="panel-lottery-control">
+            <span id="p2-panel-seat" class="seat-badge">選手：<strong id="p2-panel-num">--</strong> 號</span>
+            <button type="button" id="p2-arena-lottery-btn" class="mini-roll-btn" title="抽下一位同學上台">🎲 換人抽籤</button>
           </div>
         </div>
-        <div id="p2-options" class="options-grid"></div>
 
-        <!-- 答錯冰凍懲罰遮罩 -->
+        <div id="p2-options" class="options-list">
+          <!-- 8 個選項以 2 欄 4 列排版 -->
+        </div>
+
+        <!-- 答錯 5 秒冰凍遮罩 -->
         <div id="p2-lock-overlay" class="lock-overlay">
           <div class="lock-icon">❄️</div>
-          <div class="lock-text">答錯冰凍懲罰</div>
+          <div class="lock-title">答錯懲罰！暫停回答</div>
           <div id="p2-lock-countdown" class="lock-countdown">5</div>
-          <div class="lock-sub">秒後解除鎖定</div>
+          <div class="lock-subtext">冰凍解除倒數中，請仔細思考...</div>
         </div>
       </section>
     </main>
