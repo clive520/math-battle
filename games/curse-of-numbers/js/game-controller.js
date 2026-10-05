@@ -25,6 +25,7 @@ class DungeonEscapeController {
   init() {
     this._cacheDom();
     this._bindGlobalEvents();
+    this._initMouseTorch();
     this._updateLanguageUI();
 
     // 檢查是否有儲存的進度
@@ -36,7 +37,7 @@ class DungeonEscapeController {
         this.sanity = data.sanity || 100;
         this.currentChamberIdx = data.currentChamberIdx || 0;
         this.startTime = data.startTime ? new Date(data.startTime) : new Date();
-        this._startWithSeed();
+        this._startWithSeed(data.chamberOrder);
         return;
       } catch (e) {
         console.warn('Failed to restore save', e);
@@ -77,6 +78,17 @@ class DungeonEscapeController {
     this.dom.lockMount = document.getElementById('lockMount');
     this.dom.whisperAlert = document.getElementById('whisperAlert');
     this.dom.gateOverlay = document.getElementById('gateOverlay');
+    this.dom.torchMask = document.getElementById('torchMask');
+  }
+
+  // 手電筒/火把光暈跟隨效果 (Torchlight Vignette: 理智 <= 40% 時跟隨鼠標/觸控)
+  _initMouseTorch() {
+    window.addEventListener('pointermove', (e) => {
+      if (!this.dom.torchMask || this.sanity > 40) return;
+      const x = e.clientX;
+      const y = e.clientY;
+      this.dom.torchMask.style.background = `radial-gradient(circle 380px at ${x}px ${y}px, rgba(0, 0, 0, 0.05) 0%, rgba(5, 5, 10, 0.78) 70%, rgba(3, 3, 5, 0.96) 100%)`;
+    }, { passive: true });
   }
 
   _bindGlobalEvents() {
@@ -254,10 +266,10 @@ class DungeonEscapeController {
   }
 
   // 根據種子啟動遊戲
-  _startWithSeed() {
+  _startWithSeed(customOrder = null) {
     const seed = `${this.studentInfo.className}-${this.studentInfo.seatNum}`;
     const engine = new DungeonQuestionEngine(seed);
-    this.chambers = engine.generateAllChambers();
+    this.chambers = engine.generateAllChambers(customOrder);
 
     // 更新個人銘牌 (僅顯示暱稱)
     if (this.dom.studentBadge) {
@@ -285,11 +297,12 @@ class DungeonEscapeController {
 
     const isEn = (this.lang === 'en');
 
-    // 更新關卡徽章
+    // 更新關卡徽章 (動態反映洗牌後的當前關卡序號)
     if (this.dom.chamberBadge) {
+      const stageNo = chamber.stageIndex || (index + 1);
       this.dom.chamberBadge.textContent = isEn 
-        ? `🏰 Chamber ${chamber.id} / ${this.chambers.length}`
-        : `🏰 關卡 ${chamber.id} / ${this.chambers.length}`;
+        ? `🏰 Chamber ${stageNo} / ${this.chambers.length}`
+        : `🏰 關卡 ${stageNo} / ${this.chambers.length}`;
     }
 
     // 更新文案
@@ -384,11 +397,19 @@ class DungeonEscapeController {
 
   // 扣除理智值
   _reduceSanity(amount) {
+    const prevSanity = this.sanity;
     this.sanity = Math.max(0, this.sanity - amount);
     this._updateSanityUI();
 
     if (this.sanity <= 40) {
       window.audioMgr.startHeartbeat(115);
+      if (prevSanity > 40) {
+        const isEn = (this.lang === 'en');
+        const alertMsg = isEn
+          ? '⚠️ [Darkness Closes In] Sanity fell below 40%! The darkness encroaches; flashlight mode activated!'
+          : '⚠️【黑暗降臨】理智跌破 40%！黑暗壟罩地牢，已啟動手電筒暗黑探索模式！';
+        this._showWhisper(alertMsg, 'danger');
+      }
     }
 
     if (this.sanity <= 0) {
@@ -416,6 +437,18 @@ class DungeonEscapeController {
     }
     if (this.dom.sanityVal) {
       this.dom.sanityVal.textContent = `${this.sanity}%`;
+    }
+
+    // 理智值 <= 40% 啟用手電筒暗黑遮罩效果，> 40% 則關閉恢復正常
+    this._updateTorchMaskState();
+  }
+
+  _updateTorchMaskState() {
+    if (!this.dom.torchMask) return;
+    if (this.sanity <= 40) {
+      this.dom.torchMask.classList.add('active');
+    } else {
+      this.dom.torchMask.classList.remove('active');
     }
   }
 
@@ -473,6 +506,7 @@ class DungeonEscapeController {
     this.sanity = 100;
     this.currentChamberIdx = 0;
     this.wrongCount = 0;
+    this._updateSanityUI();
     this._showLoginModal();
   }
 
@@ -488,6 +522,7 @@ class DungeonEscapeController {
 
     window.audioMgr.stopHeartbeat();
     window.audioMgr.playEscapeVictory();
+    this.dom.torchMask?.classList.remove('active');
 
     let stars = '⭐⭐⭐';
     let titleHonor = isEn ? 'Legendary Cursebreaker' : '傳奇破咒大師';
@@ -563,7 +598,8 @@ class DungeonEscapeController {
       studentInfo: this.studentInfo,
       sanity: this.sanity,
       currentChamberIdx: this.currentChamberIdx,
-      startTime: this.startTime
+      startTime: this.startTime,
+      chamberOrder: this.chambers.map(c => c.id)
     };
     localStorage.setItem('curse_of_numbers_save', JSON.stringify(data));
   }

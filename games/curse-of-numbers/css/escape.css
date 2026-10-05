@@ -36,9 +36,21 @@ body {
   user-select: none;
 }
 
-/* 幽暗手電筒火把光暈遮罩 (已依照教學需求取消，確保文字全時清晰無遮蔽) */
+/* 幽暗手電筒火把光暈遮罩 (Torchlight Overlay: 於理智 <= 40% 時啟動) */
 .torch-mask {
-  display: none !important;
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  background: radial-gradient(circle 380px at 50% 50%, rgba(0, 0, 0, 0.05) 0%, rgba(5, 5, 10, 0.78) 70%, rgba(3, 3, 5, 0.96) 100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.torch-mask.active {
+  opacity: 1;
+  visibility: visible;
 }
 
 /* 石壁背景紋理 */

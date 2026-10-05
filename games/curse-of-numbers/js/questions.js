@@ -38,20 +38,58 @@ class DungeonQuestionEngine {
     return String(n).padStart(4, '0');
   }
 
-  generateAllChambers() {
+  generateAllChambers(customOrder = null) {
     this.rng.reset();
-    return [
-      new DungeonChamber(this._genChamber1()),
-      new DungeonChamber(this._genChamber2()),
-      new DungeonChamber(this._genChamber3()),
-      new DungeonChamber(this._genChamber4()),
-      new DungeonChamber(this._genChamber5()),
-      new DungeonChamber(this._genChamber6()),
-      new DungeonChamber(this._genChamber7()),
-      new DungeonChamber(this._genChamber8()),
-      new DungeonChamber(this._genChamber9()),
-      new DungeonChamber(this._genChamber10())
+    const rawList = [
+      this._genChamber1(),
+      this._genChamber2(),
+      this._genChamber3(),
+      this._genChamber4(),
+      this._genChamber5(),
+      this._genChamber6(),
+      this._genChamber7(),
+      this._genChamber8(),
+      this._genChamber9(),
+      this._genChamber10()
     ];
+
+    let chamberList = [];
+
+    if (Array.isArray(customOrder) && customOrder.length === rawList.length) {
+      // 依據儲存的順序排列 (延續先前進度)
+      const map = new Map(rawList.map(c => [c.id, c]));
+      chamberList = customOrder.map(id => map.get(id) || rawList[0]);
+    } else {
+      // 每次進入密室隨機打亂答題順序 (Fisher-Yates 隨機洗牌)
+      chamberList = [...rawList];
+      for (let i = chamberList.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [chamberList[i], chamberList[j]] = [chamberList[j], chamberList[i]];
+      }
+    }
+
+    // 依據洗牌後的實際答題順序，動態更新各密室之標題序號
+    const zhNums = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+    return chamberList.map((data, idx) => {
+      const stageNo = idx + 1;
+      const isFinal = (stageNo === chamberList.length);
+      const chamber = new DungeonChamber(data);
+      chamber.stageIndex = stageNo;
+
+      // 提取核心主題名稱並重新賦予序號
+      const baseTitleZh = (data.title_zh || '').replace(/^第[一二三四五六七八九十0-9]+密室(\s*\(魔王脫出\))?：/, '');
+      const baseTitleEn = (data.title_en || '').replace(/^Chamber\s*[0-9]+(\s*\(Boss Escape\))?:\s*/, '');
+
+      chamber.title_zh = isFinal 
+        ? `第${zhNums[idx]}密室 (魔王脫出)：${baseTitleZh}`
+        : `第${zhNums[idx]}密室：${baseTitleZh}`;
+
+      chamber.title_en = isFinal
+        ? `Chamber ${stageNo} (Boss Escape): ${baseTitleEn}`
+        : `Chamber ${stageNo}: ${baseTitleEn}`;
+
+      return chamber;
+    });
   }
 
   // -------------------------------------------------------------
