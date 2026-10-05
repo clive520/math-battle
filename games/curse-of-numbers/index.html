@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>《數之咒印：禁忌地牢逃脫》・國小六上數學數量關係密室闖關</title>
+  <link rel="stylesheet" href="css/escape.css?v=20261005_1">
+</head>
+<body>
+
+  <!-- 手電筒/火把光暈暗黑遮罩 -->
+  <div class="torch-mask" id="torchMask"></div>
+
+  <!-- 石壁背景層 -->
+  <div class="dungeon-bg-wrap"></div>
+
+  <!-- 主應用容器 -->
+  <div class="app-container" id="gameMain">
+    
+    <!-- 頂部狀態列 -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <span class="badge-tag" id="chamberBadge">🏰 載入密室中...</span>
+        <span class="student-tag" id="studentBadge">👤 冒險者認證中</span>
+      </div>
+
+      <div class="top-bar-right">
+        <!-- 理智值 (Sanity HP) -->
+        <div class="sanity-meter" title="理智值：答錯將遭受惡靈詛咒恐懼並消耗理智">
+          <span class="sanity-label">理智</span>
+          <div class="sanity-track">
+            <div class="sanity-fill" id="sanityFill"></div>
+          </div>
+          <span class="sanity-val" id="sanityVal">100%</span>
+        </div>
+
+        <!-- 功能按鈕 -->
+        <button type="button" class="icon-btn journal-btn" id="btnJournal" title="查看線索筆記本 (快捷鍵 J)">
+          <span>📖</span><span>染血筆記</span>
+        </button>
+        <button type="button" class="icon-btn" id="btnMute" title="切換音效 (快捷鍵 M)">🔊</button>
+        <button type="button" class="icon-btn" id="btnTeacher" title="教師巡堂上帝視角 (快捷鍵 T)">🎓 巡堂</button>
+      </div>
+    </header>
+
+    <!-- 密室核心探索面板 -->
+    <main class="chamber-panel">
+      <div class="chamber-heading">
+        <div class="chamber-subtitle" id="chamberSubtitle">單元載入中</div>
+        <h1 class="chamber-title" id="chamberTitle">密室載入中...</h1>
+        <p class="chamber-lore-quote" id="chamberLore">「牆壁深處傳來骨骼摩擦的聲音……解開密碼鎖，逃出這個房間！」</p>
+      </div>
+
+      <!-- 劇情情境描述 -->
+      <div class="story-box" id="chamberStory">
+        正在解構古代地牢密語⋯⋯
+      </div>
+
+      <!-- 機關謎題目標 -->
+      <div class="target-question-box" id="targetQuestion">
+        ⚠️ <strong>開門機關謎語：</strong>計算中...
+      </div>
+
+      <!-- 惡靈提示與警報 -->
+      <div class="whisper-alert hidden" id="whisperAlert"></div>
+
+      <!-- 實體 4 位旋轉銅鎖掛載點 -->
+      <section class="lock-mount-area" id="lockMount">
+        <!-- 由 lock-system.js 動態渲染 -->
+      </section>
+    </main>
+
+  </div>
+
+  <!-- 石門轟鳴推開過場遮罩 (Gate Transition) -->
+  <div class="gate-overlay hidden" id="gateOverlay">
+    <div class="gate-content">
+      <div class="gate-icon">🚪💥</div>
+      <div class="gate-title">【石門轟鳴震顫・咒印瓦解】</div>
+      <p style="color: #bbb; margin-top: 8px;">踏入下一間幽暗密室⋯⋯</p>
+    </div>
+  </div>
+
+  <!-- 1. 初次登入與座號輸入彈窗 (Login Modal) -->
+  <div class="modal-backdrop hidden" id="loginModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2>🏰 冒險者登錄・踏入禁忌地牢</h2>
+      </div>
+      <div class="login-body">
+        <p class="login-desc">
+          歡迎來到《數之咒印：禁忌地牢逃脫》！<br>
+          本遊戲依據<strong>國小六年級康軒數學第 03 單元《數量關係》</strong>設計。<br>
+          <span style="color: #ffd54f;">⚠️ 系統會依據您的【班級與座號】自動生成您專屬的迷宮數值與開鎖密碼，每位同學題目參數完全不同，無法抄襲！請認真推導！</span>
+        </p>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="inputClassName">班級代號</label>
+            <input type="text" id="inputClassName" class="form-input" value="601" placeholder="例如: 601">
+          </div>
+          <div class="form-group">
+            <label for="inputSeatNum">座號 (關鍵種子碼)</label>
+            <input type="number" id="inputSeatNum" class="form-input" min="1" max="99" value="1" placeholder="例如: 15">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputNickname">冒險者暱稱 / 姓名</label>
+          <input type="text" id="inputNickname" class="form-input" value="勇敢冒險者" placeholder="輸入姓名或代號">
+        </div>
+
+        <button type="button" class="btn-start-adventure" id="btnStartAdventure">
+          🔥 點燃火把・踏入密室
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 線索筆記本彈窗 (Clue Journal Modal) -->
+  <div class="modal-backdrop hidden" id="journalModal">
+    <div class="modal-dialog journal-style">
+      <div class="modal-header">
+        <h2 id="journalTitle">📖 染血筆記本</h2>
+        <button type="button" class="btn-close-modal" id="btnCloseJournal">✕</button>
+      </div>
+      <div class="journal-body">
+        <div class="journal-concept-tag" id="journalConcept">核心概念：數量關係</div>
+        <ul class="journal-hints-list" id="journalHints">
+          <li>前人留下的筆記在此⋯</li>
+        </ul>
+        <div class="diagram-mount" id="journalDiagramMount">
+          <!-- 動態 SVG 圖解渲染在此 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 教師巡堂上帝視角面板 (Teacher Modal) -->
+  <div class="modal-backdrop hidden" id="teacherModal">
+    <div class="modal-dialog teacher-dialog">
+      <div class="modal-header">
+        <h2>🎓 教師巡堂視角（上帝之眼）</h2>
+        <button type="button" class="btn-close-modal" id="btnCloseTeacher">✕</button>
+      </div>
+      <div class="teacher-body">
+        <div class="teacher-query-bar">
+          <label style="font-size: 13px;">班級：</label>
+          <input type="text" id="teacherInputClass" value="601">
+          <label style="font-size: 13px;">座號：</label>
+          <input type="number" id="teacherInputSeat" value="1" min="1" max="99">
+          <button type="button" class="btn-query-seed" id="btnQueryTeacherSeed">🔍 即時調閱題目與密碼</button>
+        </div>
+        <div id="teacherQueryResult">
+          <!-- 教師查詢結果 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. 生還脫出證書結算畫面 (Victory Screen) -->
+  <div class="victory-backdrop hidden" id="victoryScreen">
+    <!-- 由 game-controller.js 動態渲染 -->
+  </div>
+
+  <!-- 程式模組載入 -->
+  <script src="js/audio-manager.js?v=20261005_1"></script>
+  <script src="js/prng.js?v=20261005_1"></script>
+  <script src="js/diagram-renderer.js?v=20261005_1"></script>
+  <script src="js/questions.js?v=20261005_1"></script>
+  <script src="js/lock-system.js?v=20261005_1"></script>
+  <script src="js/game-controller.js?v=20261005_1"></script>
+
+</body>
+</html>

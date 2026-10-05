@@ -1,0 +1,1151 @@
+/* ==========================================================================
+   《數之咒印：禁忌地牢逃脫》 密室恐懼主題樣式表
+   Aesthetic: Dark Gothic Dungeon, Antique Brass Locks, Flickering Torches, Sanity Meter
+   ========================================================================== */
+
+:root {
+  --bg-deep: #0a0b0e;
+  --bg-stone: #15181f;
+  --bg-stone-panel: #1e222b;
+  --border-gothic: #3a3f4d;
+  --accent-gold: #e5b95c;
+  --accent-gold-glow: rgba(229, 185, 92, 0.4);
+  --accent-blood: #ff3344;
+  --accent-blood-glow: rgba(255, 51, 68, 0.4);
+  --accent-cyan: #00e5ff;
+  --text-main: #e6e8eb;
+  --text-muted: #9aa0a6;
+  --brass-grad: linear-gradient(180deg, #d4af37 0%, #aa820a 50%, #6d5203 100%);
+  --brass-dark: linear-gradient(180deg, #3a3224 0%, #201b13 100%);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", Roboto, sans-serif;
+  background-color: var(--bg-deep);
+  color: var(--text-main);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  user-select: none;
+}
+
+/* 幽暗手電筒火把光暈遮罩 (Torchlight Overlay) */
+.torch-mask {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  background: radial-gradient(circle 380px at 50% 50%, rgba(0, 0, 0, 0.05) 0%, rgba(5, 5, 10, 0.75) 70%, rgba(3, 3, 5, 0.95) 100%);
+  transition: background 0.05s ease-out;
+}
+
+/* 石壁背景紋理 */
+.dungeon-bg-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(255, 50, 50, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(0, 180, 255, 0.05) 0%, transparent 40%),
+    linear-gradient(rgba(10, 11, 14, 0.92), rgba(10, 11, 14, 0.96)),
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px);
+  background-size: cover;
+}
+
+/* 主容器 */
+.app-container {
+  position: relative;
+  z-index: 10;
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 16px 20px 40px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 頂部狀態導覽列 */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(21, 24, 31, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-gothic);
+  border-radius: 12px;
+  padding: 10px 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  margin-bottom: 20px;
+}
+
+.top-bar-left, .top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.badge-tag {
+  background: #2a2015;
+  color: var(--accent-gold);
+  border: 1px solid var(--accent-gold);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.student-tag {
+  color: #c9d1d9;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* 理智值 (Sanity Bar) */
+.sanity-meter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid #333;
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+
+.sanity-label {
+  font-size: 12px;
+  color: #ff7979;
+  font-weight: 700;
+}
+
+.sanity-track {
+  width: 110px;
+  height: 10px;
+  background: #222;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
+}
+
+.sanity-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #00e676, #00b0ff);
+  transition: width 0.4s ease, background 0.4s ease;
+}
+
+.sanity-val {
+  font-size: 12px;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+/* 頂部圖示按鈕 */
+.icon-btn {
+  background: #252a36;
+  border: 1px solid var(--border-gothic);
+  color: var(--text-main);
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.icon-btn:hover {
+  background: #32384a;
+  border-color: var(--accent-gold);
+  transform: translateY(-1px);
+}
+
+.journal-btn {
+  background: linear-gradient(180deg, #5c2020 0%, #3a1010 100%);
+  border-color: #ff5252;
+  color: #ffcdd2;
+}
+.journal-btn:hover {
+  background: linear-gradient(180deg, #7b2828 0%, #4f1515 100%);
+  border-color: #ff8a80;
+}
+
+/* 密室內容主要展示區 */
+.chamber-panel {
+  background: rgba(21, 24, 31, 0.9);
+  border: 1px solid var(--border-gothic);
+  border-radius: 16px;
+  padding: 24px 28px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7);
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+}
+
+.chamber-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+}
+
+/* 密室頭銜與情境 */
+.chamber-heading {
+  margin-bottom: 18px;
+}
+
+.chamber-subtitle {
+  font-size: 13px;
+  color: var(--accent-gold);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.chamber-title {
+  font-size: 26px;
+  color: #fff;
+  font-weight: 800;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+}
+
+.chamber-lore-quote {
+  font-style: italic;
+  color: #ff9999;
+  font-size: 14px;
+  border-left: 3px solid var(--accent-blood);
+  padding-left: 12px;
+  margin: 10px 0 16px;
+  opacity: 0.88;
+}
+
+.story-box {
+  background: rgba(10, 12, 16, 0.6);
+  border: 1px dashed #444c5c;
+  padding: 16px 20px;
+  border-radius: 10px;
+  line-height: 1.7;
+  font-size: 16px;
+  color: #d1d5db;
+  margin-bottom: 20px;
+}
+
+.story-box strong {
+  color: #ffd54f;
+  font-weight: 700;
+}
+
+.target-question-box {
+  background: rgba(45, 20, 20, 0.7);
+  border: 1px solid #ff4444;
+  color: #ffebee;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 17px;
+  line-height: 1.5;
+  box-shadow: 0 4px 14px rgba(255, 0, 0, 0.15);
+  margin-bottom: 24px;
+}
+
+/* 惡靈嘲弄警報 (Whisper Alert) */
+.whisper-alert {
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  animation: fadeIn 0.3s ease;
+}
+
+.whisper-alert.danger {
+  background: rgba(80, 10, 10, 0.85);
+  border: 1px solid #ff3344;
+  color: #ffcdd2;
+}
+
+.whisper-alert.success {
+  background: rgba(10, 60, 25, 0.85);
+  border: 1px solid #00e676;
+  color: #b9f6ca;
+}
+
+.whisper-alert.warning {
+  background: rgba(70, 45, 10, 0.85);
+  border: 1px solid #ffb300;
+  color: #ffe082;
+}
+
+/* ==========================================================================
+   實體機關：古老四位旋轉銅鎖 (Physical Lock UI)
+   ========================================================================== */
+
+.lock-mount-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0 20px;
+}
+
+.physical-lock-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 440px;
+}
+
+/* 鎖頂 U 型鐵扣環 (Shackle) */
+.lock-shackle-wrapper {
+  position: relative;
+  width: 180px;
+  height: 70px;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lock-shackle-bar {
+  width: 100%;
+  height: 100%;
+  border: 18px solid #5a6273;
+  border-bottom: none;
+  border-radius: 90px 90px 0 0;
+  box-shadow: inset 0 3px 6px rgba(255,255,255,0.2), 0 4px 10px rgba(0,0,0,0.8);
+}
+
+/* 成功解鎖時扣環向上彈起動畫 */
+.unlocked-shackle {
+  transform: translateY(-24px);
+}
+.unlocked-shackle .lock-shackle-bar {
+  border-color: #ffd54f !important;
+  box-shadow: 0 0 25px rgba(255, 213, 79, 0.8) !important;
+}
+
+/* 鎖身本體 */
+.lock-body {
+  width: 100%;
+  background: linear-gradient(180deg, #2a2318 0%, #1c1710 40%, #120f0a 100%);
+  border: 3px solid #8c6d36;
+  border-radius: 18px;
+  padding: 18px 20px;
+  box-shadow: 
+    0 12px 30px rgba(0,0,0,0.9), 
+    inset 0 2px 4px rgba(255,255,255,0.15),
+    inset 0 -3px 6px rgba(0,0,0,0.8);
+  position: relative;
+  transition: box-shadow 0.4s ease;
+}
+
+.unlocked-glow {
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.6), inset 0 0 15px rgba(255, 215, 0, 0.3) !important;
+  border-color: #ffd700 !important;
+}
+
+.lock-header {
+  text-align: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #4a3b22;
+  padding-bottom: 8px;
+}
+
+.lock-emblem {
+  display: block;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--accent-gold);
+  letter-spacing: 1px;
+}
+
+.lock-hint-text {
+  font-size: 12px;
+  color: #a89476;
+}
+
+/* 4 個輪盤排列 */
+.dials-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.dial-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dial-btn {
+  background: linear-gradient(180deg, #3d3423 0%, #262016 100%);
+  border: 1px solid #70582d;
+  color: #ffd54f;
+  width: 48px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.dial-btn:hover {
+  background: #52442b;
+  color: #fff;
+  border-color: #ffd54f;
+}
+
+.dial-btn:active {
+  transform: scale(0.92);
+}
+
+.dial-window {
+  width: 58px;
+  height: 64px;
+  background: #08080a;
+  border: 2px solid #544426;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px 0;
+  box-shadow: inset 0 4px 8px rgba(0,0,0,0.9), 0 2px 4px rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+
+.dial-digit {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 38px;
+  font-weight: 900;
+  color: #f7e1b5;
+  text-shadow: 0 0 10px rgba(247, 225, 181, 0.4);
+}
+
+.roll-anim {
+  animation: dialRoll 0.18s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+@keyframes dialRoll {
+  0% { transform: translateY(-12px); opacity: 0.3; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* 快速輸入輔助列 */
+.quick-input-bar {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.quick-input {
+  width: 170px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid #5a492c;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: monospace;
+  letter-spacing: 2px;
+  text-align: center;
+}
+.quick-input:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+}
+
+.quick-sync-btn {
+  background: #332b1d;
+  border: 1px solid #70582d;
+  color: #e0ca9b;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.quick-sync-btn:hover {
+  background: #4a3e29;
+}
+
+/* 拉動鎖栓開門按鈕 */
+.lock-action-bar {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-pull-shackle {
+  background: linear-gradient(180deg, #d4a037 0%, #996e14 50%, #614406 100%);
+  border: 1px solid #ffd54f;
+  color: #1a1202;
+  font-size: 18px;
+  font-weight: 900;
+  padding: 12px 28px;
+  border-radius: 30px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.7), inset 0 1px 2px rgba(255,255,255,0.4);
+  transition: all 0.2s;
+}
+
+.btn-pull-shackle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(212, 160, 55, 0.5);
+  background: linear-gradient(180deg, #e3af42 0%, #aa7c18 50%, #704f08 100%);
+}
+
+.btn-pull-shackle:active {
+  transform: translateY(1px);
+}
+
+/* 失敗卡死鎖身抖動動畫 */
+.lock-rattle-fail {
+  animation: lockShake 0.45s cubic-bezier(.36,.07,.19,.97) both;
+  border-color: #ff3344 !important;
+  box-shadow: 0 0 25px rgba(255, 51, 68, 0.6) !important;
+}
+
+@keyframes lockShake {
+  10%, 90% { transform: translate3d(-3px, 0, 0); }
+  20%, 80% { transform: translate3d(5px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+  40%, 60% { transform: translate3d(6px, 0, 0); }
+}
+
+/* 恐懼螢幕震動 (Horror Camera Shake) */
+.horror-screen-shake {
+  animation: screenShake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes screenShake {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-8px, 6px); }
+  40% { transform: translate(6px, -6px); }
+  60% { transform: translate(-4px, 4px); }
+  80% { transform: translate(4px, -2px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* 石門推開過場遮罩 (Gate Transition) */
+.gate-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.gate-opening-anim {
+  opacity: 1 !important;
+  pointer-events: all !important;
+}
+
+.gate-content {
+  text-align: center;
+  animation: gateTextPulse 1.2s infinite alternate;
+}
+
+.gate-icon {
+  font-size: 54px;
+  margin-bottom: 12px;
+}
+
+.gate-title {
+  font-size: 28px;
+  color: var(--accent-gold);
+  letter-spacing: 2px;
+  font-weight: 800;
+}
+
+@keyframes gateTextPulse {
+  0% { transform: scale(0.96); opacity: 0.8; }
+  100% { transform: scale(1.04); opacity: 1; }
+}
+
+/* ==========================================================================
+   彈窗與線索筆記本 (Modals & Clue Journal)
+   ========================================================================== */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(6px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-backdrop.hidden {
+  display: none !important;
+}
+
+.modal-dialog {
+  background: #1b1e26;
+  border: 1px solid var(--border-gothic);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 620px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.9);
+  padding: 24px 28px;
+  color: var(--text-main);
+  position: relative;
+}
+
+.modal-dialog.journal-style {
+  background: #181512;
+  border: 2px solid #634d28;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.95), inset 0 0 20px rgba(100, 70, 30, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+}
+
+.modal-header h2 {
+  font-size: 20px;
+  color: var(--accent-gold);
+}
+
+.btn-close-modal {
+  background: transparent;
+  border: none;
+  color: #888;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.btn-close-modal:hover {
+  color: #fff;
+}
+
+/* 登入表單元件 */
+.login-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.login-desc {
+  font-size: 14px;
+  color: #b0b8c4;
+  line-height: 1.6;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #d1d5db;
+}
+
+.form-input {
+  background: #0d0f14;
+  border: 1px solid #3a4150;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 15px;
+}
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.btn-start-adventure {
+  background: linear-gradient(180deg, #d32f2f 0%, #8e0000 100%);
+  border: 1px solid #ff5252;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(211, 47, 47, 0.4);
+  margin-top: 10px;
+  transition: all 0.2s;
+}
+.btn-start-adventure:hover {
+  background: linear-gradient(180deg, #f44336 0%, #b71c1c 100%);
+  transform: translateY(-1px);
+}
+
+/* 線索筆記本內容 */
+.journal-concept-tag {
+  background: #332617;
+  color: #ffd54f;
+  border-left: 3px solid #ffd54f;
+  padding: 8px 12px;
+  font-size: 14px;
+  margin-bottom: 14px;
+  border-radius: 0 6px 6px 0;
+}
+
+.journal-hints-list {
+  padding-left: 20px;
+  margin-bottom: 18px;
+  line-height: 1.7;
+  color: #d7ccc8;
+  font-size: 15px;
+}
+
+.journal-hints-list li {
+  margin-bottom: 6px;
+}
+
+/* 圖解容器 */
+.diagram-mount {
+  background: #0d0e12;
+  border: 1px solid #3e382b;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.diagram-box {
+  color: #e0e0e0;
+}
+
+.diagram-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--accent-gold);
+  margin-bottom: 10px;
+  border-bottom: 1px dashed #444;
+  padding-bottom: 6px;
+}
+
+.diagram-svg {
+  width: 100%;
+  max-height: 120px;
+  margin: 10px 0;
+}
+
+.runes-flow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.runes-row {
+  display: flex;
+  gap: 8px;
+}
+.rune-token {
+  font-size: 24px;
+  background: #222;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #444;
+}
+.rune-token.highlight {
+  border-color: #ff3344;
+  background: #401010;
+  box-shadow: 0 0 10px rgba(255, 51, 68, 0.4);
+}
+
+.balance-bar-wrapper {
+  margin: 14px 0;
+}
+.bar-total-label {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 4px;
+}
+.balance-bar {
+  display: flex;
+  height: 28px;
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 28px;
+  text-align: center;
+  color: #fff;
+}
+.day-seg {
+  background: #f57c00;
+}
+.night-seg {
+  background: #3949ab;
+}
+
+.dungeon-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 10px 0;
+}
+.dungeon-table th, .dungeon-table td {
+  border: 1px solid #444;
+  padding: 8px;
+  text-align: center;
+}
+.dungeon-table th {
+  background: #252219;
+  color: #ffd54f;
+}
+.highlight-row {
+  background: rgba(229, 185, 92, 0.15);
+}
+
+.math-breakdown {
+  font-size: 14px;
+  line-height: 1.6;
+  margin-top: 10px;
+}
+.final-ans-box {
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid var(--accent-cyan);
+  color: #e0f7fa;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-top: 10px;
+  font-size: 15px;
+}
+
+/* 教師巡堂視角樣式 */
+.teacher-dialog {
+  max-width: 780px;
+}
+.teacher-query-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.teacher-query-bar input {
+  width: 100px;
+  background: #0d0f14;
+  border: 1px solid #444;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+.btn-query-seed {
+  background: #1976d2;
+  border: none;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.teacher-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.teacher-card {
+  background: #11141c;
+  border: 1px solid #333a4d;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+.tc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.tc-num {
+  background: #2a344d;
+  color: #90caf9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+.tc-code {
+  color: #00e676;
+  font-size: 14px;
+  font-family: monospace;
+}
+.tc-body p {
+  color: #ccc;
+  margin-bottom: 4px;
+}
+
+/* ==========================================================================
+   通關結算生還證書 (Victory Certificate)
+   ========================================================================== */
+
+.victory-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 4, 6, 0.96);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+.victory-backdrop.hidden {
+  display: none !important;
+}
+
+.certificate-container {
+  width: 100%;
+  max-width: 680px;
+}
+
+.cert-border {
+  background: linear-gradient(180deg, #1f1b13 0%, #15120c 100%);
+  border: 4px double #d4af37;
+  border-radius: 18px;
+  padding: 32px 36px;
+  box-shadow: 0 0 60px rgba(212, 175, 55, 0.35);
+  position: relative;
+  text-align: center;
+}
+
+.cert-icon {
+  font-size: 60px;
+  margin-bottom: 6px;
+}
+
+.cert-title {
+  font-size: 30px;
+  color: #ffd54f;
+  font-weight: 900;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+
+.cert-sub {
+  font-size: 14px;
+  color: #bcaaa4;
+  margin-bottom: 24px;
+}
+
+.cert-player {
+  font-size: 20px;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.cert-player strong {
+  color: #4deeea;
+}
+
+.cert-desc {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #d7ccc8;
+  margin-bottom: 24px;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cert-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid #4a3c22;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.stat-lbl {
+  font-size: 12px;
+  color: #a89476;
+  margin-bottom: 4px;
+}
+
+.stat-val {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+}
+.stat-val.star-val {
+  color: #ffd54f;
+  font-size: 16px;
+}
+
+.cert-footer {
+  border-top: 1px dashed #544426;
+  padding-top: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.cert-date {
+  font-size: 13px;
+  color: #8d6e63;
+}
+
+.cert-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-cert {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.btn-print {
+  background: #1976d2;
+  border: 1px solid #64b5f6;
+  color: #fff;
+}
+
+.btn-restart {
+  background: #388e3c;
+  border: 1px solid #81c784;
+  color: #fff;
+}
+
+.btn-home {
+  background: #424242;
+  border: 1px solid #757575;
+  color: #fff;
+}
+
+.btn-cert:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+/* 列印樣式適配 */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .victory-backdrop, .certificate-container, .cert-border, .cert-border * {
+    visibility: visible;
+  }
+  .victory-backdrop {
+    position: absolute;
+    inset: 0;
+    background: #fff !important;
+    padding: 0;
+  }
+  .cert-border {
+    border: 3px solid #333 !important;
+    box-shadow: none !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .cert-title, .cert-player, .stat-val {
+    color: #000 !important;
+  }
+  .cert-actions {
+    display: none !important;
+  }
+}
+
+/* 響應式佈局 (Mobile & Tablet) */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 10px 12px 30px;
+  }
+
+  .top-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .top-bar-left, .top-bar-right {
+    justify-content: space-between;
+  }
+
+  .chamber-panel {
+    padding: 16px 14px;
+  }
+
+  .chamber-title {
+    font-size: 20px;
+  }
+
+  .story-box {
+    font-size: 15px;
+    padding: 12px 14px;
+  }
+
+  .dials-row {
+    gap: 8px;
+  }
+
+  .dial-btn {
+    width: 42px;
+    height: 28px;
+  }
+
+  .dial-window {
+    width: 48px;
+    height: 56px;
+  }
+
+  .dial-digit {
+    font-size: 32px;
+  }
+
+  .cert-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
