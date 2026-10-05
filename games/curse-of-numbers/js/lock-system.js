@@ -13,8 +13,9 @@ class DungeonLockSystem {
   }
 
   // 設定目標密碼與重置鎖面
-  setup(targetCode) {
+  setup(targetCode, lang = 'zh') {
     this.targetCode = String(targetCode).padStart(4, '0');
+    this.lang = lang;
     this.digits = [0, 0, 0, 0];
     this.isLocked = true;
     this.isAnimating = false;
@@ -28,6 +29,7 @@ class DungeonLockSystem {
 
   // 渲染實體銅鎖介面
   render() {
+    const isEn = (this.lang === 'en');
     this.container.innerHTML = `
       <div class="physical-lock-container">
         <!-- 鎖頂金屬 U 型扣環 (Shackle) -->
@@ -38,34 +40,34 @@ class DungeonLockSystem {
         <!-- 鎖身本體 (Lock Body) -->
         <div class="lock-body" id="lockBody">
           <div class="lock-header">
-            <span class="lock-emblem">⚙️ 遠古密法旋轉銅鎖</span>
-            <span class="lock-hint-text">點擊 ▲▼ 或按鍵盤數字撥動</span>
+            <span class="lock-emblem">${isEn ? '⚙️ Ancient Combination Brass Lock' : '⚙️ 遠古密法旋轉銅鎖'}</span>
+            <span class="lock-hint-text">${isEn ? 'Click ▲▼ or type digits to rotate dials' : '點擊 ▲▼ 或按鍵盤數字撥動'}</span>
           </div>
 
           <!-- 4 個數字輪盤 -->
           <div class="dials-row">
             ${[0, 1, 2, 3].map(col => `
               <div class="dial-column" data-col="${col}">
-                <button type="button" class="dial-btn dial-up" data-col="${col}" aria-label="增加第 ${col+1} 位數字">▲</button>
+                <button type="button" class="dial-btn dial-up" data-col="${col}" aria-label="${isEn ? `Increase digit ${col+1}` : `增加第 ${col+1} 位數字`}">▲</button>
                 <div class="dial-window">
                   <div class="dial-digit" id="dialDigit-${col}">${this.digits[col]}</div>
                 </div>
-                <button type="button" class="dial-btn dial-down" data-col="${col}" aria-label="減少第 ${col+1} 位數字">▼</button>
+                <button type="button" class="dial-btn dial-down" data-col="${col}" aria-label="${isEn ? `Decrease digit ${col+1}` : `減少第 ${col+1} 位數字`}">▼</button>
               </div>
             `).join('')}
           </div>
 
           <!-- 快捷數字鍵盤輸入切換（電子白板/平板便利） -->
           <div class="quick-input-bar">
-            <input type="text" class="quick-input" id="quickInputBox" maxlength="4" placeholder="或在此鍵入4位數字" value="${this.getCurrentInput()}">
-            <button type="button" class="quick-sync-btn" id="quickSyncBtn">同步至輪盤</button>
+            <input type="text" class="quick-input" id="quickInputBox" maxlength="4" placeholder="${isEn ? 'Type 4-digit code here' : '或在此鍵入4位數字'}" value="${this.getCurrentInput()}">
+            <button type="button" class="quick-sync-btn" id="quickSyncBtn">${isEn ? 'Sync' : '同步至輪盤'}</button>
           </div>
 
           <!-- 嘗試拉栓開鎖按鈕 -->
           <div class="lock-action-bar">
             <button type="button" class="btn-pull-shackle" id="btnPullShackle">
               <span class="btn-icon">🔓</span>
-              <span class="btn-text">拉動鎖栓・嘗試破咒</span>
+              <span class="btn-text">${isEn ? 'Pull Shackle・Attempt Unlock' : '拉動鎖栓・嘗試破咒'}</span>
             </button>
           </div>
         </div>

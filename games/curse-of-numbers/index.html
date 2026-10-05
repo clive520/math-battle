@@ -32,11 +32,13 @@
         </div>
 
         <!-- 功能按鈕 -->
+        <button type="button" class="icon-btn lang-btn" id="btnLang" title="切換語言 / Switch Language">🌐 English</button>
+        <button type="button" class="icon-btn tts-btn" id="btnTTS" title="語音報讀題目 / Read Aloud">🔊 朗讀題目</button>
         <button type="button" class="icon-btn journal-btn" id="btnJournal" title="查看線索筆記本 (快捷鍵 J)">
-          <span>📖</span><span>染血筆記</span>
+          <span>📖</span><span id="journalBtnText">染血筆記</span>
         </button>
         <button type="button" class="icon-btn" id="btnMute" title="切換音效 (快捷鍵 M)">🔊</button>
-        <button type="button" class="icon-btn" id="btnLogout" title="登出並以新座號重新開始">🚪 換座號/登出</button>
+        <button type="button" class="icon-btn" id="btnLogout" title="登出並以新座號重新開始">🚪 <span id="logoutBtnText">換座號/登出</span></button>
       </div>
     </header>
 
@@ -139,12 +141,13 @@
   </div>
 
   <!-- 程式模組載入 -->
-  <script src="js/audio-manager.js?v=20261005_1"></script>
-  <script src="js/prng.js?v=20261005_1"></script>
-  <script src="js/diagram-renderer.js?v=20261005_1"></script>
-  <script src="js/questions.js?v=20261005_1"></script>
-  <script src="js/lock-system.js?v=20261005_1"></script>
-  <script src="js/game-controller.js?v=20261005_1"></script>
+  <script src="js/audio-manager.js?v=20261005_2"></script>
+  <script src="js/tts-reader.js?v=20261005_2"></script>
+  <script src="js/prng.js?v=20261005_2"></script>
+  <script src="js/diagram-renderer.js?v=20261005_2"></script>
+  <script src="js/questions.js?v=20261005_2"></script>
+  <script src="js/lock-system.js?v=20261005_2"></script>
+  <script src="js/game-controller.js?v=20261005_2"></script>
 
 </body>
 </html>

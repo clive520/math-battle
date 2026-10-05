@@ -1,6 +1,6 @@
 /**
  * 密室逃脫主控制器 (Game Controller)
- * 負責關卡流轉、理智值 (Sanity)、火把探照、線索筆記本、教師巡堂後台與通關結算
+ * 負責關卡流轉、理智值 (Sanity)、多國語系切換 (zh/en)、語音報讀 (TTS)、線索筆記本與通關結算
  */
 class DungeonEscapeController {
   constructor() {
@@ -16,6 +16,8 @@ class DungeonEscapeController {
     this.endTime = null;
     this.wrongCount = 0;
     this.lockSystem = null;
+    this.lang = localStorage.getItem('curse_of_numbers_lang') || 'zh'; // 'zh' 或 'en'
+    this.ttsReader = new DungeonSpeechReader();
 
     this.dom = {};
   }
@@ -23,6 +25,7 @@ class DungeonEscapeController {
   init() {
     this._cacheDom();
     this._bindGlobalEvents();
+    this._updateLanguageUI();
 
     // 檢查是否有儲存的進度
     const saved = localStorage.getItem('curse_of_numbers_save');
@@ -45,7 +48,6 @@ class DungeonEscapeController {
   }
 
   _cacheDom() {
-    this.dom.torchMask = document.getElementById('torchMask');
     this.dom.loginModal = document.getElementById('loginModal');
     this.dom.journalModal = document.getElementById('journalModal');
     this.dom.victoryScreen = document.getElementById('victoryScreen');
@@ -54,11 +56,17 @@ class DungeonEscapeController {
     // 頂部狀態列
     this.dom.chamberBadge = document.getElementById('chamberBadge');
     this.dom.studentBadge = document.getElementById('studentBadge');
+    this.dom.sanityLabel = document.querySelector('.sanity-label');
     this.dom.sanityFill = document.getElementById('sanityFill');
     this.dom.sanityVal = document.getElementById('sanityVal');
+
+    this.dom.btnLang = document.getElementById('btnLang');
+    this.dom.btnTTS = document.getElementById('btnTTS');
     this.dom.btnMute = document.getElementById('btnMute');
     this.dom.btnJournal = document.getElementById('btnJournal');
     this.dom.btnLogout = document.getElementById('btnLogout');
+    this.dom.journalBtnText = document.getElementById('journalBtnText');
+    this.dom.logoutBtnText = document.getElementById('logoutBtnText');
 
     // 密室內容
     this.dom.chamberTitle = document.getElementById('chamberTitle');
@@ -78,7 +86,8 @@ class DungeonEscapeController {
       btnStart.addEventListener('click', () => {
         const cName = document.getElementById('inputClassName').value.trim() || '601';
         const sNum = document.getElementById('inputSeatNum').value.trim() || '01';
-        const nick = document.getElementById('inputNickname').value.trim() || '冒險者';
+        const defaultNick = (this.lang === 'en') ? 'Adventurer' : '冒險者';
+        const nick = document.getElementById('inputNickname').value.trim() || defaultNick;
 
         this.studentInfo = {
           className: cName,
@@ -93,9 +102,22 @@ class DungeonEscapeController {
       });
     }
 
+    // 語言切換按鈕 (中英無縫切換，拒絕混雜並排)
+    this.dom.btnLang?.addEventListener('click', () => {
+      this.toggleLanguage();
+    });
+
+    // 語音報讀按鈕 (TTS)
+    this.dom.btnTTS?.addEventListener('click', () => {
+      this.toggleTTS();
+    });
+
     // 登出換座號
     this.dom.btnLogout?.addEventListener('click', () => {
-      if (confirm('確定要登出並換新的座號重新闖關嗎？')) {
+      const confirmMsg = (this.lang === 'en')
+        ? 'Are you sure you want to log out and start fresh with a new seat number?'
+        : '確定要登出並換新的座號重新闖關嗎？';
+      if (confirm(confirmMsg)) {
         this.logout();
       }
     });
@@ -104,7 +126,9 @@ class DungeonEscapeController {
     this.dom.btnMute?.addEventListener('click', () => {
       const isMuted = window.audioMgr.toggleMute();
       this.dom.btnMute.innerHTML = isMuted ? '🔇' : '🔊';
-      this.dom.btnMute.title = isMuted ? '解除靜音' : '靜音';
+      this.dom.btnMute.title = isMuted 
+        ? (this.lang === 'en' ? 'Unmute' : '解除靜音') 
+        : (this.lang === 'en' ? 'Mute' : '靜音');
     });
 
     // 打開線索筆記本
@@ -117,15 +141,104 @@ class DungeonEscapeController {
       this._closeJournal();
     });
 
-    // 鍵盤快捷鍵：J 鍵開筆記本、M 鍵靜音
+    // 鍵盤快捷鍵：J 鍵開筆記本、M 鍵靜音、R 鍵報讀
     window.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT') return;
       if (e.key === 'j' || e.key === 'J') {
         this._openJournal();
       } else if (e.key === 'm' || e.key === 'M') {
         this.dom.btnMute?.click();
+      } else if (e.key === 'r' || e.key === 'R') {
+        this.toggleTTS();
       }
     });
+
+    // TTS 狀態回調
+    this.ttsReader.onStateChange = (isSpeaking) => {
+      this._updateTTSButtonUI(isSpeaking);
+    };
+  }
+
+  // 切換語言
+  toggleLanguage() {
+    this.ttsReader.stop();
+    this.lang = (this.lang === 'zh') ? 'en' : 'zh';
+    localStorage.setItem('curse_of_numbers_lang', this.lang);
+    this._updateLanguageUI();
+    if (this.chambers && this.chambers.length > 0) {
+      this._loadChamber(this.currentChamberIdx);
+    }
+  }
+
+  // 語音報讀切換
+  toggleTTS() {
+    const chamber = this.chambers[this.currentChamberIdx];
+    if (!chamber) return;
+
+    if (this.ttsReader.isSpeaking) {
+      this.ttsReader.stop();
+      this._updateTTSButtonUI(false);
+    } else {
+      const storyText = chamber.getStory(this.lang);
+      const questionText = chamber.getTargetQuestion(this.lang);
+      const fullSpeech = (this.lang === 'en')
+        ? `${chamber.getTitle('en')}. ${storyText}. Riddle question: ${questionText}`
+        : `${chamber.getTitle('zh')}。${storyText}。機關謎語：${questionText}`;
+
+      this.ttsReader.speak(fullSpeech, this.lang, () => {
+        this._updateTTSButtonUI(false);
+      });
+      this._updateTTSButtonUI(true);
+    }
+  }
+
+  _updateTTSButtonUI(isSpeaking) {
+    if (!this.dom.btnTTS) return;
+    if (isSpeaking) {
+      this.dom.btnTTS.innerHTML = (this.lang === 'en') ? '⏹️ Stop' : '⏹️ 停止';
+      this.dom.btnTTS.classList.add('tts-speaking');
+    } else {
+      this.dom.btnTTS.innerHTML = (this.lang === 'en') ? '🔊 Read Aloud' : '🔊 朗讀題目';
+      this.dom.btnTTS.classList.remove('tts-speaking');
+    }
+  }
+
+  // 更新所有靜態 UI 語言文字
+  _updateLanguageUI() {
+    const isEn = (this.lang === 'en');
+
+    if (this.dom.btnLang) {
+      this.dom.btnLang.innerHTML = isEn ? '🌐 中文' : '🌐 English';
+    }
+    if (this.dom.journalBtnText) {
+      this.dom.journalBtnText.textContent = isEn ? 'Notes' : '染血筆記';
+    }
+    if (this.dom.logoutBtnText) {
+      this.dom.logoutBtnText.textContent = isEn ? 'Switch' : '換座號/登出';
+    }
+    if (this.dom.sanityLabel) {
+      this.dom.sanityLabel.textContent = isEn ? 'Sanity' : '理智';
+    }
+    this._updateTTSButtonUI(this.ttsReader.isSpeaking);
+
+    // 登入彈窗文案
+    const loginHeader = document.querySelector('#loginModal .modal-header h2');
+    const loginDesc = document.querySelector('#loginModal .login-desc');
+    const labelClass = document.querySelector('#loginModal label[for="inputClassName"]');
+    const labelSeat = document.querySelector('#loginModal label[for="inputSeatNum"]');
+    const labelNick = document.querySelector('#loginModal label[for="inputNickname"]');
+    const btnStart = document.getElementById('btnStartAdventure');
+
+    if (loginHeader) loginHeader.textContent = isEn ? '🏰 Adventurer Sign-in' : '🏰 冒險者登錄・踏入禁忌地牢';
+    if (loginDesc) {
+      loginDesc.innerHTML = isEn 
+        ? `Welcome to <em>The Curse of Numbers: Dungeon Escape</em>!<br>Designed in accordance with Grade 6 Mathematics Unit 3 <em>"Quantitative Relations"</em>.<br><span style="color: #ffd54f;">⚠️ The labyrinth randomly generates unique numbers and codes based on your [Class & Seat Number]. Every student has different puzzles, so cheating is impossible! Think carefully!</span>`
+        : `歡迎來到《數之咒印：禁忌地牢逃脫》！<br>本遊戲依據<strong>國小六年級康軒數學第 03 單元《數量關係》</strong>設計。<br><span style="color: #ffd54f;">⚠️ 系統會依據您的【班級與座號】自動生成您專屬的迷宮數值與開鎖密碼，每位同學題目參數完全不同，無法抄襲！請認真推導！</span>`;
+    }
+    if (labelClass) labelClass.textContent = isEn ? 'Class ID' : '班級代號';
+    if (labelSeat) labelSeat.textContent = isEn ? 'Seat No. (Seed Code)' : '座號 (關鍵種子碼)';
+    if (labelNick) labelNick.textContent = isEn ? 'Adventurer Name' : '冒險者暱稱 / 姓名';
+    if (btnStart) btnStart.innerHTML = isEn ? '🔥 Light Torch & Enter Dungeon' : '🔥 點燃火把・踏入密室';
   }
 
   _showLoginModal() {
@@ -145,7 +258,10 @@ class DungeonEscapeController {
 
     // 更新個人銘牌
     if (this.dom.studentBadge) {
-      this.dom.studentBadge.textContent = `👤 ${this.studentInfo.className} 班 ${this.studentInfo.seatNum} 號 ${this.studentInfo.nickname}`;
+      const isEn = (this.lang === 'en');
+      this.dom.studentBadge.textContent = isEn 
+        ? `👤 Class ${this.studentInfo.className} #${this.studentInfo.seatNum} ${this.studentInfo.nickname}`
+        : `👤 ${this.studentInfo.className} 班 ${this.studentInfo.seatNum} 號 ${this.studentInfo.nickname}`;
     }
 
     this._updateSanityUI();
@@ -163,17 +279,27 @@ class DungeonEscapeController {
     this.currentChamberIdx = index;
     this._saveProgress();
 
+    // 停止上一題的語音報讀
+    this.ttsReader.stop();
+    this._updateTTSButtonUI(false);
+
+    const isEn = (this.lang === 'en');
+
     // 更新關卡徽章
     if (this.dom.chamberBadge) {
-      this.dom.chamberBadge.textContent = `🏰 關卡 ${chamber.id} / ${this.chambers.length}`;
+      this.dom.chamberBadge.textContent = isEn 
+        ? `🏰 Chamber ${chamber.id} / ${this.chambers.length}`
+        : `🏰 關卡 ${chamber.id} / ${this.chambers.length}`;
     }
 
     // 更新文案
-    if (this.dom.chamberTitle) this.dom.chamberTitle.textContent = chamber.title;
-    if (this.dom.chamberSubtitle) this.dom.chamberSubtitle.textContent = chamber.subtitle;
-    if (this.dom.chamberLore) this.dom.chamberLore.textContent = chamber.lore;
-    if (this.dom.chamberStory) this.dom.chamberStory.innerHTML = chamber.story;
-    if (this.dom.targetQuestion) this.dom.targetQuestion.innerHTML = `⚠️ <strong>開門機關謎語：</strong>${chamber.targetQuestion}`;
+    if (this.dom.chamberTitle) this.dom.chamberTitle.textContent = chamber.getTitle(this.lang);
+    if (this.dom.chamberSubtitle) this.dom.chamberSubtitle.textContent = chamber.getSubtitle(this.lang);
+    if (this.dom.chamberLore) this.dom.chamberLore.textContent = chamber.getLore(this.lang);
+    if (this.dom.chamberStory) this.dom.chamberStory.innerHTML = chamber.getStory(this.lang);
+
+    const qPrefix = isEn ? '⚠️ <strong>Gate Riddle: </strong>' : '⚠️ <strong>開門機關謎語：</strong>';
+    if (this.dom.targetQuestion) this.dom.targetQuestion.innerHTML = qPrefix + chamber.getTargetQuestion(this.lang);
 
     // 清空前次警報
     if (this.dom.whisperAlert) {
@@ -185,7 +311,7 @@ class DungeonEscapeController {
     this.lockSystem = new DungeonLockSystem(this.dom.lockMount, (isSuccess, code) => {
       this._handleUnlockAttempt(isSuccess, code);
     });
-    this.lockSystem.setup(chamber.correctCode);
+    this.lockSystem.setup(chamber.correctCode, this.lang);
 
     // 播放心跳聲 (隨理智值調節)
     if (this.sanity < 50) {
@@ -198,19 +324,26 @@ class DungeonEscapeController {
   // 處理開鎖嘗試
   _handleUnlockAttempt(isSuccess, code) {
     const chamber = this.chambers[this.currentChamberIdx];
+    const isEn = (this.lang === 'en');
 
     if (isSuccess) {
-      // 成功解開
-      this._showWhisper(`✨【石門轟鳴】密碼【${code}】完全正確！咒印破除！`, 'success');
+      this.ttsReader.stop();
+      const msg = isEn 
+        ? `✨ [Stone Gate Rumbles] Code [${code}] is correct! The ward shatters!`
+        : `✨【石門轟鳴】密碼【${code}】完全正確！咒印破除！`;
+      this._showWhisper(msg, 'success');
       this._animateGateOpen(() => {
         this._loadChamber(this.currentChamberIdx + 1);
       });
     } else {
-      // 密碼錯誤
       this.wrongCount++;
       this._reduceSanity(15);
-      const hint = chamber.hints[0] || '數字不對！請仔細觀察題目的規律與算式！';
-      this._showWhisper(`💀【惡靈嘲弄】鎖栓卡死！密碼【${code}】錯誤！${hint}`, 'danger');
+      const hints = chamber.getHints(this.lang);
+      const hint = hints[0] || (isEn ? 'Incorrect! Observe the pattern closely.' : '數字不對！請仔細觀察題目的規律與算式！');
+      const msg = isEn
+        ? `💀 [Dungeon Mockery] Lock jammed! Code [${code}] is wrong! ${hint}`
+        : `💀【惡靈嘲弄】鎖栓卡死！密碼【${code}】錯誤！${hint}`;
+      this._showWhisper(msg, 'danger');
 
       // 觸發螢幕驚悚震動
       this.dom.gameMain?.classList.add('horror-screen-shake');
@@ -226,6 +359,15 @@ class DungeonEscapeController {
     if (!this.dom.gateOverlay) {
       callback();
       return;
+    }
+
+    const gateTitle = this.dom.gateOverlay.querySelector('.gate-title');
+    const gateSub = this.dom.gateOverlay.querySelector('p');
+    if (gateTitle) {
+      gateTitle.textContent = (this.lang === 'en') ? '[Stone Gate Rumbles・Ward Collapses]' : '【石門轟鳴震顫・咒印瓦解】';
+    }
+    if (gateSub) {
+      gateSub.textContent = (this.lang === 'en') ? 'Stepping into the next dark chamber...' : '踏入下一間幽暗密室⋯⋯';
     }
 
     this.dom.gateOverlay.classList.remove('hidden');
@@ -250,8 +392,11 @@ class DungeonEscapeController {
     }
 
     if (this.sanity <= 0) {
-      // 理智崩潰提示：給予甦醒重生與直接提示
-      this._showWhisper(`🕯️【微光復甦】你在黑暗中昏厥了過去⋯古老英靈為你恢復了部分神智，並在牆上留下了強烈的提示！快查看筆記本！`, 'warning');
+      const isEn = (this.lang === 'en');
+      const msg = isEn
+        ? `🕯️ [Sanity Restored] You fainted in the dark... Ancient spirits revived part of your wits! Check your notes for guidance!`
+        : `🕯️【微光復甦】你在黑暗中昏厥了過去⋯古老英靈為你恢復了部分神智，並在牆上留下了強烈的提示！快查看筆記本！`;
+      this._showWhisper(msg, 'warning');
       this.sanity = 40;
       this._updateSanityUI();
       setTimeout(() => this._openJournal(), 800);
@@ -292,15 +437,24 @@ class DungeonEscapeController {
     const hintsEl = document.getElementById('journalHints');
     const diagramEl = document.getElementById('journalDiagramMount');
 
-    if (titleEl) titleEl.textContent = `📖 染血筆記本：${chamber.title}`;
-    if (conceptEl) conceptEl.textContent = `核心概念：${chamber.concept}`;
+    const isEn = (this.lang === 'en');
+    if (titleEl) {
+      titleEl.textContent = isEn 
+        ? `📖 Bloody Notes: ${chamber.getTitle('en')}` 
+        : `📖 染血筆記本：${chamber.getTitle('zh')}`;
+    }
+    if (conceptEl) {
+      conceptEl.textContent = isEn 
+        ? `Core Concept: ${chamber.getConcept('en')}` 
+        : `核心概念：${chamber.getConcept('zh')}`;
+    }
 
     if (hintsEl) {
-      hintsEl.innerHTML = chamber.hints.map(h => `<li>${h}</li>`).join('');
+      hintsEl.innerHTML = chamber.getHints(this.lang).map(h => `<li>${h}</li>`).join('');
     }
 
     if (diagramEl) {
-      diagramEl.innerHTML = DungeonDiagramRenderer.render(chamber.diagramType, chamber.diagramData);
+      diagramEl.innerHTML = DungeonDiagramRenderer.render(chamber.diagramType, chamber.diagramData, this.lang);
     }
 
     this.dom.journalModal.classList.remove('hidden');
@@ -313,6 +467,7 @@ class DungeonEscapeController {
 
   // 登出並切換座號
   logout() {
+    this.ttsReader.stop();
     localStorage.removeItem('curse_of_numbers_save');
     window.audioMgr.stopHeartbeat();
     this.sanity = 100;
@@ -323,24 +478,25 @@ class DungeonEscapeController {
 
   // 通關勝利結算
   _triggerVictory() {
+    this.ttsReader.stop();
     this.endTime = new Date();
     const durationSec = Math.floor((this.endTime - this.startTime) / 1000);
     const mins = Math.floor(durationSec / 60);
     const secs = durationSec % 60;
-    const timeFormatted = `${mins} 分 ${secs} 秒`;
+    const isEn = (this.lang === 'en');
+    const timeFormatted = isEn ? `${mins}m ${secs}s` : `${mins} 分 ${secs} 秒`;
 
     window.audioMgr.stopHeartbeat();
     window.audioMgr.playEscapeVictory();
 
-    // 計算星級
     let stars = '⭐⭐⭐';
-    let titleHonor = '傳奇破咒大師';
+    let titleHonor = isEn ? 'Legendary Cursebreaker' : '傳奇破咒大師';
     if (this.sanity < 50 || this.wrongCount > 6) {
       stars = '⭐';
-      titleHonor = '歷劫生還勇者';
+      titleHonor = isEn ? 'Hardened Survivor' : '歷劫生還勇者';
     } else if (this.sanity < 80 || this.wrongCount > 3) {
       stars = '⭐⭐';
-      titleHonor = '沉著解謎先驅';
+      titleHonor = isEn ? 'Calm Pathfinder' : '沉著解謎先驅';
     }
 
     if (this.dom.victoryScreen) {
@@ -349,45 +505,48 @@ class DungeonEscapeController {
           <div class="cert-border">
             <div class="cert-header">
               <div class="cert-icon">🏆</div>
-              <h1 class="cert-title">禁忌地牢・生還脫出證書</h1>
-              <p class="cert-sub">國小六年級數學《數量關係》密室解謎認證</p>
+              <h1 class="cert-title">${isEn ? 'Certificate of Dungeon Escape' : '禁忌地牢・生還脫出證書'}</h1>
+              <p class="cert-sub">${isEn ? 'Grade 6 Mathematics "Quantitative Relations" Escape Verification' : '國小六年級數學《數量關係》密室解謎認證'}</p>
             </div>
 
             <div class="cert-body">
               <p class="cert-player">
-                恭喜 <strong>${this.studentInfo.className} 班 ${this.studentInfo.seatNum} 號【${this.studentInfo.nickname}】</strong>
+                ${isEn 
+                  ? `Congratulations to <strong>Class ${this.studentInfo.className} #${this.studentInfo.seatNum} [${this.studentInfo.nickname}]</strong>`
+                  : `恭喜 <strong>${this.studentInfo.className} 班 ${this.studentInfo.seatNum} 號【${this.studentInfo.nickname}】</strong>`}
               </p>
               <p class="cert-desc">
-                成功破解幾何規律、和差積商不變法則、引魂間隔與長寬最大公因數之四象陣眼，
-                斬斷幽暗詛咒，全員平安生還逃出密室！
+                ${isEn
+                  ? 'Having conquered cyclic patterns, invariant quantities, lantern intervals, and maximum corner spacing with greatest common divisors, you have successfully lifted the ancient curse and survived the dungeon!'
+                  : '成功破解幾何規律、和差積商不變法則、引魂間隔與長寬最大公因數之四象陣眼，斬斷幽暗詛咒，全員平安生還逃出密室！'}
               </p>
 
               <div class="cert-stats-grid">
                 <div class="stat-card">
-                  <div class="stat-lbl">生還耗時</div>
+                  <div class="stat-lbl">${isEn ? 'Escape Time' : '生還耗時'}</div>
                   <div class="stat-val">${timeFormatted}</div>
                 </div>
                 <div class="stat-card">
-                  <div class="stat-lbl">剩餘理智值</div>
+                  <div class="stat-lbl">${isEn ? 'Remaining Sanity' : '剩餘理智值'}</div>
                   <div class="stat-val ${this.sanity <= 40 ? 'low' : ''}">${this.sanity}%</div>
                 </div>
                 <div class="stat-card">
-                  <div class="stat-lbl">失誤次數</div>
-                  <div class="stat-val">${this.wrongCount} 次</div>
+                  <div class="stat-lbl">${isEn ? 'Mistakes' : '失誤次數'}</div>
+                  <div class="stat-val">${this.wrongCount} ${isEn ? '' : '次'}</div>
                 </div>
                 <div class="stat-card">
-                  <div class="stat-lbl">評定階級</div>
+                  <div class="stat-lbl">${isEn ? 'Rank' : '評定階級'}</div>
                   <div class="stat-val star-val">${stars} ${titleHonor}</div>
                 </div>
               </div>
             </div>
 
             <div class="cert-footer">
-              <div class="cert-date">認證時間：${new Date().toLocaleDateString('zh-TW')}</div>
+              <div class="cert-date">${isEn ? 'Certified on: ' + new Date().toLocaleDateString('en-US') : '認證時間：' + new Date().toLocaleDateString('zh-TW')}</div>
               <div class="cert-actions">
-                <button type="button" class="btn-cert btn-print" onclick="window.print()">🖨️ 列印/截圖留存</button>
-                <button type="button" class="btn-cert btn-restart" onclick="localStorage.removeItem('curse_of_numbers_save'); location.reload();">🔄 再次挑戰</button>
-                <a href="../../index.html" class="btn-cert btn-home">🏠 返回學習大廳</a>
+                <button type="button" class="btn-cert btn-print" onclick="window.print()">🖨️ ${isEn ? 'Print / Save' : '列印/截圖留存'}</button>
+                <button type="button" class="btn-cert btn-restart" onclick="localStorage.removeItem('curse_of_numbers_save'); location.reload();">🔄 ${isEn ? 'Try Again' : '再次挑戰'}</button>
+                <a href="../../index.html" class="btn-cert btn-home">🏠 ${isEn ? 'Lobby' : '返回學習大廳'}</a>
               </div>
             </div>
           </div>
