@@ -1,7 +1,7 @@
 /**
  * 題庫與關卡隨機生成器 (AlchemistQuestionEngine)
  * 嚴格對應康軒六上數學第 04 單元《小數除法》(P.52–P.65)
- * 10 大密室關卡、防抄襲隨機種子 (PRNG)、雙語中英模型與六階輪盤小數密碼映射
+ * 遵守教育鷹架原則：僅提供觀念指引、算式方向與陷阱警示，嚴禁直接洩漏答案或計算結果！
  */
 class AlchemistQuestionEngine {
   constructor(classSeatSeed = '601-01') {
@@ -38,8 +38,8 @@ class AlchemistQuestionEngine {
       displayAnswer: `${item1.Q}`,
       unit_zh: '瓶',
       unit_en: 'vials',
-      notebook_zh: `【染血筆記・分裝之謎】\n• 計算思維：${item1.A} ÷ ${item1.B}。\n• 直式小數點移位：除數 ${item1.B} 往右移 1 位變成整數，被除數 ${item1.A} 也要向右移 1 位並補 0（即看成 ${item1.A * 10} ÷ ${item1.B * 10}）。\n• 算出的整數商，請撥入個位與十位！`,
-      notebook_en: `[Alchemist's Notes]\n• Formula: ${item1.A} ÷ ${item1.B}.\n• Decimal Shift: Shift the divisor's point 1 place right to make it an integer. Shift the dividend 1 place right and pad with 0 (calculate as ${item1.A * 10} ÷ ${item1.B * 10}).`,
+      notebook_zh: `【染血筆記・分裝之謎】\n• 計算引導：總容量 ÷ 每瓶容量 ＝ ${item1.A} ÷ ${item1.B}。\n• 直式小數點移位：除數 ${item1.B} 往右移 1 位變成整數，被除數 ${item1.A} 也要向右移 1 位並補 0（即看成 ${item1.A * 10} ÷ ${item1.B * 10} ＝ ？）。\n• 請動手計算出商，並將算出的整數商撥入輪盤！`,
+      notebook_en: `[Alchemist's Notes]\n• Formula: Total Volume ÷ Vial Volume = ${item1.A} ÷ ${item1.B}.\n• Decimal Shift: Shift the divisor's point 1 place right to make it an integer. Shift the dividend 1 place right and pad with 0 (calculate as ${item1.A * 10} ÷ ${item1.B * 10} = ?).\n• Calculate the quotient and enter it into the dials!`,
       diagramType: 'division',
       diagramData: { dividend: item1.A, divisor: item1.B, quotient: item1.Q, remainder: null }
     });
@@ -70,8 +70,8 @@ class AlchemistQuestionEngine {
       displayAnswer: `${item2.Q}`,
       unit_zh: '倍',
       unit_en: 'times',
-      notebook_zh: `【染血筆記・兩位小數之除】\n• 算式：${item2.A} ÷ ${item2.B}。\n• 除數 ${item2.B} 有兩位小數，向右移 2 位變成整數；被除數 ${item2.A} 必須同時向右移 2 位補兩個 0（例如 ${item2.A * 100} ÷ ${item2.B * 100}）！\n• 商的小數點要對齊被除數的新小數點，答案請撥出小數點與十分位！`,
-      notebook_en: `[Alchemist's Notes]\n• Equation: ${item2.A} ÷ ${item2.B}.\n• Two decimal places: Move divisor's point 2 places right. Move dividend's point 2 places right by appending two zeros (${item2.A * 100} ÷ ${item2.B * 100}).`,
+      notebook_zh: `【染血筆記・兩位小數之除】\n• 計算引導：原石重量 ÷ 碎晶重量 ＝ ${item2.A} ÷ ${item2.B}。\n• 除數 ${item2.B} 有兩位小數，向右移 2 位變成整數；被除數 ${item2.A} 必須同時向右移 2 位補兩個 0（即看成 ${item2.A * 100} ÷ ${item2.B * 100} ＝ ？）。\n• 商的小數點要對齊被除數的新小數點，請動手算出小數商後撥入輪盤！`,
+      notebook_en: `[Alchemist's Notes]\n• Equation: Stone Weight ÷ Shard Weight = ${item2.A} ÷ ${item2.B}.\n• Two decimal places: Move divisor's point 2 places right. Move dividend's point 2 places right by appending two zeros (${item2.A * 100} ÷ ${item2.B * 100} = ?).\n• Align the quotient's point with the new point and calculate!`,
       diagramType: 'division',
       diagramData: { dividend: item2.A, divisor: item2.B, quotient: item2.Q, remainder: null }
     });
@@ -101,8 +101,8 @@ class AlchemistQuestionEngine {
       displayAnswer: `${item3.Q}`,
       unit_zh: '段',
       unit_en: 'segments',
-      notebook_zh: `【染血筆記・同位小數相除】\n• 算式：${item3.A} ÷ ${item3.B}。\n• 因為被除數與除數都只有一位小數，雙方小數點同時向右移動 1 位，直接轉化為整數相除（即 ${Math.round(item3.A * 10)} ÷ ${Math.round(item3.B * 10)}）！`,
-      notebook_en: `[Alchemist's Notes]\n• Formula: ${item3.A} ÷ ${item3.B}.\n• Both have 1 decimal place: Move both decimal points 1 place right into integers (${Math.round(item3.A * 10)} ÷ ${Math.round(item3.B * 10)}).`,
+      notebook_zh: `【染血筆記・同位小數相除】\n• 計算引導：魔杖總長 ÷ 每段長度 ＝ ${item3.A} ÷ ${item3.B}。\n• 因為被除數與除數都只有一位小數，雙方小數點同時向右移動 1 位，轉化為整數相除（即 ${Math.round(item3.A * 10)} ÷ ${Math.round(item3.B * 10)} ＝ ？）。\n• 請動手計算出可以切成的段數！`,
+      notebook_en: `[Alchemist's Notes]\n• Formula: Total Length ÷ Segment Length = ${item3.A} ÷ ${item3.B}.\n• Both have 1 decimal place: Move both decimal points 1 place right into integers (${Math.round(item3.A * 10)} ÷ ${Math.round(item3.B * 10)} = ?).\n• Calculate the number of segments!`,
       diagramType: 'division',
       diagramData: { dividend: item3.A, divisor: item3.B, quotient: item3.Q, remainder: null }
     });
@@ -132,8 +132,8 @@ class AlchemistQuestionEngine {
       displayAnswer: `${item4.Q}`,
       unit_zh: '倍',
       unit_en: 'times',
-      notebook_zh: `【染血筆記・異位小數關鍵】\n• 算式：${item4.A} ÷ ${item4.B}。\n• ★ 核心法則：先將「除數」變成整數！除數向右移幾位，被除數就跟著向右移幾位。\n• ★ 商的小數點要和被除數的「新小數點」對齊！`,
-      notebook_en: `[Alchemist's Notes]\n• Equation: ${item4.A} ÷ ${item4.B}.\n• Rule: First convert the DIVISOR into an integer by shifting its point. Shift the dividend by the same number of places.\n• Align the quotient's point with the NEW point!`,
+      notebook_zh: `【染血筆記・異位小數關鍵】\n• 計算引導：大箱重量 ÷ 小箱重量 ＝ ${item4.A} ÷ ${item4.B}。\n• ★ 核心法則：先將「除數」變成整數！除數向右移幾位，被除數就跟著向右移幾位。\n• ★ 商的小數點要和被除數的「新小數點」垂直對齊！請列出直式計算出倍數。`,
+      notebook_en: `[Alchemist's Notes]\n• Equation: Large Chest ÷ Small Chest = ${item4.A} ÷ ${item4.B}.\n• Rule: First convert the DIVISOR into an integer by shifting its point. Shift the dividend by the same number of places.\n• Align the quotient's point with the NEW point and calculate!`,
       diagramType: 'division',
       diagramData: { dividend: item4.A, divisor: item4.B, quotient: item4.Q, remainder: null }
     });
@@ -163,8 +163,8 @@ class AlchemistQuestionEngine {
       displayAnswer: `${item5.Q}`,
       unit_zh: '公斤',
       unit_en: 'kg',
-      notebook_zh: `【染血筆記・單位量求法】\n• 算式：總重量 ÷ 總長度 ＝ ${item5.W} ÷ ${item5.L}。\n• 注意：要求 1 公尺重量，被除數必須放「重量 (${item5.W}kg)」，除數放「長度 (${item5.L}m)」，千萬別放顛倒了！`,
-      notebook_en: `[Alchemist's Notes]\n• Formula: Total Weight ÷ Total Length = ${item5.W} ÷ ${item5.L}.\n• Dividend is Weight, Divisor is Length. Do not invert!`,
+      notebook_zh: `【染血筆記・單位量求法】\n• 計算引導：1 公尺重量 ＝ 總重量 ÷ 總長度 ＝ ${item5.W} ÷ ${item5.L}。\n• ⚠️ 關鍵防錯：要求 1 公尺重量，被除數必須放「重量 (${item5.W}kg)」，除數放「長度 (${item5.L}m)」，千萬別放顛倒了！\n• 除數向右移 1 位變成整數，被除數也同步移位，請動手算出 1 公尺的標準重量。`,
+      notebook_en: `[Alchemist's Notes]\n• Formula: Total Weight ÷ Total Length = ${item5.W} ÷ ${item5.L}.\n• Dividend is Weight (${item5.W}kg), Divisor is Length (${item5.L}m). Do not invert!\n• Shift decimal points and calculate the weight per meter.`,
       diagramType: 'division',
       diagramData: { dividend: item5.W, divisor: item5.L, quotient: item5.Q, remainder: null }
     });
@@ -194,8 +194,8 @@ class AlchemistQuestionEngine {
       displayAnswer: `${item6.Q}`,
       unit_zh: '公克',
       unit_en: 'grams',
-      notebook_zh: `【染血筆記・濃度比例法則】\n• 算式：總結晶公克數 ÷ 溶液公升數 ＝ ${item6.S} ÷ ${item6.V}。\n• 除數 ${item6.V} 有兩位小數，雙方小數點右移兩位變整數相除。答案為三位整數，請撥入百、十、個位！`,
-      notebook_en: `[Alchemist's Notes]\n• Calculation: Total grams ÷ Total liters = ${item6.S} ÷ ${item6.V}.\n• Divisor has 2 decimal places: shift right twice. The result is a 3-digit integer.`,
+      notebook_zh: `【染血筆記・濃度比例法則】\n• 計算引導：1 公升晶體含量 ＝ 總結晶公克數 ÷ 溶液公升數 ＝ ${item6.S} ÷ ${item6.V}。\n• 除數 ${item6.V} 有兩位小數，雙方小數點右移兩位變整數相除（即 ${Math.round(item6.S * 100)} ÷ ${Math.round(item6.V * 100)} ＝ ？）。\n• 請動手計算出 1 公升所含的純度公克數！`,
+      notebook_en: `[Alchemist's Notes]\n• Calculation: Total grams ÷ Total liters = ${item6.S} ÷ ${item6.V}.\n• Divisor has 2 decimal places: shift right twice (${Math.round(item6.S * 100)} ÷ ${Math.round(item6.V * 100)} = ?).\n• Calculate the crystal content in 1 liter!`,
       diagramType: 'division',
       diagramData: { dividend: item6.S, divisor: item6.V, quotient: item6.Q, remainder: null }
     });
@@ -225,8 +225,8 @@ class AlchemistQuestionEngine {
       displayAnswer: `${item7.Q}`,
       unit_zh: '枚',
       unit_en: 'coins',
-      notebook_zh: `【染血筆記・四捨五入到個位】\n• 算式：${item7.P} ÷ ${item7.R}。\n• ★ 重要：題目要求「求商到個位」，直式除法必須算到【小數點後第一位（十分位）】！\n• 觀察十分位：0～4 捨去，5～9 則進位到個位！`,
-      notebook_en: `[Alchemist's Notes]\n• Formula: ${item7.P} ÷ ${item7.R}.\n• Critical: When rounding to the ones place, calculate to the tenths place (1st decimal) and apply rounding rules (5+ round up).`,
+      notebook_zh: `【染血筆記・四捨五入到個位】\n• 計算引導：總銀幣 ÷ 匯率 ＝ ${item7.P} ÷ ${item7.R}。\n• ★ 重要步驟：題目要求「求商到個位」，直式除法必須計算到【小數點後第一位（十分位）】！\n• 觀察十分位：0～4 捨去，5～9 則進位到個位！請動手計算並完成取概數。`,
+      notebook_en: `[Alchemist's Notes]\n• Formula: Silver Coins ÷ Rate = ${item7.P} ÷ ${item7.R}.\n• Critical Step: When rounding to the ones place, calculate until the tenths place (1st decimal) and apply rounding rules (5+ round up).\n• Calculate and round to the nearest whole number!`,
       diagramType: 'division',
       diagramData: { dividend: item7.P, divisor: item7.R, quotient: item7.Q, remainder: null }
     });
@@ -256,8 +256,8 @@ class AlchemistQuestionEngine {
       displayAnswer: `${item8.Q}`,
       unit_zh: '里',
       unit_en: 'miles',
-      notebook_zh: `【染血筆記・四捨五入到小數第一位】\n• 算式：總里數 ÷ 總公升數 ＝ ${item8.D} ÷ ${item8.F}。\n• ★ 重要：題目要求「求商到小數第一位」，除法直式必須算到【小數點後第二位（百分位）】！\n• 百分位如果是 5、6、7、8、9 就要進位！`,
-      notebook_en: `[Alchemist's Notes]\n• Calculation: Total miles ÷ Total liters = ${item8.D} ÷ ${item8.F}.\n• Critical: To round to the tenths place, you MUST divide until the hundredths place (2nd decimal) to decide whether to round up or down!`,
+      notebook_zh: `【染血筆記・四捨五入到小數第一位】\n• 計算引導：平均每公升里數 ＝ 總里數 ÷ 總公升數 ＝ ${item8.D} ÷ ${item8.F}。\n• ★ 重要步驟：題目要求「求商到小數第一位」，除法直式必須計算到【小數點後第二位（百分位）】！\n• 觀察百分位的數字，決定捨去或進位，求出最終的一位小數！`,
+      notebook_en: `[Alchemist's Notes]\n• Calculation: Total miles ÷ Total liters = ${item8.D} ÷ ${item8.F}.\n• Critical Step: To round to the tenths place, you MUST divide until the hundredths place (2nd decimal) to decide whether to round up or down!\n• Calculate and round to the 1st decimal place!`,
       diagramType: 'division',
       diagramData: { dividend: item8.D, divisor: item8.F, quotient: item8.Q, remainder: null }
     });
@@ -274,7 +274,6 @@ class AlchemistQuestionEngine {
       { B: 7, H: 3.24, L: 5.4, W: 4.2 }
     ];
     const item9 = this.rng.pickOne(pool9);
-    const area9 = Math.round(item9.B * item9.H * 100) / 100;
     chambers.push({
       id: 'ch_geometry_gate',
       baseName_zh: '雙子幾何共鳴傳送陣',
@@ -288,8 +287,8 @@ class AlchemistQuestionEngine {
       displayAnswer: `${item9.W}`,
       unit_zh: '公尺',
       unit_en: 'meters',
-      notebook_zh: `【染血筆記・幾何面積等量】\n• 第一步：求出平行四邊形面積 ＝ 底 × 高 ＝ ${item9.B} × ${item9.H} ＝ ${area9} 平方公尺。\n• 第二步：長方形面積 ＝ 長 × 寬，因此 寬 ＝ 面積 ÷ 長 ＝ ${area9} ÷ ${item9.L}。\n• 撥動小數輪盤，撥出正確寬度！`,
-      notebook_en: `[Alchemist's Notes]\n• Step 1: Parallelogram Area = Base × Height = ${item9.B} × ${item9.H} = ${area9} sq meters.\n• Step 2: Rectangle Width = Area ÷ Length = ${area9} ÷ ${item9.L}.`,
+      notebook_zh: `【染血筆記・幾何面積等量】\n• 第一步：求出平行四邊形面積 ＝ 底 × 高 ＝ ${item9.B} × ${item9.H} ＝ ？ 平方公尺（請先動手算出面積）。\n• 第二步：長方形面積與其相等，因此長方形寬度 ＝ 面積 ÷ 長 ＝ （第一步算出的面積） ÷ ${item9.L} ＝ ？ 公尺。\n• 請動手算出長方形寬度，並撥動輪盤輸入！`,
+      notebook_en: `[Alchemist's Notes]\n• Step 1: Parallelogram Area = Base × Height = ${item9.B} × ${item9.H} = ? sq meters (Calculate this first).\n• Step 2: Rectangle Width = Area ÷ Length = (Calculated Area) ÷ ${item9.L} = ? meters.\n• Calculate the rectangle width and enter into the dials!`,
       diagramType: 'geometry',
       diagramData: { base: item9.B, height: item9.H, rectLength: item9.L, rectWidth: item9.W }
     });
@@ -319,8 +318,8 @@ class AlchemistQuestionEngine {
       displayAnswer: `${item10.R}`,
       unit_zh: '公升',
       unit_en: 'liters',
-      notebook_zh: `【染血筆記・餘數小數點的致命陷阱】\n• 算式：${item10.A} ÷ ${item10.B} ＝ ${item10.Q} 瓶 ⋯⋯ 剩下 ？ 公升。\n• ★★★ 全單元最重要觀念：做除數是小數的除法時，【餘數的小數點要和被除數的「原小數點」對齊】！\n• 直式最下方雖然算出的數字是整數，但餘數是 ${item10.R} 公升，絕對不是 ${Math.round(item10.R * 10)} 公升！請在輪盤上將 ${item10.R} 撥入正確小數位！`,
-      notebook_en: `[Alchemist's Notes]\n• Equation: ${item10.A} ÷ ${item10.B} = ${item10.Q} vials remainder ? L.\n• ★ CRITICAL TRAP: The decimal point of the REMAINDER must align with the ORIGINAL decimal point of the dividend!\n• The residue is ${item10.R} liters, NOT ${Math.round(item10.R * 10)} liters! Align with the anchor gem accurately!`,
+      notebook_zh: `【染血筆記・餘數小數點的致命陷阱】\n• 計算引導：總容量 ÷ 每瓶容量 ＝ ${item10.A} ÷ ${item10.B} ＝ （裝滿瓶數） ⋯⋯ 剩下 ？ 公升。\n• ★★★ 全單元最核心觀念：做除數是小數的除法時，【餘數的小數點要和被除數的「原小數點」對齊】！\n• ⚠️ 致命易錯警示：直式最下方算出的數字看似整數，但必須將小數點筆直向上對齊被除數（${item10.A}）原本的小數點位置，還原出真實的剩餘公升數！\n• 絕不能粗心看成整數！請將對齊原小數點後算出的正確剩餘量撥入輪盤！`,
+      notebook_en: `[Alchemist's Notes]\n• Equation: Total Volume ÷ Vial Volume = ${item10.A} ÷ ${item10.B} = (Vials) remainder ? Liters.\n• ★ CRITICAL TRAP: Align the decimal point of the REMAINDER with the ORIGINAL decimal point of the dividend (${item10.A})!\n• Warning: Do NOT treat the remainder as a whole number! Align it to find the real volume in liters, then dial into the lock!`,
       diagramType: 'beaker',
       diagramData: { totalVol: item10.A, bottleVol: item10.B, bottlesCount: item10.Q, remainderVol: item10.R }
     });

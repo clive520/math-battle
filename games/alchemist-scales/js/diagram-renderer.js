@@ -1,10 +1,7 @@
 /**
  * 鍊金小數動態 SVG 幾何與鷹架圖解渲染器 (AlchemistDiagramRenderer)
  * 專為康軒六上第 04 單元《小數除法》量身打造：
- * 1. 直式除法小數點位移與對齊軌跡圖 (強調商對齊新位、餘數對齊原位)
- * 2. 賢者天秤傾斜擺動平衡圖 (展示除數 < 1 放大效應)
- * 3. 試管分裝與殘渣刻度圖 (破解餘數看成整數的致命盲點)
- * 4. 雙子幾何面積等量共鳴圖 (平行四邊形 vs 長方形)
+ * 遵守教育鷹架原則：僅提供觀念指引、位移軌跡與防錯陷阱標示，嚴禁直接洩漏答案或計算結果！
  */
 class AlchemistDiagramRenderer {
   constructor() {}
@@ -14,7 +11,6 @@ class AlchemistDiagramRenderer {
     const isEn = (lang === 'en');
     const divStr = String(dividend);
     const dvrStr = String(divisor);
-    const quoStr = String(quotient);
 
     // 判斷除數小數位數
     const dvrDecCount = (dvrStr.split('.')[1] || '').length;
@@ -23,10 +19,6 @@ class AlchemistDiagramRenderer {
       <div class="diagram-wrapper">
         <svg viewBox="0 0 540 220" class="alchemist-svg" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <linearGradient id="goldBeam" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.8"/>
-              <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.2"/>
-            </linearGradient>
             <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
               <path d="M 0 1 L 10 5 L 0 9 z" fill="#38bdf8" />
             </marker>
@@ -40,14 +32,16 @@ class AlchemistDiagramRenderer {
 
           <!-- 除法核心結構 -->
           <g transform="translate(60, 60)">
-            <!-- 商 -->
-            <text x="180" y="24" fill="#34d399" font-size="22" font-family="monospace" font-weight="bold">${quoStr}</text>
-            <text x="320" y="24" fill="#a1a1aa" font-size="12">
+            <!-- 商的引導提示 (只指示小數點位置，不洩漏商的答案數字) -->
+            <text x="160" y="24" fill="#34d399" font-size="18" font-family="monospace" font-weight="bold">
+              ${isEn ? '？ (Calculate Quotient)' : '？ (請動手計算商)'}
+            </text>
+            <text x="340" y="24" fill="#a1a1aa" font-size="12">
               ${isEn ? '← Quotient point aligns with NEW point' : '← 商的小數點對齊「新小數點」'}
             </text>
 
             <!-- 直式除號橫線與弧線 -->
-            <path d="M 120 32 L 300 32" stroke="#e4e4e7" stroke-width="2.5"/>
+            <path d="M 120 32 L 320 32" stroke="#e4e4e7" stroke-width="2.5"/>
             <path d="M 120 32 Q 100 50 120 75" fill="none" stroke="#e4e4e7" stroke-width="2.5"/>
 
             <!-- 除數 -->
@@ -59,21 +53,23 @@ class AlchemistDiagramRenderer {
             <!-- 小數點右移軌跡弧線 -->
             ${dvrDecCount > 0 ? `
               <path d="M 75 70 Q 90 85 105 70" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="3,3" marker-end="url(#arrow)"/>
-              <text x="40" y="105" fill="#38bdf8" font-size="12">
+              <text x="30" y="105" fill="#38bdf8" font-size="12">
                 ${isEn ? `Shift right by ${dvrDecCount} places` : `除數右移 ${dvrDecCount} 位變成整數`}
               </text>
 
               <path d="M 180 70 Q 195 85 210 70" fill="none" stroke="#facc15" stroke-width="2" stroke-dasharray="3,3" marker-end="url(#arrow)"/>
-              <text x="170" y="105" fill="#facc15" font-size="12">
+              <text x="160" y="105" fill="#facc15" font-size="12">
                 ${isEn ? `Dividend shifts right by ${dvrDecCount} places` : `被除數同步向右移 ${dvrDecCount} 位`}
               </text>
             ` : ''}
 
-            <!-- 餘數標註 (若為有餘數題目) -->
-            ${remainder !== null ? `
-              <line x1="140" y1="120" x2="260" y2="120" stroke="#71717a" stroke-width="1.5"/>
-              <text x="180" y="145" fill="#f87171" font-size="22" font-family="monospace" font-weight="bold">${remainder}</text>
-              <text x="240" y="145" fill="#f87171" font-size="12" font-weight="bold">
+            <!-- 餘數標註 (若為有餘數題目，只引導對齊原小數點，不給答案) -->
+            ${(remainder !== null || isRemainderTrap) ? `
+              <line x1="140" y1="120" x2="280" y2="120" stroke="#71717a" stroke-width="1.5"/>
+              <text x="160" y="145" fill="#f87171" font-size="18" font-family="monospace" font-weight="bold">
+                ${isEn ? '？ (Calculate Remainder)' : '？ (請計算剩餘量)'}
+              </text>
+              <text x="340" y="145" fill="#f87171" font-size="12" font-weight="bold">
                 ${isEn ? '⚠️ Remainder point aligns with ORIGINAL point!' : '⚠️ 餘數小數點必須對齊「原小數點」！'}
               </text>
             ` : ''}
@@ -127,8 +123,8 @@ class AlchemistDiagramRenderer {
     `;
   }
 
-  // 3. 試管分裝與殘渣刻度圖 (SVG，魔王關餘數專用)
-  renderBeakerRemainder(totalVol, bottleVol, bottlesCount, remainderVol, lang = 'zh') {
+  // 3. 試管分裝與殘渣刻度圖 (SVG，魔王關餘數專用，嚴禁洩漏答案數值)
+  renderBeakerRemainder(totalVol, bottleVol, bottlesCount = null, remainderVol = null, lang = 'zh') {
     const isEn = (lang === 'en');
     return `
       <div class="diagram-wrapper">
@@ -138,35 +134,35 @@ class AlchemistDiagramRenderer {
           <text x="95" y="22" fill="#a1a1aa" font-size="12" text-anchor="middle">${isEn ? 'Alchemy Boiler' : '靈泉鍋爐'}</text>
           <text x="95" y="70" fill="#38bdf8" font-size="16" font-weight="bold" text-anchor="middle">${totalVol} L</text>
           
-          <!-- 殘渣液面 (底部高亮) -->
+          <!-- 殘渣液面 (底部高亮，標示 ？ 請學生計算) -->
           <rect x="32" y="125" width="126" height="23" rx="4" fill="rgba(239, 68, 68, 0.45)" stroke="#ef4444" stroke-width="1.5"/>
           <text x="95" y="141" fill="#fca5a5" font-size="12" font-weight="bold" text-anchor="middle">
-            ${isEn ? `Residue: ${remainderVol} L` : `底層殘渣：${remainderVol} 公升`}
+            ${isEn ? 'Residue: ？ Liters' : '底層殘渣：？ 公升'}
           </text>
 
           <!-- 箭頭 -->
           <path d="M 180 90 L 220 90" stroke="#fbbf24" stroke-width="3" marker-end="url(#arrow)"/>
 
-          <!-- 成功裝瓶 -->
+          <!-- 成功裝瓶結構 -->
           <g transform="translate(240, 40)">
             <rect x="0" y="0" width="70" height="100" rx="8" fill="#18181b" stroke="#34d399" stroke-width="2"/>
             <rect x="5" y="25" width="60" height="70" rx="4" fill="rgba(52, 211, 153, 0.3)"/>
             <text x="35" y="60" fill="#34d399" font-size="16" font-weight="bold" text-anchor="middle">${bottleVol}L</text>
             <text x="35" y="125" fill="#e4e4e7" font-size="13" text-anchor="middle">
-              ${isEn ? `× ${bottlesCount} Vials` : `× 完整 ${bottlesCount} 瓶`}
+              ${isEn ? '× ？ Full Vials' : '× 裝滿 ？ 瓶'}
             </text>
           </g>
 
-          <!-- 重點提醒標語 -->
-          <rect x="340" y="45" width="180" height="85" rx="6" fill="#27272a" stroke="#f59e0b" stroke-width="1.5"/>
-          <text x="430" y="70" fill="#fbbf24" font-size="13" font-weight="bold" text-anchor="middle">
+          <!-- 重點提醒標語 (純教學引導，絕不洩漏數值) -->
+          <rect x="320" y="45" width="200" height="90" rx="6" fill="#27272a" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="420" y="70" fill="#fbbf24" font-size="13" font-weight="bold" text-anchor="middle">
             ${isEn ? '⚠️ CRITICAL CLUE' : '⚠️ 致命破咒線索'}
           </text>
-          <text x="430" y="93" fill="#e4e4e7" font-size="12" text-anchor="middle">
-            ${isEn ? `Residue is ${remainderVol} Liters` : `剩餘殘渣是 ${remainderVol} 公升`}
+          <text x="420" y="93" fill="#e4e4e7" font-size="12" text-anchor="middle">
+            ${isEn ? 'Align remainder with ORIGINAL point' : '餘數小數點對齊【原小數點】'}
           </text>
-          <text x="430" y="113" fill="#f87171" font-size="12" font-weight="bold" text-anchor="middle">
-            ${isEn ? `NOT ${remainderVol * 10} Liters!` : `絕不是 ${remainderVol * 10} 公升！`}
+          <text x="420" y="115" fill="#f87171" font-size="12" font-weight="bold" text-anchor="middle">
+            ${isEn ? 'Do NOT misread as whole number!' : '切勿將餘數誤看成整數！'}
           </text>
         </svg>
       </div>
