@@ -273,6 +273,35 @@ class DungeonAudioManager {
     osc2.stop(now + 0.52);
   }
 
+  // 神智復甦／清澈聖光音效 (Sanity Heal Crystal Chime)
+  playSanityHeal() {
+    if (this.isMuted) return;
+    this.ensureContext();
+    const now = this.ctx.currentTime;
+
+    const notes = [
+      { f: 523.25, t: 0.0, d: 0.3 }, // C5
+      { f: 659.25, t: 0.12, d: 0.3 }, // E5
+      { f: 783.99, t: 0.24, d: 0.4 }, // G5
+      { f: 1046.50, t: 0.36, d: 0.6 } // C6
+    ];
+
+    notes.forEach(n => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(n.f, now + n.t);
+
+      gain.gain.setValueAtTime(0.2, now + n.t);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.d);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now + n.t);
+      osc.stop(now + n.t + n.d + 0.05);
+    });
+  }
+
   // 終極生還脫出勝利大合奏 (Victory Fanfare)
   playEscapeVictory() {
     if (this.isMuted) return;

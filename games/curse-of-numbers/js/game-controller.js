@@ -15,6 +15,7 @@ class DungeonEscapeController {
     this.startTime = null;
     this.endTime = null;
     this.wrongCount = 0;
+    this.chamberWrongCount = 0;
     this.lockSystem = null;
     this.lang = localStorage.getItem('curse_of_numbers_lang') || 'zh'; // 'zh' 或 'en'
     this.ttsReader = new DungeonSpeechReader();
@@ -36,6 +37,8 @@ class DungeonEscapeController {
         this.studentInfo = data.studentInfo;
         this.sanity = data.sanity || 100;
         this.currentChamberIdx = data.currentChamberIdx || 0;
+        this.wrongCount = data.wrongCount || 0;
+        this.chamberWrongCount = data.chamberWrongCount || 0;
         this.startTime = data.startTime ? new Date(data.startTime) : new Date();
         this._startWithSeed(data.chamberOrder);
         return;
@@ -289,6 +292,7 @@ class DungeonEscapeController {
 
     const chamber = this.chambers[index];
     this.currentChamberIdx = index;
+    this.chamberWrongCount = 0; // 重置該關的失誤次數
     this._saveProgress();
 
     // 停止上一題的語音報讀
@@ -343,15 +347,41 @@ class DungeonEscapeController {
 
     if (isSuccess) {
       this.ttsReader.stop();
-      const msg = isEn 
-        ? `✨ [Stone Gate Rumbles] Code [${code}] is correct! The ward shatters!`
-        : `✨【石門轟鳴】密碼【${code}】完全正確！咒印破除！`;
+
+      // 方案 3：精準解鎖加成動態恢復理智
+      // 該關 0 次失誤: +25%
+      // 該關 1 次失誤: +15%
+      // 該關 2 次以上失誤: +10%
+      let healAmount = 25;
+      if (this.chamberWrongCount === 1) {
+        healAmount = 15;
+      } else if (this.chamberWrongCount >= 2) {
+        healAmount = 10;
+      }
+
+      const { recovered, liftedDarkness } = this._restoreSanity(healAmount);
+      window.audioMgr.playSanityHeal();
+
+      let msg = '';
+      if (isEn) {
+        msg = `✨ [Stone Gate Rumbles] Code [${code}] is correct! Sanity +${healAmount}%!`;
+        if (liftedDarkness) {
+          msg += ' ☀️ Darkness dispelled, vision restored!';
+        }
+      } else {
+        msg = `✨【石門轟鳴】密碼【${code}】完全正確！理智 ＋${healAmount}%！`;
+        if (liftedDarkness) {
+          msg += ' ☀️ 驅散黑暗，視野重現光明！';
+        }
+      }
+
       this._showWhisper(msg, 'success');
       this._animateGateOpen(() => {
         this._loadChamber(this.currentChamberIdx + 1);
       });
     } else {
       this.wrongCount++;
+      this.chamberWrongCount = (this.chamberWrongCount || 0) + 1;
       this._reduceSanity(15);
       const hints = chamber.getHints(this.lang);
       const hint = hints[0] || (isEn ? 'Incorrect! Observe the pattern closely.' : '數字不對！請仔細觀察題目的規律與算式！');
@@ -395,6 +425,26 @@ class DungeonEscapeController {
         this.dom.gateOverlay.classList.add('hidden');
       }, 400);
     }, 1200);
+  }
+
+  // 恢復理智值 (答對開鎖激勵)
+  _restoreSanity(amount) {
+    const prevSanity = this.sanity;
+    this.sanity = Math.min(100, this.sanity + amount);
+    this._updateSanityUI();
+
+    // 綠光治療動畫特效
+    if (this.dom.sanityFill) {
+      this.dom.sanityFill.classList.add('sanity-heal-pulse');
+      setTimeout(() => {
+        this.dom.sanityFill?.classList.remove('sanity-heal-pulse');
+      }, 800);
+    }
+
+    return {
+      recovered: this.sanity - prevSanity,
+      liftedDarkness: prevSanity <= 30 && this.sanity > 30
+    };
   }
 
   // 扣除理智值
@@ -512,6 +562,7 @@ class DungeonEscapeController {
     this.sanity = 100;
     this.currentChamberIdx = 0;
     this.wrongCount = 0;
+    this.chamberWrongCount = 0;
     this._updateSanityUI();
     this._showLoginModal();
   }
@@ -605,7 +656,9 @@ class DungeonEscapeController {
       sanity: this.sanity,
       currentChamberIdx: this.currentChamberIdx,
       startTime: this.startTime,
-      chamberOrder: this.chambers.map(c => c.id)
+      chamberOrder: this.chambers.map(c => c.id),
+      wrongCount: this.wrongCount,
+      chamberWrongCount: this.chamberWrongCount || 0
     };
     localStorage.setItem('curse_of_numbers_save', JSON.stringify(data));
   }

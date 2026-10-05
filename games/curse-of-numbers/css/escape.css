@@ -148,6 +148,16 @@ body {
   transition: width 0.4s ease, background 0.4s ease;
 }
 
+@keyframes sanityHealAnim {
+  0% { filter: brightness(1); box-shadow: 0 0 0 rgba(0, 230, 118, 0); }
+  50% { filter: brightness(1.6); box-shadow: 0 0 12px rgba(0, 230, 118, 0.9); }
+  100% { filter: brightness(1); box-shadow: 0 0 0 rgba(0, 230, 118, 0); }
+}
+
+.sanity-heal-pulse {
+  animation: sanityHealAnim 0.8s ease-out;
+}
+
 .sanity-val {
   font-size: 12px;
   font-family: monospace;
