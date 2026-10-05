@@ -1,0 +1,948 @@
+/* ==========================================================================
+   reactor.css - 魔導反應爐：超載危機（蒸氣龐克魔導風格樣式表）
+   ========================================================================== */
+
+:root {
+  --bg-deep: #0a0e14;
+  --bg-panel: #131b24;
+  --bg-module: #1b2633;
+  --brass-dark: #6e4c27;
+  --brass-main: #b88646;
+  --brass-light: #e5be79;
+  --aether-blue: #00d2ff;
+  --aether-glow: rgba(0, 210, 255, 0.45);
+  --mana-cyan: #64d2ff;
+  --safe-green: #30d158;
+  --warn-orange: #ff9f0a;
+  --alert-red: #ff453a;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 50% 30%, rgba(0, 210, 255, 0.08) 0%, transparent 60%),
+    linear-gradient(rgba(10, 14, 20, 0.95), rgba(10, 14, 20, 0.95));
+}
+
+/* 頂部導覽列 */
+.reactor-header {
+  background: rgba(19, 27, 36, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid #283747;
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.game-logo {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--brass-light);
+  text-shadow: 0 0 10px rgba(229, 190, 121, 0.4);
+  letter-spacing: 1px;
+}
+
+.unit-badge {
+  background: rgba(0, 210, 255, 0.15);
+  color: var(--aether-blue);
+  border: 1px solid var(--aether-blue);
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* 爐心穩定度 (理智條) */
+.stability-container {
+  flex: 1;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stability-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.stability-track {
+  width: 100%;
+  height: 12px;
+  background: #0d131a;
+  border-radius: 6px;
+  border: 1px solid #2d3c4d;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+}
+
+.progress-fill {
+  height: 100%;
+  transition: width 0.4s ease, background 0.4s ease;
+}
+
+.progress-fill.normal {
+  background: linear-gradient(90deg, #00b4d8, var(--safe-green));
+  box-shadow: 0 0 8px var(--safe-green);
+}
+
+.progress-fill.warning {
+  background: linear-gradient(90deg, #ff9f0a, #ffb703);
+  box-shadow: 0 0 8px var(--warn-orange);
+}
+
+.progress-fill.critical {
+  background: linear-gradient(90deg, #d90429, var(--alert-red));
+  box-shadow: 0 0 10px var(--alert-red);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-badge {
+  background: #1b2633;
+  color: var(--brass-light);
+  border: 1px solid #334457;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.ctrl-btn {
+  background: #1e293b;
+  color: var(--text-primary);
+  border: 1px solid #3b4d66;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ctrl-btn:hover {
+  background: #2b3a4f;
+  border-color: var(--aether-blue);
+  color: #ffffff;
+}
+
+.ctrl-btn.icon-only {
+  padding: 6px 10px;
+}
+
+.ctrl-btn.speaking {
+  background: #ff9f0a;
+  color: #000;
+  border-color: #ffd60a;
+  animation: pulse 1s infinite alternate;
+}
+
+.logout-btn:hover {
+  background: rgba(255, 69, 58, 0.2);
+  border-color: var(--alert-red);
+}
+
+/* 主畫面容器 */
+.screen-view {
+  flex: 1;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* 登入卡片 */
+.login-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 120px);
+}
+
+.login-card {
+  background: var(--bg-panel);
+  border: 2px solid var(--brass-main);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.7), 0 0 24px rgba(184, 134, 70, 0.25);
+  border-radius: 14px;
+  padding: 36px 40px;
+  width: 100%;
+  max-width: 480px;
+  text-align: center;
+}
+
+.card-icon {
+  font-size: 3rem;
+  color: var(--brass-light);
+  margin-bottom: 8px;
+  text-shadow: 0 0 16px var(--brass-light);
+}
+
+.card-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--brass-light);
+  margin-bottom: 6px;
+}
+
+.card-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  text-align: left;
+}
+
+.form-row label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.select-input, .text-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: #0d131a;
+  border: 1px solid #334457;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+.select-input:focus, .text-input:focus {
+  outline: none;
+  border-color: var(--aether-blue);
+  box-shadow: 0 0 8px var(--aether-glow);
+}
+
+/* 座號專屬步進按鈕器 */
+.seat-stepper-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #0d131a;
+  border: 1px solid #334457;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+.stepper-arrow-btn {
+  background: #1b2633;
+  color: var(--brass-light);
+  border: 1px solid #3b4d66;
+  width: 42px;
+  height: 42px;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.stepper-arrow-btn:hover {
+  background: #2a3b4f;
+  border-color: var(--brass-light);
+}
+
+.seat-number-window {
+  flex: 1;
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 800;
+  font-family: monospace;
+  color: #30d158;
+  letter-spacing: 2px;
+}
+
+.login-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.btn {
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: none;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, var(--brass-dark), var(--brass-main));
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(184, 134, 70, 0.4);
+}
+
+.primary-btn:hover {
+  background: linear-gradient(135deg, var(--brass-main), var(--brass-light));
+  color: #000000;
+}
+
+.secondary-btn {
+  background: #1e293b;
+  color: var(--text-secondary);
+  border: 1px solid #334457;
+}
+
+.secondary-btn:hover {
+  background: #283747;
+  color: #ffffff;
+}
+
+/* 密室遊戲主畫面 */
+.chamber-hero {
+  background: var(--bg-panel);
+  border: 1px solid #283747;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.chamber-meta-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.chamber-name {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--brass-light);
+}
+
+.progress-pill {
+  background: #1b2633;
+  color: var(--aether-blue);
+  border: 1px solid #2e4359;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.chamber-narrative {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #cfd8dc;
+  margin-bottom: 16px;
+}
+
+.question-highlight-box {
+  background: rgba(0, 210, 255, 0.08);
+  border-left: 4px solid var(--aether-blue);
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quest-prefix {
+  font-weight: 700;
+  color: var(--aether-blue);
+  font-size: 1.05rem;
+}
+
+.quest-text {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+/* 雙欄主佈局 */
+.reactor-main-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 24px;
+  align-items: stretch;
+}
+
+/* 左側：核心 Canvas 欄 */
+.reactor-core-column {
+  background: var(--bg-panel);
+  border: 2px solid #283747;
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 380px;
+}
+
+.canvas-wrap {
+  width: 100%;
+  height: 100%;
+  min-height: 340px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#reactor-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.core-warning-label {
+  position: absolute;
+  bottom: 12px;
+  background: rgba(13, 19, 26, 0.85);
+  border: 1px solid var(--aether-blue);
+  color: var(--aether-blue);
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+}
+
+/* 右側：控制台外框 */
+.reactor-console-column {
+  background: var(--bg-panel);
+  border: 2px solid var(--brass-main);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+}
+
+.console-box {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.console-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #2f3e50;
+  padding-bottom: 12px;
+}
+
+.gauge-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--brass-light);
+}
+
+.resonance-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.res-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.res-val {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--safe-green);
+  font-family: monospace;
+}
+
+/* 儀表板閥門區域 */
+.valves-dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1fr;
+  gap: 16px;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.valve-module {
+  background: var(--bg-module);
+  border: 1px solid #2e4359;
+  border-radius: 10px;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.module-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--brass-light);
+  text-transform: uppercase;
+}
+
+/* 步進器群組 */
+.stepper-cluster {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.step-btn {
+  background: #253344;
+  color: #ffffff;
+  border: 1px solid #3e536c;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.step-btn:hover {
+  background: #364961;
+  border-color: var(--aether-blue);
+}
+
+.digit-window {
+  width: 52px;
+  height: 48px;
+  background: #090e14;
+  border: 2px solid #2d3e52;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #ffffff;
+  font-family: monospace;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+}
+
+/* 分數能量橫隔板 */
+.fraction-division-bar {
+  width: 80%;
+  height: 6px;
+  background: linear-gradient(90deg, transparent, var(--brass-light), transparent);
+  margin: 4px 0;
+  border-radius: 3px;
+  box-shadow: 0 0 6px rgba(229, 190, 121, 0.6);
+}
+
+/* 逆流翻轉按鈕與大推桿 */
+.lever-module {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  height: 100%;
+}
+
+.inverter-btn {
+  background: #1c2b3a;
+  border: 1px solid var(--aether-blue);
+  color: var(--aether-blue);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.inverter-btn:hover {
+  background: rgba(0, 210, 255, 0.2);
+  box-shadow: 0 0 10px var(--aether-glow);
+}
+
+.heavy-lever-wrapper {
+  position: relative;
+  width: 70px;
+  height: 110px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lever-pivot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #8a6538, #3b2814);
+  border: 2px solid var(--brass-light);
+  position: absolute;
+  bottom: 18px;
+  z-index: 2;
+}
+
+.lever-arm {
+  width: 10px;
+  height: 75px;
+  background: linear-gradient(to right, #4a3622, #b88646, #4a3622);
+  border-radius: 5px;
+  position: absolute;
+  bottom: 30px;
+  transform-origin: bottom center;
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.lever-arm.pulled {
+  transform: rotate(38deg) !important;
+}
+
+.lever-handle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ff453a, #990000);
+  border: 2px solid #ff9999;
+  position: absolute;
+  top: -12px;
+  left: -7px;
+  box-shadow: 0 0 10px rgba(255, 69, 58, 0.6);
+}
+
+.lever-label {
+  position: absolute;
+  bottom: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--brass-light);
+}
+
+/* 注入按鈕行 */
+.lever-action-row {
+  margin-top: 10px;
+}
+
+.inject-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #1b382b, #2d6a4f, #1b382b);
+  border: 2px solid var(--safe-green);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 1.15rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 6px 18px rgba(48, 209, 88, 0.3);
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+
+.inject-btn:hover {
+  background: linear-gradient(135deg, #2d6a4f, #40916c, #2d6a4f);
+  box-shadow: 0 8px 24px rgba(48, 209, 88, 0.5);
+  transform: translateY(-2px);
+}
+
+/* 三向旁路閘門樣式 (Chamber 9) */
+.bypass-gate-cluster {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  padding: 20px 0;
+}
+
+.bypass-btn {
+  background: var(--bg-module);
+  border: 2px solid #2e4359;
+  border-radius: 12px;
+  padding: 24px 12px;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.bypass-btn .btn-icon {
+  font-size: 2rem;
+}
+
+.bypass-btn .btn-label {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.bypass-btn .btn-symbol {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.bypass-btn:hover {
+  border-color: var(--brass-light);
+  background: #253344;
+}
+
+.bypass-btn.active {
+  border-color: var(--aether-blue);
+  background: rgba(0, 210, 255, 0.18);
+  box-shadow: 0 0 16px var(--aether-glow);
+}
+
+/* 模態框樣式 */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-card {
+  background: var(--bg-panel);
+  border: 2px solid var(--brass-main);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.8);
+  overflow: hidden;
+}
+
+.modal-header {
+  background: #0f1720;
+  padding: 16px 20px;
+  border-bottom: 1px solid #283747;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  font-size: 1.2rem;
+  color: var(--brass-light);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: #ffffff;
+}
+
+.modal-body {
+  padding: 24px;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.scaffold-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.svg-diagram-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.scaffold-svg {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+}
+
+.hint-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hint-list li {
+  background: var(--bg-module);
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 3px solid var(--brass-light);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* 結算證書樣式 */
+.cert-card {
+  max-width: 680px;
+  padding: 24px;
+}
+
+.certificate-paper {
+  background: #fffcf2;
+  color: #1a1a1a;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+}
+
+.cert-border {
+  border: 4px double #8b5a2b;
+  padding: 24px;
+  text-align: center;
+}
+
+.cert-title {
+  font-size: 1.6rem;
+  color: #8b5a2b;
+  margin-bottom: 10px;
+}
+
+.cert-stars {
+  font-size: 2rem;
+  margin-bottom: 14px;
+}
+
+.cert-recipient {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+.cert-name {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0b4f6c;
+  display: block;
+  margin-top: 4px;
+}
+
+.cert-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  color: #333333;
+}
+
+.cert-stats {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.stat-pill {
+  background: #f0ebd8;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.cert-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #666;
+  border-top: 1px solid #ccc;
+  padding-top: 12px;
+}
+
+.cert-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* 螢幕震動動畫 */
+.screen-shake {
+  animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-3px, 0, 0); }
+  20%, 80% { transform: translate3d(5px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+  40%, 60% { transform: translate3d(6px, 0, 0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.05); }
+}
+
+/* 響應式佈局適配 (行動裝置與平板) */
+@media (max-width: 900px) {
+  .reactor-main-layout {
+    grid-template-columns: 1fr;
+  }
+  .valves-dashboard {
+    grid-template-columns: 1fr 1fr;
+  }
+  .lever-module {
+    grid-column: span 2;
+    flex-direction: row;
+  }
+  .bypass-gate-cluster {
+    grid-template-columns: 1fr;
+  }
+}

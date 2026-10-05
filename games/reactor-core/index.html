@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>魔導反應爐：超載危機｜康軒六上數學 第02單元 分數除法</title>
+  <link rel="stylesheet" href="css/reactor.css">
+</head>
+<body>
+  <!-- 頂部導覽列 -->
+  <header class="reactor-header">
+    <div class="header-left">
+      <h1 class="game-logo">⚡ <span id="game-title-text">魔導反應爐：超載危機</span></h1>
+      <span class="unit-badge" id="section-badge">2-1 最簡分數</span>
+    </div>
+
+    <!-- 爐心穩定度 (理智條) -->
+    <div class="stability-container">
+      <div class="stability-label">
+        <span>🛡️ 爐心穩定度 (Stability)</span>
+        <span id="stability-val">100%</span>
+      </div>
+      <div class="stability-track">
+        <div class="progress-fill normal" id="stability-bar" style="width: 100%;"></div>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <span class="user-badge" id="user-tag">👤 技師登入中</span>
+      <button type="button" class="ctrl-btn" id="logbook-btn">📖 維修手冊</button>
+      <button type="button" class="ctrl-btn" id="tts-toggle-btn">🔊 朗讀題目</button>
+      <button type="button" class="ctrl-btn" id="lang-toggle-btn">🌐 English</button>
+      <button type="button" class="ctrl-btn icon-only" id="mute-toggle-btn" title="切換靜音">🔊</button>
+      <button type="button" class="ctrl-btn icon-only logout-btn" id="logout-btn" title="登出">🚪</button>
+    </div>
+  </header>
+
+  <!-- 技師登入畫面 (防抄襲座號與班級) -->
+  <main id="login-screen" class="screen-view login-view">
+    <div class="login-card">
+      <div class="card-icon">⚡</div>
+      <h2 class="card-title">魔導反應爐：超載危機</h2>
+      <p class="card-subtitle">康軒六上數學 第02單元《分數除法》實體機關密室</p>
+
+      <div class="login-form">
+        <div class="form-row">
+          <label for="login-class">班級 (Class)</label>
+          <select id="login-class" class="select-input">
+            <option value="601">六年 01 班</option>
+            <option value="602">六年 02 班</option>
+            <option value="603">六年 03 班</option>
+            <option value="604">六年 04 班</option>
+            <option value="605">六年 05 班</option>
+            <option value="606">六年 06 班</option>
+            <option value="607">六年 07 班</option>
+            <option value="608">六年 08 班</option>
+            <option value="609">六年 09 班</option>
+            <option value="610">六年 10 班</option>
+            <option value="611">六年 11 班</option>
+            <option value="612">六年 12 班</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label>座號 (Seat No.) - 箭頭按鈕切換</label>
+          <div class="seat-stepper-box">
+            <button type="button" class="stepper-arrow-btn" id="seat-down">▼</button>
+            <div class="seat-number-window" id="seat-display">01</div>
+            <button type="button" class="stepper-arrow-btn" id="seat-up">▲</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="student-name">技師姓名 (Name)</label>
+          <input type="text" id="student-name" class="text-input" placeholder="請輸入姓名..." maxlength="12">
+        </div>
+
+        <div class="login-actions">
+          <button type="button" class="btn primary-btn" id="start-btn">⚡ 啟動反應爐控制台</button>
+          <a href="../../index.html" class="btn secondary-btn">🏠 返回學習大廳</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 密室遊戲主畫面 -->
+  <main id="game-screen" class="screen-view game-view hidden">
+    <!-- 頂部情境故事與關卡資訊 -->
+    <section class="chamber-hero">
+      <div class="chamber-meta-bar">
+        <h2 id="chamber-title" class="chamber-name">第 1 層反應爐：核心濾網堵塞</h2>
+        <div class="progress-pill">進度：<span id="chamber-progress">1 / 10</span></div>
+      </div>
+      <p id="chamber-story" class="chamber-narrative">載入情境故事中...</p>
+      <div class="question-highlight-box">
+        <span class="quest-prefix">🎯 本層目標：</span>
+        <span id="chamber-question" class="quest-text">載入題目中...</span>
+      </div>
+    </section>
+
+    <!-- 反應爐核心特效與機關操作雙欄架構 -->
+    <section class="reactor-main-layout">
+      <!-- 左側：魔導電漿核心與蒸氣壓力計 -->
+      <div class="reactor-core-column">
+        <div class="canvas-wrap">
+          <canvas id="reactor-canvas"></canvas>
+          <div class="core-warning-label" id="core-status-tag">CORE ACTIVE</div>
+        </div>
+      </div>
+
+      <!-- 右側：分數閥門實體控制台 -->
+      <div class="reactor-console-column">
+        <div id="reactor-console-mount">
+          <!-- 由 reactor-console.js 動態渲染 -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 維修手冊 (學習鷹架模態框) -->
+  <div id="logbook-modal" class="modal-overlay hidden">
+    <div class="modal-card logbook-card">
+      <div class="modal-header">
+        <h2>📘 艦隊工程維修日誌</h2>
+        <button type="button" class="close-btn" id="close-logbook-btn">✖</button>
+      </div>
+      <div class="modal-body" id="logbook-content">
+        <!-- 由 diagram-renderer.js 動態注入 SVG 與無答案提示 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 通關結算證書模態框 -->
+  <div id="cert-modal" class="modal-overlay hidden">
+    <div class="modal-card cert-card" id="cert-body">
+      <!-- 由 game-controller.js 動態注入證書 -->
+    </div>
+  </div>
+
+  <!-- 腳本引入 (遵循純靜態零後端規範) -->
+  <script src="js/prng.js"></script>
+  <script src="js/audio-manager.js"></script>
+  <script src="js/reactor-fx.js"></script>
+  <script src="js/diagram-renderer.js"></script>
+  <script src="js/questions.js"></script>
+  <script src="js/reactor-console.js"></script>
+  <script src="js/tts-reader.js"></script>
+  <script src="js/game-controller.js"></script>
+</body>
+</html>
