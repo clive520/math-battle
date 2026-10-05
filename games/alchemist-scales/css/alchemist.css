@@ -1,0 +1,998 @@
+/* =========================================================
+   鍊金術士的密室：賢者天秤與小數咒印 (alchemist.css)
+   哥德蒸氣龐克工坊風格・六階黃銅小數密碼鎖・沉浸式動態光影
+   ========================================================= */
+
+:root {
+  --bg-deep: #0b0c10;
+  --bg-panel: rgba(22, 24, 33, 0.92);
+  --brass-dark: #3a2b16;
+  --brass-mid: #785223;
+  --brass-light: #d4a359;
+  --brass-highlight: #fef08a;
+  --gold-glow: #fbbf24;
+  --emerald-glow: #34d399;
+  --cyan-glow: #38bdf8;
+  --ruby-glow: #ef4444;
+  --toxic-purple: rgba(168, 85, 247, 0.4);
+  --text-primary: #f4f4f5;
+  --text-muted: #a1a1aa;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+  background-color: var(--bg-deep);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* 1. 全螢幕 Canvas 背景粒子 */
+#alchemyCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 2. 手電筒暗黑遮罩 (理智 ≤ 30% 啟動) */
+.torch-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 80;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  background: radial-gradient(
+    circle 240px at var(--torch-x, 50vw) var(--torch-y, 50vh),
+    transparent 0%,
+    rgba(0, 0, 0, 0.4) 50%,
+    rgba(3, 4, 8, 0.97) 100%
+  );
+}
+
+.torch-mask.active {
+  opacity: 1;
+}
+
+/* 3. 劇毒蒸氣回火爆發層 (答錯時紫綠煙霧) */
+.toxic-burst-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 90;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, rgba(239, 68, 68, 0.3) 60%, transparent 100%);
+  transition: opacity 0.3s ease;
+}
+
+.toxic-burst-overlay.active {
+  opacity: 1;
+  animation: toxicFume 1.2s ease-out forwards;
+}
+
+@keyframes toxicFume {
+  0% { opacity: 0; transform: scale(0.85); }
+  25% { opacity: 0.85; transform: scale(1.05); }
+  100% { opacity: 0; transform: scale(1.2); }
+}
+
+/* 4. 巨型魔導鋼門滑開轉場層 */
+.vault-door-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 100;
+  display: flex;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.vault-door-overlay.opening {
+  opacity: 1;
+}
+
+.vault-door-left, .vault-door-right {
+  width: 50vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #18181b 0%, #27272a 50%, #09090b 100%);
+  border-right: 3px solid var(--brass-light);
+  border-left: 3px solid var(--brass-light);
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.9);
+  transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.vault-door-overlay.opening .vault-door-left {
+  transform: translateX(-100%);
+}
+
+.vault-door-overlay.opening .vault-door-right {
+  transform: translateX(100%);
+}
+
+.vault-light-beam {
+  position: absolute;
+  top: 0;
+  left: 48vw;
+  width: 4vw;
+  height: 100vh;
+  background: linear-gradient(90deg, transparent, #fbbf24, #fef08a, transparent);
+  opacity: 0;
+  filter: blur(15px);
+  transition: opacity 0.4s ease;
+}
+
+.vault-door-overlay.opening .vault-light-beam {
+  opacity: 1;
+  animation: beamFlash 1.2s ease-out forwards;
+}
+
+@keyframes beamFlash {
+  0% { transform: scaleX(1); opacity: 0.4; }
+  50% { transform: scaleX(25); opacity: 1; }
+  100% { transform: scaleX(40); opacity: 0; }
+}
+
+/* 5. 主應用容器 */
+.app-container {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.screen-shake {
+  animation: shakeAnim 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shakeAnim {
+  10%, 90% { transform: translate3d(-3px, 0, 0); }
+  20%, 80% { transform: translate3d(5px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+  40%, 60% { transform: translate3d(6px, 0, 0); }
+}
+
+/* 6. 登入畫面 */
+.login-screen {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg-panel);
+  border: 2px solid var(--brass-mid);
+  border-radius: 16px;
+  padding: 36px 30px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 163, 89, 0.15);
+  backdrop-filter: blur(12px);
+  text-align: center;
+}
+
+.login-emblem {
+  font-size: 3.2rem;
+  margin-bottom: 12px;
+  animation: floatEmblem 3s ease-in-out infinite alternate;
+}
+
+@keyframes floatEmblem {
+  0% { transform: translateY(0); filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.4)); }
+  100% { transform: translateY(-8px); filter: drop-shadow(0 0 22px rgba(251, 191, 36, 0.8)); }
+}
+
+.login-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--brass-highlight);
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.login-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--brass-light);
+  margin-bottom: 6px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1.5px solid var(--brass-dark);
+  background: rgba(15, 17, 23, 0.85);
+  color: var(--text-primary);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus {
+  border-color: var(--gold-glow);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.35);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.btn-start-game {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  background: linear-gradient(135deg, var(--brass-mid) 0%, var(--brass-light) 50%, #b45309 100%);
+  color: #1c1917;
+  font-size: 1.1rem;
+  font-weight: 800;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+}
+
+.btn-start-game:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
+}
+
+/* 7. 遊戲主畫面與極簡頂欄 */
+.game-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: rgba(18, 18, 24, 0.85);
+  border-bottom: 1.5px solid rgba(212, 163, 89, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.top-left, .top-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.player-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(39, 39, 42, 0.7);
+  border: 1px solid var(--brass-mid);
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--brass-highlight);
+}
+
+.btn-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(161, 161, 170, 0.3);
+  background: rgba(39, 39, 42, 0.6);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-nav:hover {
+  background: rgba(63, 63, 70, 0.9);
+  border-color: var(--gold-glow);
+  color: var(--gold-glow);
+}
+
+/* 8. 理智值 HP 列 */
+.sanity-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sanity-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.sanity-bar {
+  width: 140px;
+  height: 14px;
+  background: #27272a;
+  border-radius: 7px;
+  border: 1px solid rgba(161, 161, 170, 0.3);
+  overflow: hidden;
+  position: relative;
+  transition: box-shadow 0.3s;
+}
+
+.sanity-bar-fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background 0.4s;
+}
+
+.sanity-value {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--emerald-glow);
+  min-width: 42px;
+}
+
+.sanity-heal-pulse {
+  animation: healPulseAnim 1s ease-out;
+}
+
+@keyframes healPulseAnim {
+  0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.8); }
+  70% { box-shadow: 0 0 25px 8px rgba(52, 211, 153, 0.6); }
+  100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+}
+
+.heal-sparkle {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 10px #34d399;
+  pointer-events: none;
+  z-index: 1000;
+  animation: flySparkle 0.9s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes flySparkle {
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.3); }
+}
+
+/* 9. 密室遊戲主體內容 */
+.chamber-main {
+  flex: 1;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.chamber-story-card {
+  background: var(--bg-panel);
+  border: 1.5px solid var(--brass-mid);
+  border-radius: 14px;
+  padding: 22px 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  position: relative;
+  overflow: hidden;
+}
+
+.chamber-story-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--gold-glow);
+}
+
+.chamber-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.chamber-badge {
+  padding: 4px 10px;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid var(--gold-glow);
+  color: var(--gold-glow);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.chamber-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--brass-highlight);
+}
+
+.story-content {
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: #e4e4e7;
+  margin-bottom: 16px;
+}
+
+.question-box {
+  background: rgba(39, 39, 42, 0.6);
+  border: 1px dashed var(--brass-light);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fef08a;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   10. 六階賢者小數黃銅密碼鎖 (Lock System Styling)
+   ========================================================= */
+.physical-lock-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.alchemist-lock-container {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lock-shackle-wrapper {
+  width: 160px;
+  height: 48px;
+  position: relative;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lock-shackle-wrapper.unlocked {
+  transform: translateY(-26px);
+}
+
+.lock-shackle-bar {
+  width: 100%;
+  height: 100%;
+  border: 10px solid #a1a1aa;
+  border-bottom: none;
+  border-radius: 36px 36px 0 0;
+  background: transparent;
+  box-shadow: inset 0 2px 6px rgba(255, 255, 255, 0.5), 0 4px 10px rgba(0, 0, 0, 0.7);
+}
+
+.lock-body {
+  width: 100%;
+  background: linear-gradient(180deg, #2a1f11 0%, #4a3821 40%, #1e150a 100%);
+  border: 3px solid var(--brass-light);
+  border-radius: 20px;
+  padding: 24px 20px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), inset 0 2px 4px rgba(255, 255, 255, 0.25);
+  position: relative;
+  transition: box-shadow 0.3s;
+}
+
+.lock-body.unlock-success {
+  box-shadow: 0 0 50px rgba(251, 191, 36, 0.7), inset 0 0 30px rgba(251, 191, 36, 0.3);
+}
+
+.lock-body.lock-shake {
+  animation: shakeAnim 0.5s ease-in-out;
+}
+
+.lock-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.lock-emblem {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--brass-highlight);
+  letter-spacing: 1px;
+}
+
+.lock-hint-text {
+  display: block;
+  font-size: 0.8rem;
+  color: #d4a359;
+  margin-top: 4px;
+}
+
+/* 輪盤橫列 */
+.dials-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.dial-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 17, 23, 0.6);
+  padding: 8px 6px;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 163, 89, 0.25);
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.dial-column.active-dial {
+  border-color: var(--gold-glow);
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.4);
+  transform: translateY(-2px);
+}
+
+.place-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.int-tag {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+
+.dec-tag {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+}
+
+.dial-btn {
+  width: 44px;
+  height: 28px;
+  background: linear-gradient(180deg, #523e25 0%, #2f2213 100%);
+  border: 1px solid var(--brass-light);
+  color: var(--brass-highlight);
+  font-size: 0.85rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.dial-btn:hover {
+  background: linear-gradient(180deg, #785a36 0%, #4a351e 100%);
+  color: #ffffff;
+}
+
+.dial-btn:active {
+  transform: scale(0.92);
+}
+
+.dial-window {
+  width: 54px;
+  height: 64px;
+  background: #09090b;
+  border: 2px solid #523e25;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.9), 0 2px 4px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  cursor: pointer;
+  perspective: 400px;
+}
+
+.dial-digit {
+  font-size: 2.1rem;
+  font-weight: 900;
+  font-family: "Courier New", Courier, monospace;
+  color: #fef08a;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dial-digit.roll-anim {
+  animation: roll3D 0.25s ease-out;
+}
+
+@keyframes roll3D {
+  0% { transform: rotateX(65deg) scale(0.9); opacity: 0.5; }
+  100% { transform: rotateX(0deg) scale(1); opacity: 1; }
+}
+
+/* ★ 中央發光小數點定位寶石 (Anchor Gem) ★ */
+.decimal-gem-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+}
+
+.gem-tag {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  font-size: 0.68rem;
+}
+
+.place-subtag {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.decimal-gemstone {
+  width: 32px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.gem-dot {
+  font-size: 3.2rem;
+  font-weight: 900;
+  color: #ef4444;
+  text-shadow: 0 0 15px #ef4444, 0 0 30px #f87171;
+  line-height: 1;
+  animation: gemBreathe 2.4s ease-in-out infinite;
+}
+
+@keyframes gemBreathe {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px #ef4444); }
+  50% { transform: scale(1.15); filter: drop-shadow(0 0 16px #f87171); }
+}
+
+.decimal-gemstone.gem-flash .gem-dot {
+  animation: gemFlashAnim 0.6s ease-out;
+}
+
+@keyframes gemFlashAnim {
+  0% { transform: scale(1.6); color: #ffffff; filter: drop-shadow(0 0 30px #ffffff); }
+  100% { transform: scale(1); color: #ef4444; filter: drop-shadow(0 0 10px #ef4444); }
+}
+
+/* 快捷輸入列 */
+.quick-input-bar {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.quick-input {
+  width: 260px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1.5px solid var(--brass-mid);
+  background: #09090b;
+  color: #fef08a;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+  letter-spacing: 1px;
+}
+
+.quick-input:focus {
+  border-color: var(--gold-glow);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
+}
+
+.quick-sync-btn {
+  padding: 10px 16px;
+  background: rgba(39, 39, 42, 0.8);
+  border: 1px solid var(--brass-light);
+  border-radius: 8px;
+  color: var(--brass-highlight);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quick-sync-btn:hover {
+  background: var(--brass-mid);
+  color: #ffffff;
+}
+
+/* 拉栓開門大按鈕 */
+.lock-action-bar {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-pull-shackle {
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #785223 0%, #d4a359 50%, #854d0e 100%);
+  border: 1.5px solid #fef08a;
+  border-radius: 12px;
+  color: #1c1917;
+  font-size: 1.1rem;
+  font-weight: 900;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+}
+
+.btn-pull-shackle:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.12);
+  box-shadow: 0 12px 30px rgba(245, 158, 11, 0.5);
+}
+
+.btn-pull-shackle:active {
+  transform: translateY(1px);
+}
+
+/* 11. 浮動提示 Toast */
+.game-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(40px);
+  background: rgba(24, 24, 27, 0.96);
+  border: 1.5px solid var(--brass-mid);
+  color: #fef08a;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1000;
+}
+
+.game-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* 12. 彈出視窗模態框 (Modal: Notebook, Revival, Victory) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 640px;
+  background: #18181b;
+  border: 2px solid var(--brass-mid);
+  border-radius: 16px;
+  padding: 28px 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.modal-close-btn:hover {
+  color: var(--text-primary);
+}
+
+/* 筆記本專用樣式 */
+.notebook-header-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid var(--gold-glow);
+  color: var(--gold-glow);
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.notebook-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--brass-highlight);
+  margin-bottom: 12px;
+}
+
+.notebook-text {
+  font-size: 0.96rem;
+  line-height: 1.7;
+  color: #d4d4d8;
+  margin-bottom: 18px;
+}
+
+.diagram-wrapper {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+}
+
+.alchemist-svg {
+  width: 100%;
+  max-width: 540px;
+  height: auto;
+}
+
+/* 結算證書專用樣式 */
+.certificate-card {
+  border: 3px double var(--brass-light);
+  background: linear-gradient(180deg, #18181b 0%, #201b13 100%);
+  text-align: center;
+}
+
+.cert-header {
+  margin-bottom: 20px;
+}
+
+.cert-emblem {
+  font-size: 3.5rem;
+  margin-bottom: 6px;
+}
+
+.cert-title {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--brass-highlight);
+  letter-spacing: 2px;
+}
+
+.cert-stars {
+  font-size: 2rem;
+  margin: 10px 0 4px;
+}
+
+.cert-honor-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--gold-glow);
+  margin-bottom: 20px;
+}
+
+.cert-data-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--brass-dark);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.cert-data-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cert-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.cert-val {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.cert-action-row {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+/* 13. RWD 響應式優化 */
+@media (max-width: 640px) {
+  .dials-row {
+    gap: 4px;
+  }
+  .dial-column {
+    padding: 6px 3px;
+  }
+  .dial-window {
+    width: 42px;
+    height: 52px;
+  }
+  .dial-digit {
+    font-size: 1.6rem;
+  }
+  .dial-btn {
+    width: 36px;
+    height: 24px;
+    font-size: 0.75rem;
+  }
+  .decimal-gemstone {
+    width: 20px;
+    height: 52px;
+  }
+  .gem-dot {
+    font-size: 2.2rem;
+  }
+  .quick-input {
+    width: 180px;
+    font-size: 0.9rem;
+  }
+}

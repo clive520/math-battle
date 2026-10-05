@@ -131,6 +131,10 @@ body {
   background: linear-gradient(90deg, #64748b, #475569);
 }
 
+.game-card.theme-alchemist::before {
+  background: linear-gradient(90deg, #d4a359, #fbbf24, #10b981);
+}
+
 /* 卡片頂部資訊列 */
 .card-top {
   display: flex;

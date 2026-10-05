@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>鍊金術士的密室：賢者天秤與小數咒印 | 康軒六上數學第 04 單元小數除法逃脫</title>
+  <link rel="stylesheet" href="css/alchemist.css?v=20261005_1">
+</head>
+<body>
+
+  <!-- 1. 背景懸浮魔導金塵粒子 (HTML5 Canvas) -->
+  <canvas id="alchemyCanvas"></canvas>
+
+  <!-- 2. 手電筒暗黑遮罩 (理智 ≤ 30% 啟動，滑鼠聚光燈) -->
+  <div class="torch-mask" id="torchMask"></div>
+
+  <!-- 3. 劇毒蒸氣回火爆發層 (答錯時紫霧震動) -->
+  <div class="toxic-burst-overlay" id="toxicBurstOverlay"></div>
+
+  <!-- 4. 巨型魔導鋼門滑開轉場層 (答對開鎖時金光推進) -->
+  <div class="vault-door-overlay" id="vaultDoorOverlay">
+    <div class="vault-door-left"></div>
+    <div class="vault-light-beam"></div>
+    <div class="vault-door-right"></div>
+  </div>
+
+  <!-- 5. 遊戲主應用容器 -->
+  <div class="app-container" id="appContainer">
+
+    <!-- A. 登入設定畫面 -->
+    <section class="login-screen" id="loginScreen">
+      <div class="login-card">
+        <div class="login-emblem">⚖️</div>
+        <h1 class="login-title">鍊金術士的密室</h1>
+        <p class="login-subtitle">賢者天秤與小數咒印・六上小數除法逃脫</p>
+
+        <form id="loginForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="inputClass">班級 (Class)</label>
+              <input type="text" class="form-input" id="inputClass" placeholder="例如 601" value="601" required>
+            </div>
+            <div class="form-group">
+              <label for="inputSeat">座號 (Seat No.)</label>
+              <input type="text" class="form-input" id="inputSeat" placeholder="例如 01" value="01" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="inputNickname">探險者暱稱 (Nickname)</label>
+            <input type="text" class="form-input" id="inputNickname" placeholder="輸入學生暱稱" value="鍊金學徒" required>
+          </div>
+
+          <button type="submit" class="btn-start-game" id="btnStartGame">
+            踏入工坊・開始逃脫 ➔
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- B. 密室遊戲主畫面 -->
+    <section class="game-screen" id="gameScreen" style="display: none;">
+      <!-- 頂部極簡導覽列 -->
+      <header class="top-bar">
+        <div class="top-left">
+          <div class="player-badge" id="playerBadge">
+            <span>👤</span><span>鍊金學徒</span>
+          </div>
+
+          <div class="sanity-wrapper" title="理智值：答錯扣 15%，答對恢復，≤30% 濃霧手電筒">
+            <span class="sanity-label">理智</span>
+            <div class="sanity-bar" id="sanityBar">
+              <div class="sanity-bar-fill" id="sanityBarFill" style="width: 100%;"></div>
+            </div>
+            <span class="sanity-value" id="sanityValue">100%</span>
+          </div>
+        </div>
+
+        <div class="top-right">
+          <button type="button" class="btn-nav" id="btnNotebook">
+            <span>📖</span><span>染血筆記</span>
+          </button>
+          <button type="button" class="btn-nav" id="btnTts">
+            <span>🔊</span><span>朗讀</span>
+          </button>
+          <button type="button" class="btn-nav" id="btnLangToggle">
+            <span>🌐</span><span>English</span>
+          </button>
+          <button type="button" class="btn-nav" id="btnLogout">
+            <span>🚪</span><span>登出</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- 密室內容主要區域 -->
+      <main class="chamber-main">
+        <!-- 題目與故事卡片 -->
+        <article class="chamber-story-card">
+          <div class="chamber-header-row">
+            <h2 class="chamber-title" id="chamberTitle">第一密室：聖水瓶的分裝之門</h2>
+            <span class="chamber-badge" id="chamberBadge">關卡 1 / 10</span>
+          </div>
+
+          <p class="story-content" id="storyContent">
+            石壁刻有古老銘文，前方是一座龐大的分裝儀表...
+          </p>
+
+          <div class="question-box" id="questionContent">
+            有一桶 12 公升的聖水，每 0.8 公升裝成一瓶，一共可以裝成幾瓶？
+          </div>
+        </article>
+
+        <!-- 實體六階黃銅密碼鎖掛載點 -->
+        <section class="physical-lock-section">
+          <div id="lockMount"></div>
+        </section>
+      </main>
+    </section>
+
+  </div>
+
+  <!-- 浮動提示 Toast -->
+  <div class="game-toast" id="gameToast"></div>
+
+  <!-- 模態視窗 1：染血筆記本 (鷹架與動態 SVG 圖解) -->
+  <div class="modal-overlay" id="notebookModal">
+    <div class="modal-card">
+      <button type="button" class="modal-close-btn" id="btnCloseNotebook" aria-label="關閉筆記">✕</button>
+      <div id="notebookBody"></div>
+    </div>
+  </div>
+
+  <!-- 模態視窗 2：0% 昏厥崩潰與微光復甦 -->
+  <div class="modal-overlay" id="revivalModal">
+    <div class="modal-card" style="text-align: center;">
+      <div style="font-size: 3rem; margin-bottom: 10px;">💀 ➔ ✨</div>
+      <h2 style="color: #fca5a5; margin-bottom: 10px;">理智值耗盡・昏厥甦醒</h2>
+      <p style="color: #d4d4d8; font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">
+        濃厚的毒霧吞噬了你的意識... 賢者的英靈引導你翻開筆記本，重新審視小數除法的移位與對齊奧秘！
+      </p>
+      <button type="button" class="btn-pull-shackle" id="btnReviveConfirm">
+        領悟法則・重獲光明 (理智恢復至 40%)
+      </button>
+    </div>
+  </div>
+
+  <!-- 模態視窗 3：生還脫出結算證書 -->
+  <div class="modal-overlay" id="victoryModal">
+    <div class="modal-card certificate-card">
+      <div class="cert-header">
+        <div class="cert-emblem">🏆</div>
+        <h2 class="cert-title">賢者脫出生還證書</h2>
+        <div class="cert-stars" id="certStars">⭐⭐⭐</div>
+        <div class="cert-honor-title" id="certTitle">賢者之石傳奇煉成師</div>
+      </div>
+
+      <div class="cert-data-grid">
+        <div class="cert-data-item">
+          <span class="cert-label">探險勇者</span>
+          <span class="cert-val" id="certNickname">鍊金學徒</span>
+        </div>
+        <div class="cert-data-item">
+          <span class="cert-label">班級座號</span>
+          <span class="cert-val" id="certClassSeat">601 班 01 號</span>
+        </div>
+        <div class="cert-data-item">
+          <span class="cert-label">通關耗時</span>
+          <span class="cert-val" id="certTime">05 分 20 秒</span>
+        </div>
+        <div class="cert-data-item">
+          <span class="cert-label">最終理智值</span>
+          <span class="cert-val" id="certSanity" style="color: #34d399;">95%</span>
+        </div>
+        <div class="cert-data-item" style="grid-column: span 2;">
+          <span class="cert-label">總失誤次數</span>
+          <span class="cert-val" id="certWrong">1 次</span>
+        </div>
+      </div>
+
+      <div class="cert-action-row">
+        <button type="button" class="btn-nav" id="btnCertPrint">🖨️ 列印/截圖留存</button>
+        <button type="button" class="btn-nav" id="btnCertRestart">🔄 再次挑戰</button>
+        <a href="../../index.html" class="btn-nav" style="text-decoration: none;">🏠 返回大廳</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 核心模組載入順序 -->
+  <script src="js/prng.js?v=20261005_1"></script>
+  <script src="js/audio-manager.js?v=20261005_1"></script>
+  <script src="js/questions.js?v=20261005_1"></script>
+  <script src="js/diagram-renderer.js?v=20261005_1"></script>
+  <script src="js/lock-system.js?v=20261005_1"></script>
+  <script src="js/tts-reader.js?v=20261005_1"></script>
+  <script src="js/alchemy-fx.js?v=20261005_1"></script>
+  <script src="js/game-controller.js?v=20261005_1"></script>
+</body>
+</html>
