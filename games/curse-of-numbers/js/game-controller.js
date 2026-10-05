@@ -81,10 +81,10 @@ class DungeonEscapeController {
     this.dom.torchMask = document.getElementById('torchMask');
   }
 
-  // 手電筒/火把光暈跟隨效果 (Torchlight Vignette: 理智 <= 40% 時跟隨鼠標/觸控)
+  // 手電筒/火把光暈跟隨效果 (Torchlight Vignette: 理智 <= 30% 時跟隨鼠標/觸控)
   _initMouseTorch() {
     window.addEventListener('pointermove', (e) => {
-      if (!this.dom.torchMask || this.sanity > 40) return;
+      if (!this.dom.torchMask || this.sanity > 30) return;
       const x = e.clientX;
       const y = e.clientY;
       this.dom.torchMask.style.background = `radial-gradient(circle 380px at ${x}px ${y}px, rgba(0, 0, 0, 0.05) 0%, rgba(5, 5, 10, 0.78) 70%, rgba(3, 3, 5, 0.96) 100%)`;
@@ -327,7 +327,9 @@ class DungeonEscapeController {
     this.lockSystem.setup(chamber.correctCode, this.lang);
 
     // 播放心跳聲 (隨理智值調節)
-    if (this.sanity < 50) {
+    if (this.sanity <= 30) {
+      window.audioMgr.startHeartbeat(115);
+    } else if (this.sanity < 50) {
       window.audioMgr.startHeartbeat(100);
     } else {
       window.audioMgr.stopHeartbeat();
@@ -401,15 +403,19 @@ class DungeonEscapeController {
     this.sanity = Math.max(0, this.sanity - amount);
     this._updateSanityUI();
 
-    if (this.sanity <= 40) {
+    if (this.sanity <= 30) {
       window.audioMgr.startHeartbeat(115);
-      if (prevSanity > 40) {
+      if (prevSanity > 30) {
         const isEn = (this.lang === 'en');
         const alertMsg = isEn
-          ? '⚠️ [Darkness Closes In] Sanity fell below 40%! The darkness encroaches; flashlight mode activated!'
-          : '⚠️【黑暗降臨】理智跌破 40%！黑暗壟罩地牢，已啟動手電筒暗黑探索模式！';
+          ? '⚠️ [Darkness Closes In] Sanity fell below 30%! The darkness encroaches; flashlight mode activated!'
+          : '⚠️【黑暗降臨】理智跌破 30%！黑暗壟罩地牢，已啟動手電筒暗黑探索模式！';
         this._showWhisper(alertMsg, 'danger');
       }
+    } else if (this.sanity < 50) {
+      window.audioMgr.startHeartbeat(100);
+    } else {
+      window.audioMgr.stopHeartbeat();
     }
 
     if (this.sanity <= 0) {
@@ -439,13 +445,13 @@ class DungeonEscapeController {
       this.dom.sanityVal.textContent = `${this.sanity}%`;
     }
 
-    // 理智值 <= 40% 啟用手電筒暗黑遮罩效果，> 40% 則關閉恢復正常
+    // 理智值 <= 30% 啟用手電筒暗黑遮罩效果，> 30% 則關閉恢復正常
     this._updateTorchMaskState();
   }
 
   _updateTorchMaskState() {
     if (!this.dom.torchMask) return;
-    if (this.sanity <= 40) {
+    if (this.sanity <= 30) {
       this.dom.torchMask.classList.add('active');
     } else {
       this.dom.torchMask.classList.remove('active');
@@ -563,7 +569,7 @@ class DungeonEscapeController {
                 </div>
                 <div class="stat-card">
                   <div class="stat-lbl">${isEn ? 'Remaining Sanity' : '剩餘理智值'}</div>
-                  <div class="stat-val ${this.sanity <= 40 ? 'low' : ''}">${this.sanity}%</div>
+                  <div class="stat-val ${this.sanity <= 30 ? 'low' : ''}">${this.sanity}%</div>
                 </div>
                 <div class="stat-card">
                   <div class="stat-lbl">${isEn ? 'Mistakes' : '失誤次數'}</div>
