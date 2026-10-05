@@ -198,7 +198,7 @@ class DungeonEscapeController {
       this.dom.btnTTS.innerHTML = (this.lang === 'en') ? '⏹️ Stop' : '⏹️ 停止';
       this.dom.btnTTS.classList.add('tts-speaking');
     } else {
-      this.dom.btnTTS.innerHTML = (this.lang === 'en') ? '🔊 Read Aloud' : '🔊 朗讀題目';
+      this.dom.btnTTS.innerHTML = (this.lang === 'en') ? '🔊 Read' : '🔊 朗讀';
       this.dom.btnTTS.classList.remove('tts-speaking');
     }
   }
@@ -214,10 +214,13 @@ class DungeonEscapeController {
       this.dom.journalBtnText.textContent = isEn ? 'Notes' : '染血筆記';
     }
     if (this.dom.logoutBtnText) {
-      this.dom.logoutBtnText.textContent = isEn ? 'Switch' : '換座號/登出';
+      this.dom.logoutBtnText.textContent = isEn ? 'Logout' : '登出';
     }
     if (this.dom.sanityLabel) {
       this.dom.sanityLabel.textContent = isEn ? 'Sanity' : '理智';
+    }
+    if (this.dom.studentBadge && this.studentInfo?.nickname) {
+      this.dom.studentBadge.textContent = `👤 ${this.studentInfo.nickname}`;
     }
     this._updateTTSButtonUI(this.ttsReader.isSpeaking);
 
@@ -256,12 +259,9 @@ class DungeonEscapeController {
     const engine = new DungeonQuestionEngine(seed);
     this.chambers = engine.generateAllChambers();
 
-    // 更新個人銘牌
+    // 更新個人銘牌 (僅顯示暱稱)
     if (this.dom.studentBadge) {
-      const isEn = (this.lang === 'en');
-      this.dom.studentBadge.textContent = isEn 
-        ? `👤 Class ${this.studentInfo.className} #${this.studentInfo.seatNum} ${this.studentInfo.nickname}`
-        : `👤 ${this.studentInfo.className} 班 ${this.studentInfo.seatNum} 號 ${this.studentInfo.nickname}`;
+      this.dom.studentBadge.textContent = `👤 ${this.studentInfo.nickname}`;
     }
 
     this._updateSanityUI();
