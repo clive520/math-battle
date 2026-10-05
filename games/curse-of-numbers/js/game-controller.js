@@ -310,6 +310,14 @@ class DungeonEscapeController {
 
   _hideLoginModal() {
     this.dom.loginModal.classList.add('hidden');
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 50);
     window.audioMgr.ensureContext();
   }
 
@@ -334,6 +342,11 @@ class DungeonEscapeController {
       this._triggerVictory();
       return;
     }
+
+    // 關卡切換置頂
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
 
     const chamber = this.chambers[index];
     this.currentChamberIdx = index;

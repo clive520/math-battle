@@ -241,6 +241,15 @@ class GameController {
 
     this.saveProgress();
     this.showGameScreen();
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 50);
+
     this.loadChamber(0);
     this.updateSanityDisplay();
     this.updateTopBarUI();
@@ -251,6 +260,11 @@ class GameController {
       this.triggerVictory();
       return;
     }
+
+    // 關卡切換置頂
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
 
     this.currentChamberIdx = idx;
     this.chamberWrongCount = 0;

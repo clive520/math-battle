@@ -187,8 +187,21 @@ class ReactorGameController {
   }
 
   startGame() {
+    if (document.activeElement) {
+      document.activeElement.blur();
+    }
     document.getElementById('login-screen')?.classList.add('hidden');
     document.getElementById('game-screen')?.classList.remove('hidden');
+
+    // 確保畫面置頂，完整呈現題目與故事資訊
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 50);
 
     this.isGameActive = true;
     this.startTime = Date.now();
@@ -228,6 +241,11 @@ class ReactorGameController {
   renderCurrentChamber() {
     const chamber = this.getCurrentChamber();
     if (!chamber) return;
+
+    // 關卡切換時確保置頂
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
 
     this.tts.stop();
     this.chamberMistakes = 0;
