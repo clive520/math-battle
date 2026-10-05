@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>小學六年級數學：植樹與間隔問題 雙人搶答對決</title>
-  <link rel="stylesheet" href="style.css?v=20261005_3">
+  <link rel="stylesheet" href="style.css?v=20261005_4">
 </head>
 <body>
 
@@ -76,6 +76,22 @@
           <input type="checkbox" id="no-repeat-checkbox" checked>
           <span>避免抽到重複號碼（每位同學都有機會上台）</span>
         </label>
+      </div>
+      <div class="setting-item">
+        <button type="button" id="reset-history-btn" class="reset-history-btn" title="清空已抽座號紀錄，全班重新輪替">
+          🔄 清空已抽名單
+        </button>
+      </div>
+    </div>
+
+    <!-- 已抽名單視覺化標籤展示列 -->
+    <div class="lottery-history-container">
+      <div class="history-header">
+        <span class="history-title">📋 本輪已抽上台座號紀錄（<span id="drawn-count">0</span> / <span id="total-count">26</span> 人已上台）：</span>
+        <span class="history-tip">（點選座號標籤可移除並放回抽籤池）</span>
+      </div>
+      <div id="drawn-tags-list" class="drawn-tags-list">
+        <span class="empty-history-tip">尚未抽籤，點選下方隊伍抽籤鈕開始！</span>
       </div>
     </div>
 
@@ -275,8 +291,8 @@
   </div>
 
   <!-- 引用 JavaScript (加入版本號防瀏覽器快取) -->
-  <script src="js/audio.js?v=20261005_3"></script>
-  <script src="js/generator.js?v=20261005_3"></script>
-  <script src="js/game.js?v=20261005_3"></script>
+  <script src="js/audio.js?v=20261005_4"></script>
+  <script src="js/generator.js?v=20261005_4"></script>
+  <script src="js/game.js?v=20261005_4"></script>
 </body>
 </html>

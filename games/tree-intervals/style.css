@@ -237,6 +237,109 @@ body {
   cursor: pointer;
 }
 
+.reset-history-btn {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  color: #fecaca;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.reset-history-btn:hover {
+  background: rgba(239, 68, 68, 0.4);
+  border-color: rgba(239, 68, 68, 0.8);
+  color: #fff;
+  transform: scale(1.04);
+}
+
+/* 已抽座號歷史展示容器 */
+.lottery-history-container {
+  width: 100%;
+  max-width: 720px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  padding: 12px 20px;
+  margin-bottom: 22px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.history-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.history-title span {
+  color: #facc15;
+  font-size: 1.05rem;
+}
+
+.history-tip {
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+
+.drawn-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 32px;
+  align-items: center;
+}
+
+.empty-history-tip {
+  font-size: 0.88rem;
+  color: #64748b;
+  font-style: italic;
+}
+
+.drawn-student-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.55);
+  color: #fef08a;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.drawn-student-tag:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.7);
+  color: #fca5a5;
+  transform: translateY(-2px);
+}
+
+.drawn-student-tag .tag-remove {
+  font-size: 0.75rem;
+  opacity: 0.75;
+  margin-left: 2px;
+}
+
 /* 隊伍名稱與抽籤設定 */
 .team-setup {
   display: flex;
