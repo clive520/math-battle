@@ -95,6 +95,27 @@ class DungeonEscapeController {
   }
 
   _bindGlobalEvents() {
+    // 座號步進按鈕 (▲ / ▼)
+    const btnDownCurse = document.getElementById('btnSeatDownCurse');
+    const btnUpCurse = document.getElementById('btnSeatUpCurse');
+    const selectSeatCurse = document.getElementById('inputSeatNum');
+    if (btnDownCurse && selectSeatCurse) {
+      btnDownCurse.addEventListener('click', () => {
+        if (selectSeatCurse.selectedIndex > 0) {
+          selectSeatCurse.selectedIndex--;
+          this.audio?.playDialTick?.();
+        }
+      });
+    }
+    if (btnUpCurse && selectSeatCurse) {
+      btnUpCurse.addEventListener('click', () => {
+        if (selectSeatCurse.selectedIndex < selectSeatCurse.options.length - 1) {
+          selectSeatCurse.selectedIndex++;
+          this.audio?.playDialTick?.();
+        }
+      });
+    }
+
     // 登入確認按鈕
     const btnStart = document.getElementById('btnStartAdventure');
     if (btnStart) {

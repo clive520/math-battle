@@ -755,6 +755,49 @@ body {
   gap: 12px;
 }
 
+.seat-stepper-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stepper-btn {
+  width: 36px;
+  height: 42px;
+  background: #2a2015;
+  border: 1px solid var(--border-bronze);
+  color: var(--accent-gold);
+  font-size: 0.95rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.stepper-btn:hover {
+  background: #4a3821;
+  color: #fff;
+  border-color: var(--accent-gold);
+}
+
+.stepper-btn:active {
+  transform: scale(0.92);
+}
+
+.stepper-select {
+  flex: 1;
+  text-align: center;
+  text-align-last: center;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 10px 4px;
+}
+
 .btn-start-adventure {
   background: linear-gradient(180deg, #d32f2f 0%, #8e0000 100%);
   border: 1px solid #ff5252;

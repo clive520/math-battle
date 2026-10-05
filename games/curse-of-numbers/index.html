@@ -99,11 +99,74 @@
         <div class="form-row-2">
           <div class="form-group">
             <label for="inputClassName">班級代號</label>
-            <input type="text" id="inputClassName" class="form-input" value="601" placeholder="例如: 601">
+            <select id="inputClassName" class="form-input" style="height: 42px;">
+              <option value="601" selected>601 班</option>
+              <option value="602">602 班</option>
+              <option value="603">603 班</option>
+              <option value="604">604 班</option>
+              <option value="605">605 班</option>
+              <option value="606">606 班</option>
+              <option value="607">607 班</option>
+              <option value="608">608 班</option>
+              <option value="609">609 班</option>
+              <option value="610">610 班</option>
+              <option value="611">611 班</option>
+              <option value="612">612 班</option>
+            </select>
           </div>
           <div class="form-group">
             <label for="inputSeatNum">座號 (關鍵種子碼)</label>
-            <input type="number" id="inputSeatNum" class="form-input" min="1" max="99" value="1" placeholder="例如: 15">
+            <div class="seat-stepper-wrap">
+              <button type="button" class="stepper-btn" id="btnSeatDownCurse" aria-label="座號減 1">▼</button>
+              <select id="inputSeatNum" class="form-input stepper-select" style="height: 42px;">
+                <option value="01" selected>01 號</option>
+                <option value="02">02 號</option>
+                <option value="03">03 號</option>
+                <option value="04">04 號</option>
+                <option value="05">05 號</option>
+                <option value="06">06 號</option>
+                <option value="07">07 號</option>
+                <option value="08">08 號</option>
+                <option value="09">09 號</option>
+                <option value="10">10 號</option>
+                <option value="11">11 號</option>
+                <option value="12">12 號</option>
+                <option value="13">13 號</option>
+                <option value="14">14 號</option>
+                <option value="15">15 號</option>
+                <option value="16">16 號</option>
+                <option value="17">17 號</option>
+                <option value="18">18 號</option>
+                <option value="19">19 號</option>
+                <option value="20">20 號</option>
+                <option value="21">21 號</option>
+                <option value="22">22 號</option>
+                <option value="23">23 號</option>
+                <option value="24">24 號</option>
+                <option value="25">25 號</option>
+                <option value="26">26 號</option>
+                <option value="27">27 號</option>
+                <option value="28">28 號</option>
+                <option value="29">29 號</option>
+                <option value="30">30 號</option>
+                <option value="31">31 號</option>
+                <option value="32">32 號</option>
+                <option value="33">33 號</option>
+                <option value="34">34 號</option>
+                <option value="35">35 號</option>
+                <option value="36">36 號</option>
+                <option value="37">37 號</option>
+                <option value="38">38 號</option>
+                <option value="39">39 號</option>
+                <option value="40">40 號</option>
+                <option value="41">41 號</option>
+                <option value="42">42 號</option>
+                <option value="43">43 號</option>
+                <option value="44">44 號</option>
+                <option value="45">45 號</option>
+              </select>
+              <button type="button" class="stepper-btn" id="btnSeatUpCurse" aria-label="座號加 1">▲</button>
+            </div>
           </div>
         </div>
 

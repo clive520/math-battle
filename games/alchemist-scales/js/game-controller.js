@@ -48,6 +48,29 @@ class GameController {
       });
     }
 
+    // 座號步進選擇器按鈕 (▲ / ▼)
+    const btnSeatDown = document.getElementById('btnSeatDown');
+    const btnSeatUp = document.getElementById('btnSeatUp');
+    const selectSeat = document.getElementById('inputSeat');
+
+    if (btnSeatDown && selectSeat) {
+      btnSeatDown.addEventListener('click', () => {
+        if (selectSeat.selectedIndex > 0) {
+          selectSeat.selectedIndex--;
+          if (this.audio) this.audio.playDialTick();
+        }
+      });
+    }
+
+    if (btnSeatUp && selectSeat) {
+      btnSeatUp.addEventListener('click', () => {
+        if (selectSeat.selectedIndex < selectSeat.options.length - 1) {
+          selectSeat.selectedIndex++;
+          if (this.audio) this.audio.playDialTick();
+        }
+      });
+    }
+
     // 語言切換
     const langBtn = document.getElementById('btnLangToggle');
     if (langBtn) {
