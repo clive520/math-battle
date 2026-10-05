@@ -23,7 +23,6 @@ class DungeonEscapeController {
   init() {
     this._cacheDom();
     this._bindGlobalEvents();
-    this._initMouseTorch();
 
     // 檢查是否有儲存的進度
     const saved = localStorage.getItem('curse_of_numbers_save');
@@ -135,16 +134,6 @@ class DungeonEscapeController {
     // 教師查詢座號按鈕
     document.getElementById('btnQueryTeacherSeed')?.addEventListener('click', () => {
       this._queryTeacherSeed();
-    });
-  }
-
-  // 手電筒/火把光暈跟隨效果 (Torchlight Vignette)
-  _initMouseTorch() {
-    window.addEventListener('pointermove', (e) => {
-      if (!this.dom.torchMask) return;
-      const x = e.clientX;
-      const y = e.clientY;
-      this.dom.torchMask.style.background = `radial-gradient(circle 380px at ${x}px ${y}px, rgba(0, 0, 0, 0.05) 0%, rgba(5, 5, 10, 0.75) 70%, rgba(3, 3, 5, 0.95) 100%)`;
     });
   }
 

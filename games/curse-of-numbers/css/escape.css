@@ -36,14 +36,9 @@ body {
   user-select: none;
 }
 
-/* 幽暗手電筒火把光暈遮罩 (Torchlight Overlay) */
+/* 幽暗手電筒火把光暈遮罩 (已依照教學需求取消，確保文字全時清晰無遮蔽) */
 .torch-mask {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 50;
-  background: radial-gradient(circle 380px at 50% 50%, rgba(0, 0, 0, 0.05) 0%, rgba(5, 5, 10, 0.75) 70%, rgba(3, 3, 5, 0.95) 100%);
-  transition: background 0.05s ease-out;
+  display: none !important;
 }
 
 /* 石壁背景紋理 */
@@ -233,31 +228,36 @@ body {
 }
 
 .story-box {
-  background: rgba(10, 12, 16, 0.6);
-  border: 1px dashed #444c5c;
-  padding: 16px 20px;
-  border-radius: 10px;
-  line-height: 1.7;
-  font-size: 16px;
-  color: #d1d5db;
+  background: rgba(10, 12, 16, 0.75);
+  border: 1px solid #475569;
+  padding: 18px 22px;
+  border-radius: 12px;
+  line-height: 1.8;
+  font-size: 17px;
+  color: #f1f5f9;
   margin-bottom: 20px;
+  user-select: text;
 }
 
 .story-box strong {
   color: #ffd54f;
-  font-weight: 700;
+  font-weight: 800;
+  background: rgba(255, 213, 79, 0.12);
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 .target-question-box {
-  background: rgba(45, 20, 20, 0.7);
-  border: 1px solid #ff4444;
-  color: #ffebee;
-  padding: 14px 18px;
-  border-radius: 10px;
-  font-size: 17px;
-  line-height: 1.5;
-  box-shadow: 0 4px 14px rgba(255, 0, 0, 0.15);
+  background: rgba(55, 20, 20, 0.85);
+  border: 2px solid #ef4444;
+  color: #ffffff;
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: 18px;
+  line-height: 1.6;
+  box-shadow: 0 4px 18px rgba(239, 68, 68, 0.25);
   margin-bottom: 24px;
+  user-select: text;
 }
 
 /* 惡靈嘲弄警報 (Whisper Alert) */
