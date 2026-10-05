@@ -86,8 +86,8 @@ class DungeonQuestionEngine {
       correctCode: answerCode,
       hints: [
         `咒印每 4 個為一組重複循環。`,
-        `先算完整組數：${totalCount} ÷ 4 ＝ ${baseGroups} 組 ⋯ 餘 ${remainder} 個。`,
-        `每組中都有 1 個【${targetRune.name}】（共 ${baseGroups} 次），再看剩下的 ${remainder} 個中是否包含它！`
+        `先算完整組數與餘數：${totalCount} ÷ 4 ＝ ？ 組 ⋯ 餘 ？ 個。`,
+        `每組中都有 1 個【${targetRune.name}】，前 ${baseGroups} 組有 ${baseGroups} 次，再加上剩下的餘數中是否還有它！`
       ],
       diagramType: 'runes',
       diagramData: {
@@ -143,8 +143,8 @@ class DungeonQuestionEngine {
       hints: [
         `觀察規律：相連的籠子會共用骨杖！`,
         isTriangle 
-          ? `每多排 1 個三角形多 2 根骨杖。公式：1 ＋ 2 × ${n}（或 3 ＋ 2 × (${n}－1)）。`
-          : `每多排 1 個正方形多 3 根骨杖。公式：1 ＋ 3 × ${n}（或 4 ＋ 3 × (${n}－1)）。`,
+          ? `每多排 1 個三角形多 2 根骨杖。公式引導：1 ＋ 2 × ${n} ＝ ？（請動手計算）`
+          : `每多排 1 個正方形多 3 根骨杖。公式引導：1 ＋ 3 × ${n} ＝ ？（請動手計算）`,
         `千萬不要直接用 ${n} × ${isTriangle ? 3 : 4}，因為相鄰的邊是共用的！`
       ],
       diagramType: 'matchsticks',
@@ -180,7 +180,7 @@ class DungeonQuestionEngine {
       correctCode: answerCode,
       hints: [
         `一天永遠是 24 小時，白晝 ＋ 黑夜 ＝ 24。`,
-        `算式：24 － ${daylight} ＝ ${night}。`,
+        `算式方向：24 － ${daylight} ＝ ？（請動手計算黑夜是幾小時）`,
         `小心小數點借位計算！`
       ],
       diagramType: 'sumInvariant',
@@ -217,7 +217,7 @@ class DungeonQuestionEngine {
       hints: [
         `年齡問題的核心：兩人的「年齡差」永遠不會改變！`,
         `今年兩人相差：${elderCurrent} － ${youngerCurrent} ＝ ${diff} 歲。`,
-        `當法師 ${elderFuture} 歲時，侍從依然比他小 ${diff} 歲：${elderFuture} － ${diff} ＝ ${youngerFuture} 歲。`
+        `當法師 ${elderFuture} 歲時，侍從依然比他小 ${diff} 歲：${elderFuture} － ${diff} ＝ ？（請算出侍從歲數）`
       ],
       diagramType: 'diffInvariant',
       diagramData: { diff, elder1: elderCurrent, young1: youngerCurrent, elder2: elderFuture, young2: youngerFuture }
@@ -251,8 +251,8 @@ class DungeonQuestionEngine {
       correctAnswer: requiredRate,
       correctCode: answerCode,
       hints: [
-        `此為「積不變」原理：每分鐘水量 × 時間 ＝ 總容量。`,
-        `算式：${capacity} ÷ ${targetTime} ＝ ${requiredRate}。`,
+        `此為「積不變」原理：每分鐘水量 × 時間 ＝ 總容量（${capacity} 公升）。`,
+        `算式方向：總容積 ÷ 時間 ＝ ${capacity} ÷ ${targetTime} ＝ ？（請動手計算）`,
         `時間越短，每分鐘需要的排水量就必須越大！`
       ],
       diagramType: 'prodInvariant',
@@ -289,7 +289,7 @@ class DungeonQuestionEngine {
       hints: [
         `先求出「1 顆魂晶多少幣」：${sampleTotal} ÷ ${sampleQty} ＝ ${unitPrice} 幣/顆。`,
         `商不變：每一顆魂晶的價錢維持不變。`,
-        `手上的幣所能購買的數量：${targetTotal} ÷ ${unitPrice} ＝ ${targetQty} 顆。`
+        `手上的幣所能購買的數量：${targetTotal} ÷ ${unitPrice} ＝ ？ 顆（請動手計算）`
       ],
       diagramType: 'quotInvariant',
       diagramData: { unitPrice, sampleQty, sampleTotal, targetQty, targetTotal }
@@ -324,7 +324,7 @@ class DungeonQuestionEngine {
       hints: [
         `小心！求的是「第 ${startNum} 號到第 ${endNum} 號」之間的間隔數，不是相加！`,
         `間隔數 ＝ 後號碼 － 前號碼：${endNum} － ${startNum} ＝ ${countIntervals} 個間隔。`,
-        `總距離 ＝ 間隔數 × 間距：${countIntervals} × ${intervalDist} ＝ ${totalDist} 公尺。`
+        `總距離 ＝ 間隔數 × 每個間距：${countIntervals} × ${intervalDist} ＝ ？ 公尺（請動手計算）`
       ],
       diagramType: 'numberLine',
       diagramData: { startNum, endNum, intervalDist, intervals: countIntervals, totalDist }
@@ -360,8 +360,8 @@ class DungeonQuestionEngine {
       correctCode: answerCode,
       hints: [
         `第一步：算單側有幾個間隔：${totalLength} ÷ ${intervalDist} ＝ ${intervalsOneSide} 個間隔。`,
-        `第二步：因為「頭尾兩端都要放」，單側的晶石數 ＝ 間隔數 ＋ 1：${intervalsOneSide} ＋ 1 ＝ ${countOneSide} 顆。`,
-        `第三步：關鍵陷阱！題目是「長廊兩側」，所以要乘以 2：${countOneSide} × 2 ＝ ${totalItems} 顆！`
+        `第二步：因為「頭尾兩端都要放」，單側的晶石數 ＝ 間隔數 ＋ 1 ＝ ${countOneSide} 顆。`,
+        `第三步：關鍵陷阱！題目是「長廊兩側」，所以單側算完後要再乘以 2 ＝ ？ 顆（請動手計算）`
       ],
       diagramType: 'treeBothEnds',
       diagramData: { totalLength, intervalDist, intervals: intervalsOneSide, oneSide: countOneSide, total: totalItems }
@@ -394,7 +394,7 @@ class DungeonQuestionEngine {
       hints: [
         `請注意！這是「封閉圖形」（繞一圈回到原點）。`,
         `封閉圖形的柱子數「剛好等於」間隔數，不必加 1 也不能減 1！`,
-        `算式：周長 ÷ 間距 ＝ ${perimeter} ÷ ${intervalDist} ＝ ${trees} 根。`
+        `算式方向：周長 ÷ 間距 ＝ ${perimeter} ÷ ${intervalDist} ＝ ？ 根（請動手計算）`
       ],
       diagramType: 'closedCircle',
       diagramData: { perimeter, intervalDist, trees }
@@ -438,7 +438,7 @@ class DungeonQuestionEngine {
       hints: [
         `相鄰兩燭的距離必須同時能整除長（${length}m）與寬（${width}m），才不會在角落卡住。`,
         `因此這個距離必須是 ${length} 和 ${width} 的「公因數」。`,
-        `題目要求「最大距離」，所以正是求兩數的【最大公因數】gcd(${length}, ${width}) ＝ ${maxDist} 公尺！`
+        `題目要求「最大距離」，請計算出兩數的【最大公因數】gcd(${length}, ${width}) ＝ ？ 公尺（請動手計算）`
       ],
       diagramType: 'rectangleGcd',
       diagramData: { length, width, maxDist }

@@ -1,6 +1,7 @@
 /**
  * 動態幾何與數學數線圖解渲染器 (Diagram Renderer)
- * 根據學生個人化題目參數，動態生成清晰易懂的向量 SVG 圖解鷹架，協助理解題目結構
+ * 根據學生個人化題目參數，動態生成清晰易懂的向量 SVG 圖解鷹架
+ * 【原則】：僅提供解題概念、結構剖析與算式模板，絕對不直接給出最終答案！由學生動手計算。
  */
 class DungeonDiagramRenderer {
   static render(diagramType, data) {
@@ -34,22 +35,22 @@ class DungeonDiagramRenderer {
 
   // 1. 週期循環圖解
   static _renderRunes(data) {
-    const { pattern, targetSymbol, total, groups, rem, occurrences } = data;
+    const { pattern, targetSymbol, total, groups, rem } = data;
     return `
       <div class="diagram-box">
         <div class="diagram-title">📜 咒文規律分析透視圖</div>
         <div class="runes-flow">
-          <div class="runes-group-label">一組 4 個循環：</div>
+          <div class="runes-group-label">每 4 個為一組循環：</div>
           <div class="runes-row">
             ${pattern.map(s => `<span class="rune-token ${s === targetSymbol ? 'highlight' : ''}">${s}</span>`).join('')}
           </div>
         </div>
         <div class="math-breakdown">
           <p>✦ 總咒印數：<strong>${total}</strong> 個</p>
-          <p>✦ 完整組數算式：<strong>${total} ÷ 4 ＝ ${groups}（組） ⋯ 餘 ${rem}（個）</strong></p>
-          <p>✦ 前 ${groups} 組中，每個循環包含 1 個 ${targetSymbol}，共 ${groups} 次。</p>
-          <p>✦ 剩下的餘數 ${rem} 個中包含 ${rem > 0 && pattern.slice(0, rem).includes(targetSymbol) ? '1' : '0'} 個 ${targetSymbol}。</p>
-          <p class="final-ans-box">🔑 【${targetSymbol}】總次數 ＝ ${groups} ＋ ${rem > 0 && pattern.slice(0, rem).includes(targetSymbol) ? '1' : '0'} ＝ <strong>${occurrences}</strong> 次</p>
+          <p>✦ 分組算式：<strong>${total} ÷ 4 ＝ ${groups}（組） ⋯ 餘 ${rem}（個）</strong></p>
+          <p>✦ 前 ${groups} 組中，每組都有 1 個【${targetSymbol}】，共出現 ${groups} 次。</p>
+          <p>✦ 剩下的餘數 ${rem} 個中，請觀察是否還有【${targetSymbol}】？</p>
+          <p class="final-ans-box">💡 解謎指引：【${targetSymbol}】總次數 ＝ ${groups} ＋ (餘數中的次數) ＝ <strong>？</strong> 次（請動手計算）</p>
         </div>
       </div>
     `;
@@ -57,7 +58,7 @@ class DungeonDiagramRenderer {
 
   // 2. 火柴棒/骨杖圖解
   static _renderMatchsticks(data) {
-    const { isTriangle, count, result, formula } = data;
+    const { isTriangle, count } = data;
     return `
       <div class="diagram-box">
         <div class="diagram-title">🦴 骨牢生長公共邊透視圖</div>
@@ -83,8 +84,8 @@ class DungeonDiagramRenderer {
           `}
         </svg>
         <div class="math-breakdown">
-          <p>✦ 規律：除了第 1 根基準骨杖，每多建 1 個籠子就多需要 ${isTriangle ? '2' : '3'} 根骨杖（共用邊）。</p>
-          <p class="final-ans-box">🔑 計算式：<strong>${formula}</strong>（根）</p>
+          <p>✦ 規律：除了第 1 根基準骨杖，每多排 1 個牢籠就多需要 ${isTriangle ? '2' : '3'} 根骨杖（共用邊）。</p>
+          <p class="final-ans-box">💡 解謎公式：${isTriangle ? `1 ＋ 2 × ${count}` : `1 ＋ 3 × ${count}`} ＝ <strong>？</strong> 根（請動手計算）</p>
         </div>
       </div>
     `;
@@ -92,7 +93,7 @@ class DungeonDiagramRenderer {
 
   // 3. 和不變圖解
   static _renderSumInvariant(data) {
-    const { total, partA, partB } = data;
+    const { total, partA } = data;
     const pctA = (partA / total) * 100;
     return `
       <div class="diagram-box">
@@ -101,12 +102,12 @@ class DungeonDiagramRenderer {
           <div class="bar-total-label">全日總時數：24 小時</div>
           <div class="balance-bar">
             <div class="bar-segment day-seg" style="width: ${pctA}%;">白晝 ${partA} 時</div>
-            <div class="bar-segment night-seg" style="width: ${100 - pctA}%;">黑夜 ${partB} 時</div>
+            <div class="bar-segment night-seg" style="width: ${100 - pctA}%;">黑夜 ？ 時</div>
           </div>
         </div>
         <div class="math-breakdown">
           <p>✦ 核心不變量：<strong>白晝 ＋ 黑夜 ＝ 24 小時</strong></p>
-          <p class="final-ans-box">🔑 黑夜時數 ＝ 24 － ${partA} ＝ <strong>${partB}</strong> 小時</p>
+          <p class="final-ans-box">💡 解謎公式：黑夜時數 ＝ 24 － ${partA} ＝ <strong>？</strong> 小時（請動手計算）</p>
         </div>
       </div>
     `;
@@ -114,7 +115,7 @@ class DungeonDiagramRenderer {
 
   // 4. 差不變圖解
   static _renderDiffInvariant(data) {
-    const { diff, elder1, young1, elder2, young2 } = data;
+    const { diff, elder1, young1, elder2 } = data;
     return `
       <div class="diagram-box">
         <div class="diagram-title">⏳ 永恆時光數線（年齡差永遠不變）</div>
@@ -129,7 +130,7 @@ class DungeonDiagramRenderer {
         </div>
         <div class="math-breakdown">
           <p>✦ 核心不變量：兩人經過相同的歲月，兩人的<strong>年齡差距始終為 ${diff} 歲</strong>！</p>
-          <p class="final-ans-box">🔑 侍從未來年齡 ＝ ${elder2} － ${diff} ＝ <strong>${young2}</strong> 歲</p>
+          <p class="final-ans-box">💡 解謎公式：侍從未來年齡 ＝ ${elder2} － ${diff} ＝ <strong>？</strong> 歲（請動手計算）</p>
         </div>
       </div>
     `;
@@ -137,14 +138,14 @@ class DungeonDiagramRenderer {
 
   // 5. 積不變圖解
   static _renderProdInvariant(data) {
-    const { capacity, targetTime, requiredRate } = data;
+    const { capacity, targetTime } = data;
     return `
       <div class="diagram-box">
         <div class="diagram-title">🧪 水牢容量與流速反比圖解</div>
         <div class="math-breakdown">
           <p>✦ 核心不變量：<strong>每分鐘排水量 × 所需時間 ＝ 總容積（${capacity} 公升）</strong></p>
           <p>✦ 時間縮短，需要的每分鐘排水量就必須成反比增加。</p>
-          <p class="final-ans-box">🔑 所需每分鐘排毒量 ＝ ${capacity} ÷ ${targetTime} ＝ <strong>${requiredRate}</strong> 公升/分鐘</p>
+          <p class="final-ans-box">💡 解謎公式：每分鐘排毒量 ＝ ${capacity} ÷ ${targetTime} ＝ <strong>？</strong> 公升/分鐘（請動手計算）</p>
         </div>
       </div>
     `;
@@ -152,14 +153,14 @@ class DungeonDiagramRenderer {
 
   // 6. 商不變圖解
   static _renderQuotInvariant(data) {
-    const { unitPrice, sampleQty, sampleTotal, targetQty, targetTotal } = data;
+    const { unitPrice, sampleQty, sampleTotal, targetTotal } = data;
     return `
       <div class="diagram-box">
         <div class="diagram-title">🪙 靈魂寶石等價商不變圖解</div>
         <div class="math-breakdown">
           <p>✦ 核心不變量：<strong>總金額 ÷ 數量 ＝ 每一顆的單價（商不變）</strong></p>
           <p>✦ 先算單價：${sampleTotal} ÷ ${sampleQty} ＝ <strong>${unitPrice}</strong> 暗黑幣/顆</p>
-          <p class="final-ans-box">🔑 ${targetTotal} 幣可換數量 ＝ ${targetTotal} ÷ ${unitPrice} ＝ <strong>${targetQty}</strong> 顆</p>
+          <p class="final-ans-box">💡 解謎公式：可換得數量 ＝ ${targetTotal} ÷ ${unitPrice} ＝ <strong>？</strong> 顆（請動手計算）</p>
         </div>
       </div>
     `;
@@ -167,7 +168,7 @@ class DungeonDiagramRenderer {
 
   // 7. 兩點間隔數線圖
   static _renderNumberLine(data) {
-    const { startNum, endNum, intervalDist, intervals, totalDist } = data;
+    const { startNum, endNum, intervalDist, intervals } = data;
     return `
       <div class="diagram-box">
         <div class="diagram-title">📏 引魂燈編號與間距數線圖</div>
@@ -186,7 +187,7 @@ class DungeonDiagramRenderer {
         </svg>
         <div class="math-breakdown">
           <p>✦ 間隔數計算：<strong>${endNum} － ${startNum} ＝ ${intervals}（個間隔）</strong></p>
-          <p class="final-ans-box">🔑 總距離 ＝ ${intervals} × ${intervalDist} ＝ <strong>${totalDist}</strong> 公尺</p>
+          <p class="final-ans-box">💡 解謎公式：總距離 ＝ ${intervals} × ${intervalDist} ＝ <strong>？</strong> 公尺（請動手計算）</p>
         </div>
       </div>
     `;
@@ -194,15 +195,15 @@ class DungeonDiagramRenderer {
 
   // 8. 兩端都設 + 兩側圖解
   static _renderTreeBothEnds(data) {
-    const { totalLength, intervalDist, intervals, oneSide, total } = data;
+    const { totalLength, intervalDist, intervals, oneSide } = data;
     return `
       <div class="diagram-box">
         <div class="diagram-title">⛩️ 斷魂長廊雙側與兩端封印圖解</div>
         <div class="math-breakdown">
           <p>✦ <strong>步驟 1（求單側間隔數）</strong>：${totalLength} ÷ ${intervalDist} ＝ <strong>${intervals}</strong> 個間隔</p>
           <p>✦ <strong>步驟 2（頭尾兩端都放）</strong>：單側顆數 ＝ 間隔數 ＋ 1 ＝ ${intervals} ＋ 1 ＝ <strong>${oneSide}</strong> 顆</p>
-          <p>✦ <strong>步驟 3（長廊兩側皆設）</strong>：兩側需乘以 2 ＝ ${oneSide} × 2 ＝ <strong>${total}</strong> 顆！</p>
-          <p class="final-ans-box">🔑 晶石總數 ＝ <strong>${total}</strong> 顆</p>
+          <p>✦ <strong>步驟 3（長廊兩側皆設）</strong>：請注意是長廊「兩側」，需再乘以 2！</p>
+          <p class="final-ans-box">💡 解謎公式：晶石總數 ＝ ${oneSide} × 2 ＝ <strong>？</strong> 顆（請動手計算）</p>
         </div>
       </div>
     `;
@@ -210,13 +211,13 @@ class DungeonDiagramRenderer {
 
   // 9. 封閉圓形圖解
   static _renderClosedCircle(data) {
-    const { perimeter, intervalDist, trees } = data;
+    const { perimeter, intervalDist } = data;
     return `
       <div class="diagram-box">
         <div class="diagram-title">⭕ 銜尾蛇封閉石陣（圓形迴路）</div>
         <div class="math-breakdown">
           <p>✦ <strong>封閉圖形核心秘密</strong>：繞行一圈頭尾相接，<strong>柱子數 ＝ 間隔數</strong>（不必加 1 也不能減 1）！</p>
-          <p class="final-ans-box">🔑 柱子總數 ＝ 周長 ÷ 間距 ＝ ${perimeter} ÷ ${intervalDist} ＝ <strong>${trees}</strong> 根</p>
+          <p class="final-ans-box">💡 解謎公式：柱子總數 ＝ ${perimeter} ÷ ${intervalDist} ＝ <strong>？</strong> 根（請動手計算）</p>
         </div>
       </div>
     `;
@@ -224,7 +225,7 @@ class DungeonDiagramRenderer {
 
   // 10. 最大公因數綜合題
   static _renderRectangleGcd(data) {
-    const { length, width, maxDist } = data;
+    const { length, width } = data;
     return `
       <div class="diagram-box">
         <div class="diagram-title">🏛️ 終極祭壇四象陣眼（長方形最大公因數）</div>
@@ -239,9 +240,9 @@ class DungeonDiagramRenderer {
           <text x="318" y="75" fill="#f0c040" font-size="13">寬 ${width}m</text>
         </svg>
         <div class="math-breakdown">
-          <p>✦ 四角都要安插，且間距相同 ➔ 間距必須同時整除長（${length}）與寬（${width}），即為兩者的「公因數」。</p>
+          <p>✦ 四角都要安插，且間距相同 ➔ 間距必須同時整除長（${length}m）與寬（${width}m），即為兩者的「公因數」。</p>
           <p>✦ 要求「最大距離」 ➔ 就是求兩數的【最大公因數】！</p>
-          <p class="final-ans-box">🔑 最大間距 ＝ gcd(${length}, ${width}) ＝ <strong>${maxDist}</strong> 公尺</p>
+          <p class="final-ans-box">💡 解謎公式：求 ${length} 與 ${width} 的【最大公因數】＝ <strong>？</strong> 公尺（請動手計算）</p>
         </div>
       </div>
     `;

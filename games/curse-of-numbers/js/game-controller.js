@@ -48,7 +48,6 @@ class DungeonEscapeController {
     this.dom.torchMask = document.getElementById('torchMask');
     this.dom.loginModal = document.getElementById('loginModal');
     this.dom.journalModal = document.getElementById('journalModal');
-    this.dom.teacherModal = document.getElementById('teacherModal');
     this.dom.victoryScreen = document.getElementById('victoryScreen');
     this.dom.gameMain = document.getElementById('gameMain');
 
@@ -59,7 +58,7 @@ class DungeonEscapeController {
     this.dom.sanityVal = document.getElementById('sanityVal');
     this.dom.btnMute = document.getElementById('btnMute');
     this.dom.btnJournal = document.getElementById('btnJournal');
-    this.dom.btnTeacher = document.getElementById('btnTeacher');
+    this.dom.btnLogout = document.getElementById('btnLogout');
 
     // 密室內容
     this.dom.chamberTitle = document.getElementById('chamberTitle');
@@ -94,6 +93,13 @@ class DungeonEscapeController {
       });
     }
 
+    // 登出換座號
+    this.dom.btnLogout?.addEventListener('click', () => {
+      if (confirm('確定要登出並換新的座號重新闖關嗎？')) {
+        this.logout();
+      }
+    });
+
     // 靜音切換
     this.dom.btnMute?.addEventListener('click', () => {
       const isMuted = window.audioMgr.toggleMute();
@@ -111,29 +117,14 @@ class DungeonEscapeController {
       this._closeJournal();
     });
 
-    // 教師按鈕
-    this.dom.btnTeacher?.addEventListener('click', () => {
-      this._openTeacherModal();
-    });
-    document.getElementById('btnCloseTeacher')?.addEventListener('click', () => {
-      this.dom.teacherModal.classList.add('hidden');
-    });
-
-    // 鍵盤快捷鍵：T 鍵打開教師面板、J 鍵開筆記本、M 鍵靜音
+    // 鍵盤快捷鍵：J 鍵開筆記本、M 鍵靜音
     window.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT') return;
-      if (e.key === 't' || e.key === 'T') {
-        this._openTeacherModal();
-      } else if (e.key === 'j' || e.key === 'J') {
+      if (e.key === 'j' || e.key === 'J') {
         this._openJournal();
       } else if (e.key === 'm' || e.key === 'M') {
         this.dom.btnMute?.click();
       }
-    });
-
-    // 教師查詢座號按鈕
-    document.getElementById('btnQueryTeacherSeed')?.addEventListener('click', () => {
-      this._queryTeacherSeed();
     });
   }
 
@@ -320,49 +311,14 @@ class DungeonEscapeController {
     this.dom.journalModal.classList.add('hidden');
   }
 
-  // 教師巡堂視角 (Teacher Panel)
-  _openTeacherModal() {
-    const inputClass = document.getElementById('teacherInputClass');
-    const inputSeat = document.getElementById('teacherInputSeat');
-    if (inputClass) inputClass.value = this.studentInfo.className;
-    if (inputSeat) inputSeat.value = this.studentInfo.seatNum;
-
-    this._queryTeacherSeed();
-    this.dom.teacherModal.classList.remove('hidden');
-  }
-
-  _queryTeacherSeed() {
-    const cName = document.getElementById('teacherInputClass').value.trim() || '601';
-    const sNum = (document.getElementById('teacherInputSeat').value.trim() || '01').padStart(2, '0');
-    const querySeed = `${cName}-${sNum}`;
-
-    const testEngine = new DungeonQuestionEngine(querySeed);
-    const testChambers = testEngine.generateAllChambers();
-
-    const resultBox = document.getElementById('teacherQueryResult');
-    if (!resultBox) return;
-
-    resultBox.innerHTML = `
-      <div class="teacher-overview">
-        <h4>🎯 查詢對象：${cName} 班 ${sNum} 號（種子碼：${querySeed}）</h4>
-        <p class="teacher-tip-sub">以下為該同學的 10 間密室題目參數與唯一正確密碼，方便巡堂時迅速查對：</p>
-      </div>
-      <div class="teacher-cards-list">
-        ${testChambers.map((c, i) => `
-          <div class="teacher-card">
-            <div class="tc-header">
-              <span class="tc-num">關卡 ${i+1}</span>
-              <strong class="tc-title">${c.title}</strong>
-              <span class="tc-code">🔑 密碼：<strong>${c.correctCode}</strong></span>
-            </div>
-            <div class="tc-body">
-              <p><strong>題目：</strong>${c.targetQuestion}</p>
-              <p><strong>算式提示：</strong>${c.hints[c.hints.length-1]}</p>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `;
+  // 登出並切換座號
+  logout() {
+    localStorage.removeItem('curse_of_numbers_save');
+    window.audioMgr.stopHeartbeat();
+    this.sanity = 100;
+    this.currentChamberIdx = 0;
+    this.wrongCount = 0;
+    this._showLoginModal();
   }
 
   // 通關勝利結算

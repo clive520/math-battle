@@ -36,7 +36,7 @@
           <span>📖</span><span>染血筆記</span>
         </button>
         <button type="button" class="icon-btn" id="btnMute" title="切換音效 (快捷鍵 M)">🔊</button>
-        <button type="button" class="icon-btn" id="btnTeacher" title="教師巡堂上帝視角 (快捷鍵 T)">🎓 巡堂</button>
+        <button type="button" class="icon-btn" id="btnLogout" title="登出並以新座號重新開始">🚪 換座號/登出</button>
       </div>
     </header>
 
@@ -133,29 +133,7 @@
     </div>
   </div>
 
-  <!-- 3. 教師巡堂上帝視角面板 (Teacher Modal) -->
-  <div class="modal-backdrop hidden" id="teacherModal">
-    <div class="modal-dialog teacher-dialog">
-      <div class="modal-header">
-        <h2>🎓 教師巡堂視角（上帝之眼）</h2>
-        <button type="button" class="btn-close-modal" id="btnCloseTeacher">✕</button>
-      </div>
-      <div class="teacher-body">
-        <div class="teacher-query-bar">
-          <label style="font-size: 13px;">班級：</label>
-          <input type="text" id="teacherInputClass" value="601">
-          <label style="font-size: 13px;">座號：</label>
-          <input type="number" id="teacherInputSeat" value="1" min="1" max="99">
-          <button type="button" class="btn-query-seed" id="btnQueryTeacherSeed">🔍 即時調閱題目與密碼</button>
-        </div>
-        <div id="teacherQueryResult">
-          <!-- 教師查詢結果 -->
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 4. 生還脫出證書結算畫面 (Victory Screen) -->
+  <!-- 3. 生還脫出證書結算畫面 (Victory Screen) -->
   <div class="victory-backdrop hidden" id="victoryScreen">
     <!-- 由 game-controller.js 動態渲染 -->
   </div>
