@@ -179,11 +179,11 @@ class DungeonEscapeController {
       this.ttsReader.stop();
       this._updateTTSButtonUI(false);
     } else {
+      const titleText = chamber.getTitle(this.lang);
       const storyText = chamber.getStory(this.lang);
-      const questionText = chamber.getTargetQuestion(this.lang);
       const fullSpeech = (this.lang === 'en')
-        ? `${chamber.getTitle('en')}. ${storyText}. Riddle question: ${questionText}`
-        : `${chamber.getTitle('zh')}。${storyText}。機關謎語：${questionText}`;
+        ? `${titleText}. ${storyText}`
+        : `${titleText}。${storyText}`;
 
       this.ttsReader.speak(fullSpeech, this.lang, () => {
         this._updateTTSButtonUI(false);
