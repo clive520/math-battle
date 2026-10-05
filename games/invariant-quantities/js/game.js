@@ -15,6 +15,8 @@ class InvariantBattleGame {
     this.lotteryNumbers = { p1: null, p2: null };
     this.usedLottery = { p1: new Set(), p2: new Set() };
     this.isRollingLottery = { p1: false, p2: false };
+    this.rollTimers = { p1: null, p2: null };
+    this.safetyTimers = { p1: null, p2: null };
 
     this.timer = null;
     this.timeLeft = this.timeLimit;
@@ -208,13 +210,21 @@ class InvariantBattleGame {
   }
 
   // =========================================================================
-  // 隨機抽籤系統 (號碼 1 到 26 號，支援快速滾動動畫與防重複)
+  // 隨機抽籤系統 (號碼 1 到 26 號，支援快速滾動動畫、防重複與強制逾時停止機制)
   // =========================================================================
   rollTeamLottery(teamKey) {
+    // 若該隊已在抽籤中，先停止舊計時器
+    if (this.rollTimers[teamKey]) {
+      clearInterval(this.rollTimers[teamKey]);
+      this.rollTimers[teamKey] = null;
+    }
+    if (this.safetyTimers && this.safetyTimers[teamKey]) {
+      clearTimeout(this.safetyTimers[teamKey]);
+      this.safetyTimers[teamKey] = null;
+    }
     if (this.isRollingLottery[teamKey]) return;
-    this.isRollingLottery[teamKey] = true;
 
-    const maxNum = parseInt(this.lotteryMaxInput.value, 10) || 26;
+    const maxNum = parseInt(this.lotteryMaxInput ? this.lotteryMaxInput.value : '26', 10) || 26;
     const isNoRepeat = this.noRepeatCheckbox ? this.noRepeatCheckbox.checked : true;
 
     // 建立可抽號碼池
@@ -233,48 +243,85 @@ class InvariantBattleGame {
       }
     }
 
-    const finalChoice = pool[Math.floor(Math.random() * pool.length)];
-
-    // 禁用抽籤按鈕避免重複連點
+    this.isRollingLottery[teamKey] = true;
     this.setLotteryButtonsDisabled(teamKey, true);
 
-    // 滾動動畫效果 (約 1 秒，快速跳動數字)
-    let rollCount = 0;
-    const maxRolls = 22;
-    const rollInterval = setInterval(() => {
-      rollCount++;
-      const tempNum = Math.floor(Math.random() * maxNum) + 1;
-      this.updateLotteryDisplay(teamKey, tempNum, true);
-      window.soundManager.playLotteryRoll();
+    const finalChoice = pool[Math.floor(Math.random() * pool.length)];
 
-      if (rollCount >= maxRolls) {
-        clearInterval(rollInterval);
+    // 終極安全機制：設定 1.0 秒硬性停止定時器，確保在任何異常或頁面切換情況下必能停止抽籤
+    this.safetyTimers[teamKey] = setTimeout(() => {
+      if (this.isRollingLottery[teamKey]) {
         this.finalizeLotteryDraw(teamKey, finalChoice);
+      }
+    }, 1000);
+
+    // 滾動動畫效果 (快速跳動數字)
+    let rollCount = 0;
+    const maxRolls = 16;
+    this.rollTimers[teamKey] = setInterval(() => {
+      try {
+        rollCount++;
+        const tempNum = Math.floor(Math.random() * maxNum) + 1;
+        this.updateLotteryDisplay(teamKey, tempNum, true);
+        if (window.soundManager && typeof window.soundManager.playLotteryRoll === 'function') {
+          window.soundManager.playLotteryRoll();
+        }
+      } catch (e) {
+        console.warn('Lottery tick exception caught:', e);
+      } finally {
+        if (rollCount >= maxRolls) {
+          if (this.rollTimers[teamKey]) {
+            clearInterval(this.rollTimers[teamKey]);
+            this.rollTimers[teamKey] = null;
+          }
+          if (this.safetyTimers && this.safetyTimers[teamKey]) {
+            clearTimeout(this.safetyTimers[teamKey]);
+            this.safetyTimers[teamKey] = null;
+          }
+          this.finalizeLotteryDraw(teamKey, finalChoice);
+        }
       }
     }, 45);
   }
 
   finalizeLotteryDraw(teamKey, selectedNum) {
+    if (this.rollTimers[teamKey]) {
+      clearInterval(this.rollTimers[teamKey]);
+      this.rollTimers[teamKey] = null;
+    }
+    if (this.safetyTimers && this.safetyTimers[teamKey]) {
+      clearTimeout(this.safetyTimers[teamKey]);
+      this.safetyTimers[teamKey] = null;
+    }
     this.lotteryNumbers[teamKey] = selectedNum;
     this.usedLottery[teamKey].add(selectedNum);
     this.isRollingLottery[teamKey] = false;
     this.setLotteryButtonsDisabled(teamKey, false);
 
-    this.updateLotteryDisplay(teamKey, selectedNum, false);
-    window.soundManager.playLotterySuccess();
-
-    // 增加醒目中選動畫效果
-    const displays = [
-      teamKey === 'p1' ? this.p1MenuNumber : this.p2MenuNumber,
-      teamKey === 'p1' ? this.p1PanelNum : this.p2PanelNum
-    ];
-    displays.forEach(el => {
-      if (el) {
-        el.classList.remove('num-pop');
-        void el.offsetWidth; // 強制重繪
-        el.classList.add('num-pop');
+    try {
+      this.updateLotteryDisplay(teamKey, selectedNum, false);
+      if (window.soundManager && typeof window.soundManager.playLotterySuccess === 'function') {
+        window.soundManager.playLotterySuccess();
       }
-    });
+
+      // 增加醒目中選動畫效果
+      const displays = [
+        teamKey === 'p1' ? this.p1MenuNumber : this.p2MenuNumber,
+        teamKey === 'p1' ? this.p1PanelNum : this.p2PanelNum
+      ];
+      displays.forEach(el => {
+        if (el) {
+          el.classList.remove('num-pop');
+          void el.offsetWidth; // 強制重繪
+          el.classList.add('num-pop');
+        }
+      });
+    } catch (e) {
+      console.warn('Finalize lottery UI exception caught:', e);
+    } finally {
+      this.isRollingLottery[teamKey] = false;
+      this.setLotteryButtonsDisabled(teamKey, false);
+    }
   }
 
   updateLotteryDisplay(teamKey, numVal, isRolling) {
@@ -332,6 +379,20 @@ class InvariantBattleGame {
     this.p2ScoreEl.textContent = '0';
     this.p1NameDisplay.textContent = this.teamNames.p1;
     this.p2NameDisplay.textContent = this.teamNames.p2;
+
+    // 清理任何正在進行的抽籤計時器
+    ['p1', 'p2'].forEach(teamKey => {
+      if (this.rollTimers[teamKey]) {
+        clearInterval(this.rollTimers[teamKey]);
+        this.rollTimers[teamKey] = null;
+      }
+      if (this.safetyTimers && this.safetyTimers[teamKey]) {
+        clearTimeout(this.safetyTimers[teamKey]);
+        this.safetyTimers[teamKey] = null;
+      }
+      this.isRollingLottery[teamKey] = false;
+      this.setLotteryButtonsDisabled(teamKey, false);
+    });
 
     // 若比賽前尚未抽籤，自動進行初始抽籤
     if (this.lotteryNumbers.p1 === null) {
