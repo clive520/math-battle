@@ -53,11 +53,26 @@ class ReactorGameController {
 
     let currentSeat = 1;
 
+    // 讀取前一次輸入的班級、座號與姓名
+    try {
+      const savedProfile = localStorage.getItem('math_student_profile');
+      if (savedProfile) {
+        const p = JSON.parse(savedProfile);
+        if (p.classNum && classSelect) classSelect.value = p.classNum;
+        if (p.seatNum) currentSeat = Math.max(1, Math.min(45, parseInt(p.seatNum, 10) || 1));
+        if (p.name && nameInput) nameInput.value = p.name;
+      }
+    } catch (e) {
+      console.warn('Load student profile error:', e);
+    }
+
     const updateSeat = () => {
       const formatted = String(currentSeat).padStart(2, '0');
       if (seatDisplay) seatDisplay.textContent = formatted;
       this.studentInfo.seatNum = formatted;
     };
+
+    updateSeat();
 
     if (seatUp) {
       seatUp.addEventListener('click', () => {
@@ -86,6 +101,16 @@ class ReactorGameController {
 
         this.studentInfo.classNum = classSelect ? classSelect.value : '601';
         this.studentInfo.name = nameVal;
+
+        // 記住本次輸入的班級、座號與姓名
+        try {
+          localStorage.setItem('math_student_profile', JSON.stringify({
+            classNum: this.studentInfo.classNum,
+            seatNum: this.studentInfo.seatNum,
+            name: this.studentInfo.name
+          }));
+        } catch (e) {}
+
         this.startGame();
       });
     }

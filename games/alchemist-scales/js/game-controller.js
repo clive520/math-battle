@@ -224,6 +224,15 @@ class GameController {
     this.chamberWrongCount = 0;
     this.startTime = Date.now();
 
+    // 記住本次輸入的班級、座號與姓名
+    try {
+      localStorage.setItem('math_student_profile', JSON.stringify({
+        classNum: classNo,
+        seatNum: seatNo,
+        name: nickname
+      }));
+    } catch (e) {}
+
     const seed = `${classNo}-${seatNo}`;
     this.questionEngine = new AlchemistQuestionEngine(seed);
     const gen = this.questionEngine.generateAllChambers(); // 新局隨機洗牌
@@ -577,6 +586,20 @@ class GameController {
   showLoginScreen() {
     document.getElementById('loginScreen').style.display = 'flex';
     document.getElementById('gameScreen').style.display = 'none';
+
+    // 載入前一次記住的學生資料
+    try {
+      const savedProfile = localStorage.getItem('math_student_profile');
+      if (savedProfile) {
+        const p = JSON.parse(savedProfile);
+        const classEl = document.getElementById('inputClass');
+        const seatEl = document.getElementById('inputSeat');
+        const nickEl = document.getElementById('inputNickname');
+        if (classEl && p.classNum) classEl.value = p.classNum;
+        if (seatEl && p.seatNum) seatEl.value = p.seatNum;
+        if (nickEl && p.name) nickEl.value = p.name;
+      }
+    } catch (e) {}
   }
 
   showGameScreen() {

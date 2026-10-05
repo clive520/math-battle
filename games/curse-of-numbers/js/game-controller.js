@@ -130,6 +130,16 @@ class DungeonEscapeController {
           seatNum: sNum.padStart(2, '0'),
           nickname: nick
         };
+
+        // 記住本次輸入的班級、座號與姓名
+        try {
+          localStorage.setItem('math_student_profile', JSON.stringify({
+            classNum: cName,
+            seatNum: sNum.padStart(2, '0'),
+            name: nick
+          }));
+        } catch (e) {}
+
         this.startTime = new Date();
         this.sanity = 100;
         this.currentChamberIdx = 0;
@@ -282,6 +292,20 @@ class DungeonEscapeController {
 
   _showLoginModal() {
     this.dom.loginModal.classList.remove('hidden');
+
+    // 載入前一次記住的學生資料
+    try {
+      const savedProfile = localStorage.getItem('math_student_profile');
+      if (savedProfile) {
+        const p = JSON.parse(savedProfile);
+        const classEl = document.getElementById('inputClassName');
+        const seatEl = document.getElementById('inputSeatNum');
+        const nickEl = document.getElementById('inputNickname');
+        if (classEl && p.classNum) classEl.value = p.classNum;
+        if (seatEl && p.seatNum) seatEl.value = p.seatNum;
+        if (nickEl && p.name) nickEl.value = p.name;
+      }
+    } catch (e) {}
   }
 
   _hideLoginModal() {
