@@ -137,9 +137,7 @@ class ReactorGameController {
         } else {
           const chamber = this.getCurrentChamber();
           if (chamber) {
-            const textToRead = this.lang === 'zh' 
-              ? `${chamber.story_zh} ${chamber.question_zh}`
-              : `${chamber.story_en} ${chamber.question_en}`;
+            const textToRead = this.lang === 'zh' ? chamber.story_zh : chamber.story_en;
             this.tts.speak(textToRead, this.lang);
           }
         }
@@ -257,7 +255,6 @@ class ReactorGameController {
     const titleEl = document.getElementById('chamber-title');
     const secBadgeEl = document.getElementById('section-badge');
     const storyEl = document.getElementById('chamber-story');
-    const questEl = document.getElementById('chamber-question');
     const progEl = document.getElementById('chamber-progress');
 
     if (titleEl) {
@@ -269,11 +266,16 @@ class ReactorGameController {
     if (storyEl) {
       storyEl.textContent = isZh ? chamber.story_zh : chamber.story_en;
     }
-    if (questEl) {
-      questEl.textContent = isZh ? chamber.question_zh : chamber.question_en;
-    }
     if (progEl) {
       progEl.textContent = `${chamberNum} / 10`;
+    }
+
+    // 重置核心狀態標籤
+    const coreStatus = document.getElementById('core-status-tag');
+    if (coreStatus) {
+      coreStatus.textContent = 'CORE ACTIVE';
+      coreStatus.style.borderColor = '';
+      coreStatus.style.color = '';
     }
 
     // 切換控制台模式 (Bypass vs. Fraction)
@@ -351,10 +353,12 @@ class ReactorGameController {
     this.stability = Math.min(100, this.stability + healAmount);
     this.updateStabilityDisplay();
 
-    // 提示反饋
-    const questEl = document.getElementById('chamber-question');
-    if (questEl) {
-      questEl.innerHTML = `<span style="color:#30d158; font-weight:bold;">⚡ ${this.lang === 'zh' ? '加壓成功！核心共振鎖定！' : 'INJECTION SUCCESS! RESONANCE LOCKED!'}</span>`;
+    // 核心狀態標籤顯示成功回饋
+    const coreStatus = document.getElementById('core-status-tag');
+    if (coreStatus) {
+      coreStatus.textContent = this.lang === 'zh' ? '⚡ 加壓成功！共振鎖定' : '⚡ INJECTION SUCCESS! LOCKED';
+      coreStatus.style.borderColor = 'var(--safe-green)';
+      coreStatus.style.color = 'var(--safe-green)';
     }
 
     setTimeout(() => {
