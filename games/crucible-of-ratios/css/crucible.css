@@ -1,0 +1,1091 @@
+/* ============================================================
+   crucible.css - 元素調和秘境：黃金比例密室 專屬樣式表
+   深邃古代金碧神殿風格 (深青藍、黃金、天青微光、琥珀橙)
+   ============================================================ */
+
+:root {
+  --bg-main: #0a1118;
+  --bg-panel: #131e2b;
+  --bg-module: #182637;
+  --gold-light: #fef08a;
+  --gold-main: #e5c07b;
+  --gold-dark: #b88646;
+  --cyan-light: #81d4fa;
+  --cyan-main: #4fc3f7;
+  --cyan-dark: #0288d1;
+  --safe-green: #30d158;
+  --warn-orange: #ff9f0a;
+  --alert-red: #ff453a;
+  --text-primary: #f0f4f8;
+  --text-secondary: #90a4ae;
+  --border-gold: rgba(229, 192, 123, 0.4);
+  --border-cyan: rgba(79, 195, 247, 0.4);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+body {
+  background-color: var(--bg-main);
+  background-image: 
+    radial-gradient(circle at 50% 20%, rgba(79, 195, 247, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 80% 80%, rgba(229, 192, 123, 0.06) 0%, transparent 50%),
+    linear-gradient(180deg, #070c12 0%, #0c1520 100%);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* 頂部全域儀表板 */
+.app-header {
+  background: rgba(19, 30, 43, 0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border-gold);
+  padding: 8px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.5);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-emblem {
+  font-size: 1.6rem;
+  filter: drop-shadow(0 0 8px var(--gold-main));
+}
+
+.brand-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--gold-main);
+  letter-spacing: 0.5px;
+}
+
+.header-center {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 280px;
+}
+
+.stability-box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stability-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.stability-track {
+  width: 100%;
+  height: 10px;
+  background: #080d14;
+  border-radius: 5px;
+  border: 1px solid #283747;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  transition: width 0.35s ease, background 0.35s ease;
+}
+
+.progress-fill.normal {
+  background: linear-gradient(90deg, var(--cyan-main), var(--safe-green));
+  box-shadow: 0 0 8px var(--safe-green);
+}
+
+.progress-fill.warning {
+  background: linear-gradient(90deg, #ff9f0a, #ffd60a);
+  box-shadow: 0 0 8px var(--warn-orange);
+}
+
+.progress-fill.critical {
+  background: linear-gradient(90deg, #d90429, var(--alert-red));
+  box-shadow: 0 0 10px var(--alert-red);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-badge {
+  background: #182637;
+  color: var(--gold-light);
+  border: 1px solid var(--border-gold);
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.ctrl-btn {
+  background: #182637;
+  color: var(--text-primary);
+  border: 1px solid #2e4359;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ctrl-btn:hover {
+  background: #25394f;
+  border-color: var(--gold-main);
+  color: #ffffff;
+}
+
+/* 主畫面容器 */
+.screen-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 18px;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* 登入介面 */
+.login-view {
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 70px);
+}
+
+.login-card {
+  background: var(--bg-panel);
+  border: 2px solid var(--gold-main);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.7), 0 0 24px rgba(229, 192, 123, 0.25);
+  border-radius: 14px;
+  padding: 32px 36px;
+  width: 100%;
+  max-width: 460px;
+  text-align: center;
+}
+
+.card-icon {
+  font-size: 3rem;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 0 12px var(--gold-main));
+}
+
+.card-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--gold-light);
+  margin-bottom: 4px;
+}
+
+.card-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+
+.form-row label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.select-input, .text-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: #090e14;
+  border: 1px solid #2d3e52;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+.select-input:focus, .text-input:focus {
+  outline: none;
+  border-color: var(--gold-main);
+  box-shadow: 0 0 8px rgba(229, 192, 123, 0.4);
+}
+
+.seat-stepper-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #090e14;
+  border: 1px solid #2d3e52;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.stepper-arrow-btn {
+  background: #182637;
+  color: var(--gold-light);
+  border: 1px solid #2e4359;
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.stepper-arrow-btn:hover {
+  background: #25394f;
+  border-color: var(--gold-main);
+}
+
+.seat-number-window {
+  flex: 1;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  font-family: monospace;
+}
+
+.login-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.btn {
+  padding: 11px 18px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  transition: all 0.2s;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold-main));
+  color: #070c12;
+  box-shadow: 0 4px 14px rgba(229, 192, 123, 0.4);
+}
+
+.primary-btn:hover {
+  background: linear-gradient(135deg, var(--gold-main), var(--gold-light));
+  transform: translateY(-1px);
+}
+
+.secondary-btn {
+  background: #182637;
+  color: var(--text-secondary);
+  border: 1px solid #2e4359;
+}
+
+.secondary-btn:hover {
+  background: #25394f;
+  color: #ffffff;
+}
+
+/* 遊戲主畫面英雄卡片 */
+.chamber-hero {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-gold);
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.chamber-meta-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.chamber-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--gold-light);
+}
+
+.progress-pill {
+  background: #182637;
+  color: var(--cyan-main);
+  border: 1px solid var(--border-cyan);
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.chamber-narrative {
+  font-size: 0.96rem;
+  line-height: 1.55;
+  color: #cfd8dc;
+}
+
+/* 遊戲主佈局：雙欄 */
+.crucible-main-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 14px;
+  align-items: start;
+}
+
+/* 左側：Canvas 神殿調和環 */
+.crucible-left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.canvas-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #070c12;
+  border: 2px solid #213346;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: inset 0 0 24px rgba(0,0,0,0.8);
+}
+
+#crucible-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.core-warning-label {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(7, 12, 18, 0.85);
+  border: 1px solid var(--cyan-main);
+  color: var(--cyan-main);
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* 右側：控制台外框 */
+.crucible-right-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.console-box {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-gold);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.console-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #213346;
+  padding-bottom: 8px;
+}
+
+.gauge-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--gold-light);
+}
+
+.preview-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.preview-label {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.preview-val {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.preview-sub-label {
+  font-size: 0.8rem;
+  color: #78909c;
+}
+
+.preview-val-sub {
+  font-size: 1.1rem;
+  color: var(--cyan-light);
+}
+
+/* 雙軌量筒儀表板 (Burette Dashboard) */
+.burette-dashboard {
+  display: grid;
+  grid-template-columns: 1fr 40px 1fr 80px;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.burette-column {
+  background: var(--bg-module);
+  border: 1px solid #25394f;
+  border-radius: 10px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.column-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.ante-title { color: var(--gold-light); }
+.cons-title { color: var(--cyan-light); }
+
+.cylinder-tube {
+  width: 58px;
+  height: 110px;
+  background: #070c12;
+  border: 2px solid #2d4157;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);
+}
+
+.liquid-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transition: height 0.25s ease;
+  border-top: 2px solid #ffffff;
+}
+
+.ante-fill {
+  background: linear-gradient(180deg, rgba(255, 214, 10, 0.8) 0%, rgba(229, 192, 123, 0.4) 100%);
+  box-shadow: 0 0 12px rgba(255, 214, 10, 0.5);
+}
+
+.cons-fill {
+  background: linear-gradient(180deg, rgba(79, 195, 247, 0.8) 0%, rgba(2, 136, 209, 0.4) 100%);
+  box-shadow: 0 0 12px rgba(79, 195, 247, 0.5);
+}
+
+.cylinder-scale {
+  position: absolute;
+  top: 6px;
+  right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.35);
+  font-family: monospace;
+}
+
+.colon-divider-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.colon-emblem {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow: 0 0 10px var(--gold-main);
+}
+
+/* 步進控制器 */
+.stepper-cluster {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.step-btn {
+  background: #213346;
+  color: #ffffff;
+  border: 1px solid #364e6b;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.step-btn:hover {
+  background: #314b68;
+  border-color: var(--gold-main);
+}
+
+.digit-window {
+  width: 46px;
+  height: 42px;
+  background: #070c12;
+  border: 2px solid #2d4157;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 800;
+  font-family: monospace;
+}
+.ante-digit { color: var(--gold-light); }
+.cons-digit { color: var(--cyan-light); }
+
+/* 分數閥門儀表板 */
+.valves-dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 80px;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.valve-module {
+  background: var(--bg-module);
+  border: 1px solid #25394f;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.module-title {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--gold-light);
+}
+
+.fraction-bar-divider {
+  width: 75%;
+  height: 4px;
+  background: var(--cyan-main);
+  border-radius: 2px;
+  box-shadow: 0 0 6px var(--cyan-main);
+  margin: 3px 0;
+}
+
+/* 單一數值大步進器 */
+.single-dashboard {
+  display: grid;
+  grid-template-columns: 1fr 80px;
+  gap: 16px;
+  align-items: center;
+}
+
+.stepper-large-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-module);
+  border: 1px solid #25394f;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.stepper-quick-row {
+  display: flex;
+  gap: 8px;
+}
+
+.quick-btn {
+  width: 48px;
+  height: 28px;
+  font-size: 0.75rem;
+}
+
+.main-stepper .lg-btn {
+  width: 46px;
+  height: 46px;
+  font-size: 1.2rem;
+}
+
+.lg-digit {
+  width: 90px;
+  height: 52px;
+  font-size: 1.8rem;
+  color: var(--gold-light);
+}
+
+/* 四向管路選擇 */
+.pipe-select-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.pipe-btn {
+  background: var(--bg-module);
+  border: 1px solid #25394f;
+  border-radius: 8px;
+  padding: 14px;
+  color: #cfd8dc;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.pipe-btn:hover {
+  background: #25394f;
+  border-color: var(--cyan-main);
+  color: #ffffff;
+}
+
+.pipe-btn.active {
+  background: rgba(79, 195, 247, 0.2);
+  border-color: var(--cyan-main);
+  color: var(--cyan-light);
+  box-shadow: 0 0 12px rgba(79, 195, 247, 0.4);
+}
+
+/* 性價比選擇群組 */
+.rate-choice-box {
+  background: var(--bg-module);
+  border: 1px solid #25394f;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.choice-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--gold-light);
+}
+
+.choice-btn-group {
+  display: flex;
+  gap: 6px;
+}
+
+.choice-btn {
+  background: #182637;
+  border: 1px solid #2e4359;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: #cfd8dc;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.choice-btn:hover {
+  background: #25394f;
+}
+
+.choice-btn.active {
+  background: rgba(229, 192, 123, 0.2);
+  border-color: var(--gold-main);
+  color: var(--gold-light);
+  box-shadow: 0 0 8px rgba(229, 192, 123, 0.4);
+}
+
+/* 實體調和推桿 (Harmonizer Lever) */
+.lever-module-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.heavy-lever-wrapper {
+  width: 60px;
+  height: 120px;
+  background: #090e14;
+  border: 2px solid var(--border-gold);
+  border-radius: 8px;
+  position: relative;
+  cursor: pointer;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.9), 0 0 10px rgba(229, 192, 123, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lever-pivot {
+  position: absolute;
+  bottom: 12px;
+  width: 22px;
+  height: 22px;
+  background: #37474f;
+  border: 2px solid var(--gold-main);
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.lever-arm {
+  position: absolute;
+  bottom: 22px;
+  width: 10px;
+  height: 75px;
+  background: linear-gradient(90deg, #90a4ae, #cfd8dc, #78909c);
+  transform-origin: bottom center;
+  transform: rotate(-16deg);
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border-radius: 4px;
+}
+
+.lever-arm.pulled {
+  transform: rotate(26deg);
+}
+
+.lever-handle {
+  position: absolute;
+  top: -12px;
+  left: -8px;
+  width: 26px;
+  height: 26px;
+  background: radial-gradient(circle at 35% 35%, #ffd60a, #b88646);
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.8);
+}
+
+.lever-label {
+  position: absolute;
+  bottom: 3px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--gold-light);
+  letter-spacing: 0.5px;
+}
+
+/* 底部操作主按鈕 */
+.lever-action-row {
+  margin-top: 2px;
+}
+
+.harmonize-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold-main));
+  color: #070c12;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(229, 192, 123, 0.4);
+  transition: all 0.2s;
+}
+
+.harmonize-btn:hover {
+  background: linear-gradient(135deg, var(--gold-main), var(--gold-light));
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   標準數學排版符號 (Math Fraction & Ratio Typography)
+   ============================================================ */
+.math-fraction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  font-family: "Cambria Math", "STIX Two Math", "Georgia", "Times New Roman", serif;
+  font-style: normal;
+  line-height: 1;
+  margin: 0 0.15em;
+  padding: 0 0.05em;
+  color: var(--cyan-light);
+}
+
+.math-fraction .math-whole {
+  font-size: 1.25em;
+  font-weight: 700;
+  margin-right: 0.16em;
+  line-height: 1;
+  color: inherit;
+}
+
+.math-fraction .math-frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  font-size: 0.82em;
+  line-height: 1;
+  margin: 0 0.05em;
+}
+
+.math-fraction .math-num {
+  display: block;
+  text-align: center;
+  padding: 0 0.22em 0.12em 0.22em;
+  border-bottom: 1.8px solid currentColor;
+  width: 100%;
+  font-weight: 700;
+}
+
+.math-fraction .math-den {
+  display: block;
+  text-align: center;
+  padding: 0.12em 0.22em 0 0.22em;
+  width: 100%;
+  font-weight: 700;
+}
+
+.math-ratio {
+  display: inline-flex;
+  align-items: center;
+  font-weight: bold;
+}
+.ratio-ante { color: var(--gold-light); }
+.ratio-colon { color: #ffffff; margin: 0 1px; }
+.ratio-cons { color: var(--cyan-light); }
+
+.math-bracket-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(79, 195, 247, 0.1);
+  border: 1px solid rgba(79, 195, 247, 0.4);
+  border-radius: 6px;
+  padding: 2px 6px;
+  margin: 0 3px;
+  vertical-align: middle;
+  color: #e0f7fa;
+  font-weight: 600;
+}
+
+.math-bracket-badge .bracket-sym {
+  color: var(--gold-light);
+  opacity: 0.75;
+}
+
+/* 模態框 (Modal) */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 7, 10, 0.85);
+  backdrop-filter: blur(6px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal-card {
+  background: var(--bg-panel);
+  border: 2px solid var(--border-gold);
+  border-radius: 14px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.8);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border-bottom: 1px solid #25394f;
+}
+
+.modal-header h2 {
+  font-size: 1.2rem;
+  color: var(--gold-light);
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.close-btn:hover { color: #ffffff; }
+
+.modal-body {
+  padding: 16px 18px;
+}
+
+.scaffold-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.svg-diagram-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.scaffold-svg {
+  width: 100%;
+  max-width: 440px;
+  height: auto;
+  border-radius: 8px;
+}
+
+.hint-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 18px;
+  color: #cfd8dc;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+/* 通關結算證書 */
+.cert-card-inner {
+  text-align: center;
+  padding: 24px;
+}
+
+.cert-emblem {
+  font-size: 3.5rem;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 0 14px var(--gold-main));
+}
+
+.cert-title {
+  font-size: 1.5rem;
+  color: var(--gold-light);
+  margin-bottom: 6px;
+}
+
+.cert-stars {
+  font-size: 2rem;
+  margin-bottom: 4px;
+}
+
+.cert-hero-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--cyan-light);
+  margin-bottom: 18px;
+}
+
+.cert-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 14px;
+  background: #090e14;
+  border: 1px solid #25394f;
+  border-radius: 8px;
+  padding: 14px;
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.meta-item {
+  font-size: 0.85rem;
+}
+
+.m-label { color: var(--text-secondary); }
+.m-val { color: #ffffff; font-weight: bold; }
+
+.cert-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* 震動動畫 */
+.screen-shake {
+  animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-3px, 0, 0); }
+  20%, 80% { transform: translate3d(5px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+  40%, 60% { transform: translate3d(6px, 0, 0); }
+}
+
+/* 響應式適配 */
+@media (max-width: 900px) {
+  .crucible-main-layout {
+    grid-template-columns: 1fr;
+  }
+  .burette-dashboard {
+    grid-template-columns: 1fr 30px 1fr;
+  }
+  .lever-module-wrap {
+    grid-column: span 3;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 10px;
+  }
+}

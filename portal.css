@@ -143,6 +143,10 @@ body {
   background: linear-gradient(90deg, #f59e0b, #38bdf8, #8b5cf6);
 }
 
+.game-card.theme-crucible::before {
+  background: linear-gradient(90deg, #ffd60a, #4fc3f7, #30d158);
+}
+
 /* 卡片頂部資訊列 */
 .card-top {
   display: flex;
@@ -259,6 +263,17 @@ body {
 .game-card.theme-dungeon:hover .play-btn {
   background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
   box-shadow: 0 6px 25px rgba(239, 68, 68, 0.65);
+}
+
+/* 元素調和秘境主題 */
+.theme-crucible .play-btn {
+  background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+  border: 1px solid #34d399;
+  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.4);
+}
+.game-card.theme-crucible:hover .play-btn {
+  background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+  box-shadow: 0 6px 25px rgba(52, 211, 153, 0.6);
 }
 
 /* 預留卡片 */

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>元素調和秘境：黃金比例密室 | 康軒六上數學 第05單元 比與比值密室逃脫</title>
+  <link rel="stylesheet" href="css/crucible.css?v=20261006_1">
+</head>
+<body>
+
+  <!-- 全域頂部導覽列 -->
+  <header class="app-header">
+    <div class="header-left">
+      <span class="brand-emblem">🏛️</span>
+      <h1 class="brand-title">元素調和秘境：黃金比例密室</h1>
+    </div>
+
+    <div class="header-center">
+      <div class="stability-box">
+        <div class="stability-label">
+          <span>理智共鳴度 (Sanity)</span>
+          <span id="stability-val">100%</span>
+        </div>
+        <div class="stability-track">
+          <div id="stability-bar" class="progress-fill normal" style="width: 100%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <span class="user-badge" id="user-tag">👤 未登入</span>
+      <button type="button" class="ctrl-btn" id="lang-toggle-btn">🌐 English</button>
+      <button type="button" class="ctrl-btn" id="tts-toggle-btn" title="朗讀題目">🔊 語音朗讀</button>
+      <button type="button" class="ctrl-btn" id="mute-toggle-btn" title="靜音切換">🔊</button>
+      <button type="button" class="ctrl-btn" id="logbook-btn">📘 調和聖典</button>
+      <button type="button" class="ctrl-btn" id="logout-btn">🚪 離開</button>
+    </div>
+  </header>
+
+  <!-- 登入與座號設定畫面 -->
+  <main id="login-screen" class="screen-view login-view">
+    <div class="login-card">
+      <div class="card-icon">🧪</div>
+      <h2 class="card-title">調和師神殿認證</h2>
+      <p class="card-subtitle">古代黃金比例核心・康軒六上第五單元 比與比值 逃脫挑戰</p>
+
+      <div class="login-form">
+        <div class="form-row">
+          <label for="student-class">班級 (Class)</label>
+          <select id="student-class" class="select-input">
+            <option value="601">六年 1 班</option>
+            <option value="602">六年 2 班</option>
+            <option value="603">六年 3 班</option>
+            <option value="604">六年 4 班</option>
+            <option value="605">六年 5 班</option>
+            <option value="606">六年 6 班</option>
+            <option value="607">六年 7 班</option>
+            <option value="608">六年 8 班</option>
+            <option value="609">六年 9 班</option>
+            <option value="610">六年 10 班</option>
+            <option value="611">六年 11 班</option>
+            <option value="612">六年 12 班</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label>座號 (Seat No.) - 箭頭按鈕切換</label>
+          <div class="seat-stepper-box">
+            <button type="button" class="stepper-arrow-btn" id="seat-down">▼</button>
+            <div class="seat-number-window" id="seat-display">01</div>
+            <button type="button" class="stepper-arrow-btn" id="seat-up">▲</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="student-name">調和師姓名 (Name)</label>
+          <input type="text" id="student-name" class="text-input" placeholder="請輸入姓名..." maxlength="12">
+        </div>
+
+        <div class="login-actions">
+          <button type="button" class="btn primary-btn" id="start-btn">✨ 啟動神殿調和儀</button>
+          <a href="../../index.html" class="btn secondary-btn">🏠 返回學習大廳</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 密室遊戲主畫面 -->
+  <main id="game-screen" class="screen-view hidden">
+    <!-- 頂部情境故事與關卡資訊 -->
+    <section class="chamber-hero">
+      <div class="chamber-meta-bar">
+        <h2 id="chamber-title" class="chamber-name">第 1 層神殿：符號神印室</h2>
+        <div class="progress-pill">
+          <span id="section-badge" style="margin-right: 8px; color: var(--gold-light);">5-1 比與比值</span>
+          進度：<span id="chamber-progress">1 / 10</span>
+        </div>
+      </div>
+      <p id="chamber-story" class="chamber-narrative">載入神殿封印情境中...</p>
+    </section>
+
+    <!-- 主雙欄佈局：左側神殿調和環 + 右側實體操作台 -->
+    <section class="crucible-main-layout">
+      <!-- 左側：Canvas 調和環 -->
+      <div class="crucible-left-column">
+        <div class="canvas-wrap">
+          <canvas id="crucible-canvas"></canvas>
+          <div class="core-warning-label" id="core-status-tag">HARMONY ACTIVE</div>
+        </div>
+      </div>
+
+      <!-- 右側：實體機關操作台 -->
+      <div class="crucible-right-column">
+        <div id="crucible-console-mount">
+          <!-- 由 ratio-console.js 動態渲染 -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 調和聖典 (學習鷹架模態框) -->
+  <div id="logbook-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>📘 調和聖典・思考鷹架手冊</h2>
+        <button type="button" class="close-btn" id="close-logbook-btn">✖</button>
+      </div>
+      <div class="modal-body" id="logbook-content">
+        <!-- 由 diagram-renderer.js 動態注入 SVG 與無答案提示 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 通關結算證書模態框 -->
+  <div id="cert-modal" class="modal-overlay hidden">
+    <div class="modal-card" id="cert-body">
+      <!-- 由 game-controller.js 動態注入證書 -->
+    </div>
+  </div>
+
+  <!-- 腳本引入 (零外部依賴) -->
+  <script src="js/prng.js"></script>
+  <script src="js/audio-manager.js"></script>
+  <script src="js/math-formatter.js"></script>
+  <script src="js/diagram-renderer.js"></script>
+  <script src="js/crucible-fx.js"></script>
+  <script src="js/questions.js"></script>
+  <script src="js/ratio-console.js"></script>
+  <script src="js/tts-reader.js"></script>
+  <script src="js/game-controller.js"></script>
+</body>
+</html>
