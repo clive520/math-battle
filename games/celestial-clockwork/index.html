@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>時空星門：質源鐘樓與雙重神印 | 康軒六上數學 第01單元 最大公因數與最小公倍數密室逃脫</title>
+  <link rel="stylesheet" href="css/clockwork.css?v=20261006_1">
+</head>
+<body>
+
+  <!-- 1. 背景懸浮星塵與旋轉齒輪 (HTML5 Canvas) -->
+  <canvas id="clockworkCanvas"></canvas>
+
+  <!-- 2. 手電筒暗黑遮罩 (理智 ≤ 30% 啟動，滑鼠探照聚光燈) -->
+  <div class="torch-mask" id="torchMask"></div>
+
+  <!-- 3. 星門過場光爆遮罩 (解鎖正確時星門開啟推進) -->
+  <div class="stargate-overlay" id="stargateOverlay"></div>
+
+  <!-- 4. 遊戲主應用容器 -->
+  <div class="app-container" id="appContainer">
+
+    <!-- A. 登入設定畫面 -->
+    <section class="login-screen" id="loginScreen">
+      <div class="login-card">
+        <div class="login-emblem">⏳</div>
+        <h1 class="login-title">時空星門：質源鐘樓</h1>
+        <p class="login-subtitle">古代雙重神印・六上最大公因數與最小公倍數逃脫</p>
+
+        <form id="loginForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="inputClass">班級 (Class)</label>
+              <select class="form-input form-select" id="inputClass" title="選擇班級">
+                <option value="601" selected>601 班</option>
+                <option value="602">602 班</option>
+                <option value="603">603 班</option>
+                <option value="604">604 班</option>
+                <option value="605">605 班</option>
+                <option value="606">606 班</option>
+                <option value="607">607 班</option>
+                <option value="608">608 班</option>
+                <option value="609">609 班</option>
+                <option value="610">610 班</option>
+                <option value="611">611 班</option>
+                <option value="612">612 班</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="inputSeat">座號 (Seat No.)</label>
+              <div class="seat-stepper-wrap">
+                <button type="button" class="stepper-btn" id="btnSeatDown" aria-label="座號減 1">▼</button>
+                <select class="form-input form-select stepper-select" id="inputSeat" title="選擇座號 (01~45)">
+                  <option value="01" selected>01 號</option>
+                  <option value="02">02 號</option>
+                  <option value="03">03 號</option>
+                  <option value="04">04 號</option>
+                  <option value="05">05 號</option>
+                  <option value="06">06 號</option>
+                  <option value="07">07 號</option>
+                  <option value="08">08 號</option>
+                  <option value="09">09 號</option>
+                  <option value="10">10 號</option>
+                  <option value="11">11 號</option>
+                  <option value="12">12 號</option>
+                  <option value="13">13 號</option>
+                  <option value="14">14 號</option>
+                  <option value="15">15 號</option>
+                  <option value="16">16 號</option>
+                  <option value="17">17 號</option>
+                  <option value="18">18 號</option>
+                  <option value="19">19 號</option>
+                  <option value="20">20 號</option>
+                  <option value="21">21 號</option>
+                  <option value="22">22 號</option>
+                  <option value="23">23 號</option>
+                  <option value="24">24 號</option>
+                  <option value="25">25 號</option>
+                  <option value="26">26 號</option>
+                  <option value="27">27 號</option>
+                  <option value="28">28 號</option>
+                  <option value="29">29 號</option>
+                  <option value="30">30 號</option>
+                  <option value="31">31 號</option>
+                  <option value="32">32 號</option>
+                  <option value="33">33 號</option>
+                  <option value="34">34 號</option>
+                  <option value="35">35 號</option>
+                  <option value="36">36 號</option>
+                  <option value="37">37 號</option>
+                  <option value="38">38 號</option>
+                  <option value="39">39 號</option>
+                  <option value="40">40 號</option>
+                  <option value="41">41 號</option>
+                  <option value="42">42 號</option>
+                  <option value="43">43 號</option>
+                  <option value="44">44 號</option>
+                  <option value="45">45 號</option>
+                </select>
+                <button type="button" class="stepper-btn" id="btnSeatUp" aria-label="座號加 1">▲</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="inputNickname">探險者暱稱 (Nickname)</label>
+            <input type="text" class="form-input" id="inputNickname" placeholder="輸入學生暱稱" value="星際探險家" required>
+          </div>
+
+          <button type="submit" class="btn-start-game" id="btnStartGame">
+            踏入星門・開始逃脫 ➔
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- B. 密室遊戲主畫面 -->
+    <section class="game-screen" id="gameScreen" style="display: none;">
+      <!-- 頂部極簡導覽列 -->
+      <header class="top-bar">
+        <div class="top-left">
+          <div class="player-badge" id="playerBadge">
+            <span>👤</span><span id="playerBadgeName">星際探險家</span>
+          </div>
+
+          <div class="sanity-wrapper" title="理智值：答錯扣 15%，一次答對 +25%，≤30% 暗黑手電筒">
+            <span class="sanity-label">理智</span>
+            <div class="sanity-bar" id="sanityBar">
+              <div class="sanity-bar-fill" id="sanityBarFill" style="width: 100%;"></div>
+            </div>
+            <span class="sanity-value" id="sanityValue">100%</span>
+          </div>
+        </div>
+
+        <div class="top-right">
+          <button type="button" class="btn-nav" id="btnNotebook">
+            <span>📖</span><span>考古筆記</span>
+          </button>
+          <button type="button" class="btn-nav" id="btnTts">
+            <span>🔊</span><span>朗讀</span>
+          </button>
+          <button type="button" class="btn-nav" id="btnLangToggle">
+            <span>🌐</span><span>English</span>
+          </button>
+          <button type="button" class="btn-nav" id="btnLogout">
+            <span>🚪</span><span>登出</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- 密室內容主要區域 -->
+      <main class="chamber-main">
+        <!-- 題目與故事卡片 -->
+        <article class="chamber-story-card">
+          <div class="chamber-header-row">
+            <h2 class="chamber-title" id="chamberTitle">第一密室：質源之石的辨識</h2>
+            <span class="chamber-badge" id="chamberBadge">關卡 1 / 10</span>
+          </div>
+
+          <p class="story-content" id="storyContent">
+            石壁刻有古老銘文，前方是一座龐大的鐘樓齒輪組...
+          </p>
+
+          <div class="question-box" id="questionContent">
+            請計算找出所有質源原石之數值總和，得出開門之密碼！
+          </div>
+        </article>
+
+        <!-- 實體 4 位黃銅旋轉密碼鎖掛載點 -->
+        <section class="physical-lock-section">
+          <div id="lockMount"></div>
+        </section>
+      </main>
+    </section>
+
+  </div>
+
+  <!-- 浮動提示 Toast -->
+  <div class="game-toast" id="gameToast"></div>
+
+  <!-- 模態視窗 1：考古筆記本 (鷹架與動態 SVG 圖解) -->
+  <div class="modal-overlay" id="notebookModal">
+    <div class="modal-card">
+      <button type="button" class="modal-close-btn" id="btnCloseNotebook" aria-label="關閉筆記">✕</button>
+      <div id="notebookBody"></div>
+    </div>
+  </div>
+
+  <!-- 模態視窗 2：0% 昏厥甦醒與微光復甦 -->
+  <div class="modal-overlay" id="revivalModal">
+    <div class="modal-card" style="text-align: center;">
+      <div style="font-size: 3rem; margin-bottom: 10px;">💀 ➔ 🌟</div>
+      <h2 style="color: #fca5a5; margin-bottom: 10px;">理智值耗盡・昏厥甦醒</h2>
+      <p style="color: #d4d4d8; font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">
+        古代時空的黑霧吞噬了你的意識... 星門的守護英靈喚醒了你，引導你翻開考古筆記，重新領悟質數與短除法的真諦！
+      </p>
+      <button type="button" class="btn-pull-shackle" id="btnReviveConfirm">
+        領悟法則・重獲光明 (理智恢復至 40%)
+      </button>
+    </div>
+  </div>
+
+  <!-- 模態視窗 3：生還脫出結算證書 -->
+  <div class="modal-overlay" id="victoryModal">
+    <div class="modal-card certificate-card">
+      <div class="cert-header">
+        <div class="cert-emblem">🏆</div>
+        <h2 class="cert-title">星門脫出生還證書</h2>
+        <div class="cert-stars" id="certStars">⭐⭐⭐</div>
+        <div class="cert-honor-title" id="certHonorTitle">傳奇星門破密大師</div>
+      </div>
+
+      <div class="cert-data-grid">
+        <div class="cert-data-item">
+          <span class="cert-label">探險勇者</span>
+          <span class="cert-val" id="certNickname">星際探險家</span>
+        </div>
+        <div class="cert-data-item">
+          <span class="cert-label">班級座號</span>
+          <span class="cert-val" id="certClassSeat">601 班 01 號</span>
+        </div>
+        <div class="cert-data-item">
+          <span class="cert-label">通關耗時</span>
+          <span class="cert-val" id="certTime">05 分 20 秒</span>
+        </div>
+        <div class="cert-data-item">
+          <span class="cert-label">最終理智值</span>
+          <span class="cert-val" id="certSanity" style="color: #34d399;">95%</span>
+        </div>
+        <div class="cert-data-item" style="grid-column: span 2;">
+          <span class="cert-label">總失誤次數</span>
+          <span class="cert-val" id="certWrong">1 次</span>
+        </div>
+      </div>
+
+      <div class="cert-action-row">
+        <button type="button" class="btn-nav" id="btnCertPrint">🖨️ 列印/截圖留存</button>
+        <button type="button" class="btn-nav" id="btnCertRestart">🔄 再次挑戰</button>
+        <a href="../../index.html" class="btn-nav" style="text-decoration: none;">🏠 返回大廳</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 核心模組載入順序 -->
+  <script src="js/prng.js?v=20261006_1"></script>
+  <script src="js/audio-manager.js?v=20261006_1"></script>
+  <script src="js/questions.js?v=20261006_1"></script>
+  <script src="js/diagram-renderer.js?v=20261006_1"></script>
+  <script src="js/lock-system.js?v=20261006_1"></script>
+  <script src="js/tts-reader.js?v=20261006_1"></script>
+  <script src="js/clockwork-fx.js?v=20261006_1"></script>
+  <script src="js/game-controller.js?v=20261006_1"></script>
+</body>
+</html>

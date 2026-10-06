@@ -1,0 +1,878 @@
+/* ==========================================================================
+   《時空星門：質源鐘樓與雙重神印》
+   康軒六上數學 第 01 單元 最大公因數與最小公倍數 密室逃脫專用樣式表
+   ========================================================================== */
+
+:root {
+  --bg-dark: #0a0e17;
+  --bg-card: rgba(19, 27, 42, 0.88);
+  --border-gold: #d97706;
+  --gold-primary: #fbbf24;
+  --gold-glow: rgba(251, 191, 36, 0.4);
+  --cyan-celestial: #38bdf8;
+  --cyan-glow: rgba(56, 189, 248, 0.4);
+  --emerald-success: #10b981;
+  --crimson-danger: #ef4444;
+  --text-primary: #f8fafc;
+  --text-muted: #94a3b8;
+  --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* 1. 全螢幕 Canvas 特效層 */
+#clockworkCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* 2. 手電筒暗黑遮罩 (理智 ≤ 30% 啟動) */
+.torch-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  background: radial-gradient(
+    circle 360px at var(--torch-x, 50vw) var(--torch-y, 50vh),
+    transparent 0%,
+    rgba(6, 9, 15, 0.5) 50%,
+    rgba(3, 5, 10, 0.96) 85%,
+    rgba(2, 3, 7, 0.98) 100%
+  );
+}
+
+.torch-mask.active {
+  opacity: 1;
+}
+
+/* 3. 星門過場光爆層 */
+.stargate-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 95;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.85) 0%, rgba(56, 189, 248, 0.6) 40%, rgba(10, 14, 23, 0.95) 100%);
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.4s ease, transform 0.6s ease;
+}
+
+.stargate-overlay.active {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+/* 4. 遊戲主應用容器 */
+.app-container {
+  position: relative;
+  z-index: 10;
+  max-width: 1100px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.screen-shake {
+  animation: shakeAnim 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shakeAnim {
+  10%, 90% { transform: translate3d(-3px, 0, 0); }
+  20%, 80% { transform: translate3d(5px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+  40%, 60% { transform: translate3d(6px, 0, 0); }
+}
+
+/* -------------------------------------------------------------
+   A. 登入設定畫面
+   ------------------------------------------------------------- */
+.login-screen {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.login-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-gold);
+  border-radius: 16px;
+  padding: 36px 32px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7), 0 0 24px var(--gold-glow);
+  backdrop-filter: blur(12px);
+  text-align: center;
+}
+
+.login-emblem {
+  font-size: 3.5rem;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 12px var(--gold-glow));
+}
+
+.login-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--gold-primary);
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.login-subtitle {
+  color: var(--cyan-celestial);
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.form-group {
+  flex: 1;
+  text-align: left;
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.form-input, .form-select {
+  width: 100%;
+  background: #1e293b;
+  border: 1.5px solid #475569;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus, .form-select:focus {
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 10px var(--gold-glow);
+}
+
+.seat-stepper-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stepper-btn {
+  background: #334155;
+  border: 1px solid #64748b;
+  color: var(--gold-primary);
+  border-radius: 6px;
+  width: 38px;
+  height: 42px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.stepper-btn:hover {
+  background: #475569;
+}
+
+.stepper-select {
+  flex: 1;
+}
+
+.btn-start-game {
+  width: 100%;
+  background: linear-gradient(135deg, #d97706, #b45309);
+  color: #fff;
+  border: 1px solid var(--gold-primary);
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4);
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+}
+
+.btn-start-game:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: 0 8px 24px rgba(217, 119, 6, 0.6);
+}
+
+.btn-start-game:active {
+  transform: translateY(0);
+}
+
+/* -------------------------------------------------------------
+   B. 密室遊戲主畫面
+   ------------------------------------------------------------- */
+.game-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 頂部導覽列 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(19, 27, 42, 0.9);
+  border: 1.5px solid #334155;
+  border-radius: 12px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  backdrop-filter: blur(8px);
+}
+
+.top-left, .top-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.player-badge {
+  background: #1e293b;
+  border: 1px solid #475569;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--cyan-celestial);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sanity-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1e293b;
+  border: 1px solid #475569;
+  border-radius: 20px;
+  padding: 6px 14px;
+}
+
+.sanity-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.sanity-bar {
+  width: 100px;
+  height: 10px;
+  background: #0f172a;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid #334155;
+}
+
+.sanity-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #059669, #10b981);
+  transition: width 0.4s ease, background 0.4s ease;
+}
+
+.sanity-value {
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #6ee7b7;
+  min-width: 38px;
+}
+
+.sanity-heal-pulse {
+  animation: healPulse 0.8s ease;
+}
+
+@keyframes healPulse {
+  0% { box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
+  50% { box-shadow: 0 0 16px rgba(16, 185, 129, 0.8); }
+  100% { box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.btn-nav {
+  background: #1e293b;
+  border: 1px solid #475569;
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.btn-nav:hover {
+  background: #334155;
+  border-color: var(--gold-primary);
+  color: var(--gold-primary);
+}
+
+.btn-nav.tts-active {
+  background: #b91c1c;
+  border-color: #ef4444;
+  color: #fff;
+  animation: ttsBlink 1.5s infinite;
+}
+
+@keyframes ttsBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* 密室內容主要區域 */
+.chamber-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.chamber-story-card {
+  background: var(--bg-card);
+  border: 2px solid #334155;
+  border-radius: 16px;
+  padding: 24px 28px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.chamber-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.chamber-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--gold-primary);
+  letter-spacing: 0.5px;
+}
+
+.chamber-badge {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid var(--cyan-celestial);
+  color: var(--cyan-celestial);
+  border-radius: 14px;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.story-content {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #e2e8f0;
+  margin-bottom: 16px;
+  white-space: pre-line;
+}
+
+.question-box {
+  background: rgba(30, 41, 59, 0.85);
+  border-left: 4px solid var(--cyan-celestial);
+  border-radius: 0 10px 10px 0;
+  padding: 14px 18px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fef08a;
+  line-height: 1.6;
+}
+
+/* -------------------------------------------------------------
+   實體黃銅旋轉滾輪密碼鎖樣式
+   ------------------------------------------------------------- */
+.physical-lock-section {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.physical-lock-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 440px;
+  width: 100%;
+}
+
+.lock-shackle-wrapper {
+  width: 180px;
+  height: 60px;
+  position: relative;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lock-shackle-bar {
+  width: 100%;
+  height: 100%;
+  border: 14px solid #78716c;
+  border-bottom: none;
+  border-radius: 60px 60px 0 0;
+  box-shadow: inset 0 3px 6px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.8);
+}
+
+.lock-shackle-wrapper.shackle-unlocked {
+  transform: translateY(-28px);
+}
+
+.lock-body {
+  width: 100%;
+  background: linear-gradient(180deg, #44403c 0%, #292524 50%, #1c1917 100%);
+  border: 3px solid #b45309;
+  border-radius: 18px;
+  padding: 20px 24px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), inset 0 2px 4px rgba(251, 191, 36, 0.3);
+  text-align: center;
+  position: relative;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.lock-body.lock-body-success {
+  border-color: var(--emerald-success);
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
+}
+
+.lock-body.lock-body-shake {
+  animation: shakeAnim 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  border-color: var(--crimson-danger);
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.6);
+}
+
+.lock-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.lock-emblem {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--gold-primary);
+}
+
+.lock-hint-text {
+  font-size: 0.75rem;
+  color: #a8a29e;
+}
+
+.dials-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.dial-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.dial-btn {
+  background: #292524;
+  border: 1.5px solid #78716c;
+  color: var(--gold-primary);
+  border-radius: 6px;
+  width: 48px;
+  height: 32px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.dial-btn:hover {
+  background: #44403c;
+  border-color: var(--gold-primary);
+}
+
+.dial-btn:active {
+  transform: scale(0.92);
+}
+
+.dial-window {
+  width: 60px;
+  height: 64px;
+  background: linear-gradient(180deg, #0c0a09 0%, #1c1917 50%, #0c0a09 100%);
+  border: 2px solid #a8a29e;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 6px 12px rgba(0, 0, 0, 0.9), 0 2px 6px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.dial-digit {
+  font-size: 2.2rem;
+  font-family: var(--font-mono);
+  font-weight: 900;
+  color: #fef08a;
+  text-shadow: 0 0 10px rgba(254, 240, 138, 0.5);
+  transition: transform 0.12s ease;
+}
+
+.dial-digit.dial-animating {
+  transform: scale(1.18);
+  color: #fff;
+}
+
+.quick-input-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.quick-input {
+  flex: 1;
+  background: #1c1917;
+  border: 1px solid #57534e;
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: #fef08a;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  text-align: center;
+  outline: none;
+}
+
+.quick-input:focus {
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+
+.quick-sync-btn {
+  background: #292524;
+  border: 1px solid #78716c;
+  color: #e7e5e4;
+  border-radius: 6px;
+  padding: 0 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.quick-sync-btn:hover {
+  background: #44403c;
+  color: var(--gold-primary);
+}
+
+.btn-pull-shackle {
+  width: 100%;
+  background: linear-gradient(135deg, #059669, #047857);
+  color: #fff;
+  border: 1.5px solid #34d399;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 6px 18px rgba(5, 150, 105, 0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-pull-shackle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(5, 150, 105, 0.6);
+}
+
+.btn-pull-shackle:active {
+  transform: translateY(0);
+}
+
+/* -------------------------------------------------------------
+   C. 模態視窗與彈窗 (Modal Overlays)
+   ------------------------------------------------------------- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  background: rgba(3, 7, 18, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  padding: 16px;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-gold);
+  border-radius: 16px;
+  max-width: 680px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 28px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 30px var(--gold-glow);
+  position: relative;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: #334155;
+  border: 1px solid #64748b;
+  color: #fff;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-btn:hover {
+  background: #475569;
+}
+
+/* 筆記本樣式 */
+.notebook-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.notebook-header {
+  border-bottom: 1.5px solid #334155;
+  padding-bottom: 12px;
+}
+
+.notebook-tag {
+  font-size: 0.8rem;
+  color: var(--cyan-celestial);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.notebook-title {
+  font-size: 1.35rem;
+  color: var(--gold-primary);
+  margin-top: 4px;
+}
+
+.notebook-concept {
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+.diagram-wrapper {
+  width: 100%;
+  margin: 10px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.clockwork-svg {
+  width: 100%;
+  max-height: 240px;
+  height: auto;
+}
+
+.hints-heading {
+  font-size: 1rem;
+  color: #38bdf8;
+  margin-bottom: 8px;
+}
+
+.hints-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hints-list li {
+  background: rgba(30, 41, 59, 0.6);
+  border-left: 3px solid #38bdf8;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #e2e8f0;
+  border-radius: 0 6px 6px 0;
+}
+
+/* 生還證書樣式 */
+.certificate-card {
+  text-align: center;
+  border: 3px solid var(--gold-primary);
+  background: linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%);
+}
+
+.cert-emblem {
+  font-size: 4rem;
+  margin-bottom: 8px;
+}
+
+.cert-title {
+  font-size: 1.8rem;
+  color: var(--gold-primary);
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.cert-stars {
+  font-size: 1.8rem;
+  letter-spacing: 4px;
+  margin-bottom: 6px;
+}
+
+.cert-honor-title {
+  font-size: 1.2rem;
+  color: var(--cyan-celestial);
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.cert-data-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.cert-data-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cert-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.cert-val {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  font-family: var(--font-mono);
+}
+
+.cert-action-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* 浮動提示 Toast */
+.game-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #1e293b;
+  border: 1.5px solid var(--border-gold);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  z-index: 120;
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.game-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* 響應式優化 */
+@media (max-width: 640px) {
+  .top-bar {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .top-left, .top-right {
+    justify-content: space-between;
+  }
+  .cert-data-grid {
+    grid-template-columns: 1fr;
+  }
+}
