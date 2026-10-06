@@ -496,10 +496,12 @@ body {
 }
 
 .res-val {
-  font-size: 1.3rem;
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.35rem;
   font-weight: 800;
   color: var(--safe-green);
-  font-family: monospace;
+  min-height: 38px;
 }
 
 /* 儀表板閥門區域 */
@@ -928,6 +930,122 @@ body {
 @keyframes pulse {
   0% { transform: scale(1); }
   100% { transform: scale(1.05); }
+}
+
+/* ============================================================
+   數學標準分數符號樣式 (Math Fraction Typography)
+   符合教科書標準：整數在左、水平分數線、分子居上、分母居下
+   ============================================================ */
+.math-fraction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  font-family: "Cambria Math", "STIX Two Math", "Georgia", "Times New Roman", serif;
+  font-style: normal;
+  line-height: 1;
+  margin: 0 0.15em;
+  padding: 0 0.05em;
+  color: var(--aether-blue, #64d2ff);
+  letter-spacing: normal;
+  text-indent: 0;
+  user-select: none;
+}
+
+.math-fraction .math-whole {
+  font-size: 1.25em;
+  font-weight: 700;
+  margin-right: 0.16em;
+  line-height: 1;
+  color: inherit;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.math-fraction .math-frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  font-size: 0.82em;
+  line-height: 1;
+  margin: 0 0.05em;
+}
+
+.math-fraction .math-num {
+  display: block;
+  text-align: center;
+  padding: 0 0.22em 0.12em 0.22em;
+  border-bottom: 1.8px solid currentColor;
+  width: 100%;
+  box-sizing: border-box;
+  font-weight: 700;
+  color: inherit;
+}
+
+.math-fraction .math-den {
+  display: block;
+  text-align: center;
+  padding: 0.12em 0.22em 0 0.22em;
+  width: 100%;
+  box-sizing: border-box;
+  font-weight: 700;
+  color: inherit;
+}
+
+/* 題目情境科技數值標籤 (Bracket Badge) */
+.math-bracket-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(0, 180, 216, 0.12);
+  border: 1px solid rgba(0, 180, 216, 0.4);
+  border-radius: 6px;
+  padding: 2px 7px;
+  margin: 0 3px;
+  vertical-align: middle;
+  color: #e0f7fa;
+  font-weight: 600;
+  box-shadow: 0 0 8px rgba(0, 180, 216, 0.18);
+  white-space: nowrap;
+}
+
+.math-bracket-badge .bracket-sym {
+  color: var(--brass-light, #ffd60a);
+  font-weight: bold;
+  opacity: 0.75;
+  margin: 0 1px;
+}
+
+.math-bracket-badge .math-fraction {
+  color: #64d2ff;
+  text-shadow: 0 0 6px rgba(100, 210, 255, 0.5);
+}
+
+/* 控制台設定值預覽 (Console Preview) */
+.resonance-display .res-val .math-fraction {
+  font-size: 1.35rem;
+  color: #64d2ff;
+  text-shadow: 0 0 10px rgba(100, 210, 255, 0.6);
+}
+
+.resonance-display .res-val .math-fraction .math-whole {
+  font-size: 1.3em;
+  color: var(--brass-light, #ffd60a);
+  text-shadow: 0 0 10px rgba(255, 214, 10, 0.5);
+}
+
+.resonance-display .res-val .math-fraction .math-num {
+  border-bottom-color: var(--aether-blue, #64d2ff);
+}
+
+/* 維修日誌提示清單中的分數排版微調 */
+.hint-list .math-fraction {
+  font-size: 1.1em;
+  color: #ffd60a;
+}
+.hint-list .math-fraction .math-num {
+  border-bottom-color: #ffd60a;
 }
 
 /* 響應式佈局適配 (行動裝置與平板) */

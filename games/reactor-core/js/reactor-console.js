@@ -92,15 +92,8 @@ class ReactorConsole {
         </div>
       `;
     } else {
-      // 數值讀數預覽
-      let previewText = '';
-      if (this.whole > 0 && this.num > 0) {
-        previewText = `${this.whole}又 ${this.num}/${this.den}`;
-      } else if (this.num > 0) {
-        previewText = `${this.num}/${this.den}`;
-      } else {
-        previewText = `${this.whole}`;
-      }
+      // 數值讀數預覽 (以標準數學橫式分數呈現)
+      const previewHtml = this.getFormattedPreview();
 
       this.container.innerHTML = `
         <div class="console-box fraction-mode">
@@ -108,7 +101,7 @@ class ReactorConsole {
             <span class="gauge-title">⚙️ ${isZh ? '魔導分數調諧量程儀' : 'Aether Fractional Meter'}</span>
             <div class="resonance-display">
               <span class="res-label">${isZh ? '當前設定值：' : 'Setting:'}</span>
-              <span class="res-val" id="res-val-preview">${previewText}</span>
+              <span class="res-val" id="res-val-preview">${previewHtml}</span>
             </div>
           </div>
 
@@ -242,16 +235,17 @@ class ReactorConsole {
     if (dEl) dEl.textContent = this.den;
 
     if (prevEl) {
-      let previewText = '';
-      if (this.whole > 0 && this.num > 0) {
-        previewText = `${this.whole}又 ${this.num}/${this.den}`;
-      } else if (this.num > 0) {
-        previewText = `${this.num}/${this.den}`;
-      } else {
-        previewText = `${this.whole}`;
-      }
-      prevEl.textContent = previewText;
+      prevEl.innerHTML = this.getFormattedPreview();
     }
+  }
+
+  getFormattedPreview() {
+    if (typeof MathFormatter !== 'undefined') {
+      return MathFormatter.formatFraction(this.whole, this.num, this.den);
+    }
+    if (this.whole > 0 && this.num > 0) return `${this.whole}又 ${this.num}/${this.den}`;
+    if (this.num > 0) return `${this.num}/${this.den}`;
+    return `${this.whole}`;
   }
 
   pullLever() {

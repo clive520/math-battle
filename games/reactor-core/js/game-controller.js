@@ -264,7 +264,8 @@ class ReactorGameController {
       secBadgeEl.textContent = chamber.unitSection;
     }
     if (storyEl) {
-      storyEl.textContent = isZh ? chamber.story_zh : chamber.story_en;
+      const rawStory = isZh ? chamber.story_zh : chamber.story_en;
+      storyEl.innerHTML = typeof MathFormatter !== 'undefined' ? MathFormatter.formatText(rawStory, this.lang) : rawStory;
     }
     if (progEl) {
       progEl.textContent = `${chamberNum} / 10`;
@@ -450,7 +451,7 @@ class ReactorGameController {
         </div>
 
         <ul class="hint-list">
-          ${hints.map(h => `<li>${h}</li>`).join('')}
+          ${hints.map(h => `<li>${typeof MathFormatter !== 'undefined' ? MathFormatter.formatText(h, this.lang) : h}</li>`).join('')}
         </ul>
       </div>
     `;

@@ -92,13 +92,13 @@ class QuestionEngine {
       hint_zh: [
         '💡 觀念導引：最簡分數的分子和分母互質，也就是公因數只有 1。',
         '💡 步驟引導：找出分子的數值與分母的數值，求出兩者的「最大公因數」。',
-        '💡 算式鷹架：（分子 ÷ 最大公因數）/（分母 ÷ 最大公因數）＝ ？（請動手計算）',
+        '💡 算式鷹架：新分子 ＝ 分子 ÷ 最大公因數，新分母 ＝ 分母 ÷ 最大公因數。（請動手計算）',
         '⚠️ 注意陷阱：若有整數部分，整數保持不變，只需約簡分數部分！'
       ],
       hint_en: [
         '💡 Concept: A fraction is in simplest form when numerator and denominator are coprime (GCD = 1).',
         '💡 Steps: Identify the numerator and denominator, then find their Greatest Common Divisor (GCD).',
-        '💡 Scaffolding: (Numerator ÷ GCD) / (Denominator ÷ GCD) = ? (Calculate on paper)',
+        '💡 Scaffolding: New Numerator = Numerator ÷ GCD, New Denominator = Denominator ÷ GCD. (Calculate on paper)',
         '⚠️ Trap: If there is a whole number part, keep it untouched and only reduce the fraction!'
       ]
     };

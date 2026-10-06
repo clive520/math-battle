@@ -1,6 +1,7 @@
 /**
  * diagram-renderer.js - 分數除法專屬 SVG 動態幾何與概念鷹架渲染器
  * 依據關卡題型即時渲染向量圖，嚴禁直接洩漏最終計算商數，專注於概念圖解與架構指引。
+ * 全面採用標準數學橫式分數符號（水平分數線、整數在左、分子居上、分母居下）。
  */
 class DiagramRenderer {
   static render(type, data, lang = 'zh') {
@@ -31,19 +32,13 @@ class DiagramRenderer {
   // 1. 最簡分數約分圖解 (Reduction Ladder)
   static renderReduction(data, lang) {
     const { whole, num, den, gcdVal } = data;
-    const wholePrefix = whole > 0 ? `${whole} ` : '';
     const isZh = lang === 'zh';
     return `
       <svg viewBox="0 0 420 160" class="scaffold-svg">
         <rect width="420" height="160" rx="10" fill="#1b242e" stroke="#3a4f66" stroke-width="2"/>
         
-        <!-- 原始分數 -->
-        <g transform="translate(60, 45)">
-          ${whole > 0 ? `<text x="0" y="45" font-size="28" fill="#ffd60a" font-weight="bold">${whole}</text>` : ''}
-          <text x="${whole > 0 ? 35 : 15}" y="28" font-size="24" fill="#64d2ff" text-anchor="middle">${num}</text>
-          <line x1="${whole > 0 ? 15 : 0}" y1="36" x2="${whole > 0 ? 55 : 30}" y2="36" stroke="#64d2ff" stroke-width="3"/>
-          <text x="${whole > 0 ? 35 : 15}" y="62" font-size="24" fill="#64d2ff" text-anchor="middle">${den}</text>
-        </g>
+        <!-- 原始分數 (標準數學橫式分數) -->
+        ${MathFormatter.svgFraction(whole, num, den, 70, 75, { size: 28, align: 'center' })}
 
         <!-- 約分箭頭與最大公因數標記 -->
         <g transform="translate(145, 75)">
@@ -53,13 +48,8 @@ class DiagramRenderer {
         </g>
 
         <!-- 最簡分數鷹架 -->
-        <g transform="translate(265, 45)">
-          ${whole > 0 ? `<text x="0" y="45" font-size="28" fill="#ffd60a" font-weight="bold">${whole}</text>` : ''}
-          <text x="${whole > 0 ? 35 : 15}" y="28" font-size="24" fill="#30d158" text-anchor="middle" font-weight="bold">？</text>
-          <line x1="${whole > 0 ? 15 : 0}" y1="36" x2="${whole > 0 ? 55 : 30}" y2="36" stroke="#30d158" stroke-width="3"/>
-          <text x="${whole > 0 ? 35 : 15}" y="62" font-size="24" fill="#30d158" text-anchor="middle" font-weight="bold">？</text>
-          <text x="${whole > 0 ? 80 : 55}" y="45" font-size="14" fill="#30d158">${isZh ? '(最簡分數)' : '(Simplest)'}</text>
-        </g>
+        ${MathFormatter.svgFraction(whole, '？', '？', 290, 75, { size: 28, color: '#30d158', align: 'center' })}
+        <text x="348" y="80" font-size="13" fill="#30d158">${isZh ? '(最簡分數)' : '(Simplest)'}</text>
       </svg>
     `;
   }
@@ -74,9 +64,10 @@ class DiagramRenderer {
         
         <!-- 頂部總長度大括號標記 -->
         <path d="M 40 45 L 40 35 L 200 35 L 200 25 L 200 35 L 360 35 L 360 45" fill="none" stroke="#64d2ff" stroke-width="2"/>
-        <text x="200" y="20" font-size="15" fill="#64d2ff" text-anchor="middle" font-weight="bold">
-          ${isZh ? `總量：${totalNum}/${den}` : `Total: ${totalNum}/${den}`}
-        </text>
+        <g transform="translate(160, 20)">
+          <text x="0" y="4" font-size="14" fill="#64d2ff" font-weight="bold">${isZh ? '總量：' : 'Total: '}</text>
+          ${MathFormatter.svgFraction(0, totalNum, den, 55, 0, { size: 15, color: '#64d2ff', align: 'center' })}
+        </g>
 
         <!-- 緞帶本體 -->
         <rect x="40" y="55" width="320" height="34" rx="4" fill="#2c3e50" stroke="#4fc3f7" stroke-width="2"/>
@@ -84,13 +75,13 @@ class DiagramRenderer {
         <!-- 單位分割弧線示意 -->
         <rect x="40" y="55" width="70" height="34" fill="#0288d1" opacity="0.6"/>
         <rect x="110" y="55" width="70" height="34" fill="#03a9f4" opacity="0.4"/>
-        <text x="75" y="77" font-size="13" fill="#ffffff" text-anchor="middle">${unitStep}/${den}</text>
-        <text x="145" y="77" font-size="13" fill="#ffffff" text-anchor="middle">${unitStep}/${den}</text>
+        ${MathFormatter.svgFraction(0, unitStep, den, 75, 72, { size: 14, color: '#ffffff', align: 'center' })}
+        ${MathFormatter.svgFraction(0, unitStep, den, 145, 72, { size: 14, color: '#ffffff', align: 'center' })}
         <text x="250" y="77" font-size="16" fill="#8e8e93" text-anchor="middle">⋯ ⋯</text>
 
         <!-- 底部計算引導 -->
-        <text x="210" y="125" font-size="14" fill="#ffd60a" text-anchor="middle" font-weight="bold">
-          ${isZh ? `「${totalNum} 個 1/${den}」分成「每份 ${unitStep} 個 1/${den}」 ➡️ ${totalNum} ÷ ${unitStep} ＝ ？` : `Divide numerators directly: ${totalNum} ÷ ${unitStep} = ?`}
+        <text x="210" y="128" font-size="14" fill="#ffd60a" text-anchor="middle" font-weight="bold">
+          ${isZh ? `「${totalNum} 個單位量」分成「每份 ${unitStep} 個單位量」 ➡️ ${totalNum} ÷ ${unitStep} ＝ ？` : `Divide numerators directly: ${totalNum} ÷ ${unitStep} = ?`}
         </text>
       </svg>
     `;
@@ -109,21 +100,21 @@ class DiagramRenderer {
         </text>
 
         <!-- 分數1 通分 -->
-        <g transform="translate(60, 50)">
-          <text x="0" y="24" font-size="18" fill="#64d2ff">${n1}/${d1}</text>
-          <path d="M 45 18 L 85 18 M 75 10 L 85 18 L 75 26" fill="none" stroke="#64d2ff" stroke-width="2"/>
-          <text x="115" y="24" font-size="18" fill="#30d158">？/${lcd}</text>
+        <g transform="translate(60, 65)">
+          ${MathFormatter.svgFraction(0, n1, d1, 35, 0, { size: 20, color: '#64d2ff', align: 'center' })}
+          <path d="M 68 0 L 105 0 M 96 -7 L 105 0 L 96 7" fill="none" stroke="#64d2ff" stroke-width="2"/>
+          ${MathFormatter.svgFraction(0, '？', lcd, 140, 0, { size: 20, color: '#30d158', align: 'center' })}
         </g>
 
         <!-- 分數2 通分 -->
-        <g transform="translate(60, 95)">
-          <text x="0" y="24" font-size="18" fill="#ff9f0a">${n2}/${d2}</text>
-          <path d="M 45 18 L 85 18 M 75 10 L 85 18 L 75 26" fill="none" stroke="#ff9f0a" stroke-width="2"/>
-          <text x="115" y="24" font-size="18" fill="#30d158">？/${lcd}</text>
+        <g transform="translate(60, 115)">
+          ${MathFormatter.svgFraction(0, n2, d2, 35, 0, { size: 20, color: '#ff9f0a', align: 'center' })}
+          <path d="M 68 0 L 105 0 M 96 -7 L 105 0 L 96 7" fill="none" stroke="#ff9f0a" stroke-width="2"/>
+          ${MathFormatter.svgFraction(0, '？', lcd, 140, 0, { size: 20, color: '#30d158', align: 'center' })}
         </g>
 
         <!-- 結論提示 -->
-        <text x="210" y="150" font-size="13" fill="#e0e0e0" text-anchor="middle">
+        <text x="210" y="152" font-size="13" fill="#e0e0e0" text-anchor="middle">
           ${isZh ? '通分成分母相同後，分子直接相除！' : 'Once denominators match, divide the new numerators!'}
         </text>
       </svg>
@@ -139,11 +130,11 @@ class DiagramRenderer {
         <rect width="420" height="160" rx="10" fill="#1b242e" stroke="#3a4f66" stroke-width="2"/>
         
         <!-- 左側：原始除法算式 -->
-        <g transform="translate(45, 55)">
-          <text x="20" y="18" font-size="20" fill="#64d2ff">${a}/${b}</text>
-          <text x="65" y="18" font-size="22" fill="#ffd60a">÷</text>
-          <rect x="85" y="-5" width="55" height="36" rx="6" fill="#ff453a" fill-opacity="0.2" stroke="#ff453a" stroke-dasharray="3,3"/>
-          <text x="112" y="20" font-size="20" fill="#ff453a" text-anchor="middle">${c}/${d}</text>
+        <g transform="translate(45, 65)">
+          ${MathFormatter.svgFraction(0, a, b, 25, 0, { size: 22, color: '#64d2ff', align: 'center' })}
+          <text x="65" y="8" font-size="22" fill="#ffd60a">÷</text>
+          <rect x="85" y="-22" width="55" height="44" rx="6" fill="#ff453a" fill-opacity="0.2" stroke="#ff453a" stroke-dasharray="3,3"/>
+          ${MathFormatter.svgFraction(0, c, d, 112, 0, { size: 22, color: '#ff453a', align: 'center' })}
         </g>
 
         <!-- 中間轉換大箭頭 -->
@@ -154,11 +145,11 @@ class DiagramRenderer {
         </g>
 
         <!-- 右側：乘法與倒數 -->
-        <g transform="translate(255, 55)">
-          <text x="15" y="18" font-size="20" fill="#64d2ff">${a}/${b}</text>
-          <text x="60" y="18" font-size="22" fill="#30d158">×</text>
-          <rect x="80" y="-5" width="55" height="36" rx="6" fill="#30d158" fill-opacity="0.2" stroke="#30d158"/>
-          <text x="107" y="20" font-size="20" fill="#30d158" text-anchor="middle" font-weight="bold">${d}/${c}</text>
+        <g transform="translate(255, 65)">
+          ${MathFormatter.svgFraction(0, a, b, 25, 0, { size: 22, color: '#64d2ff', align: 'center' })}
+          <text x="60" y="8" font-size="22" fill="#30d158">×</text>
+          <rect x="80" y="-22" width="55" height="44" rx="6" fill="#30d158" fill-opacity="0.2" stroke="#30d158"/>
+          ${MathFormatter.svgFraction(0, d, c, 107, 0, { size: 22, color: '#30d158', align: 'center' })}
         </g>
 
         <text x="210" y="138" font-size="13" fill="#ffd60a" text-anchor="middle">
@@ -177,21 +168,25 @@ class DiagramRenderer {
         <rect width="420" height="160" rx="10" fill="#1b242e" stroke="#3a4f66" stroke-width="2"/>
         
         <!-- 水槽外框 -->
-        <rect x="60" y="45" width="140" height="80" rx="8" fill="#1e3a5f" stroke="#64d2ff" stroke-width="2"/>
-        <rect x="65" y="65" width="130" height="55" rx="4" fill="#007aff" opacity="0.6"/>
-        <text x="130" y="100" font-size="15" fill="#ffffff" text-anchor="middle" font-weight="bold">
-          ${capW}又${capN}/${capD} L
-        </text>
+        <rect x="50" y="45" width="150" height="80" rx="8" fill="#1e3a5f" stroke="#64d2ff" stroke-width="2"/>
+        <rect x="55" y="65" width="140" height="55" rx="4" fill="#007aff" opacity="0.6"/>
+        <g transform="translate(110, 95)">
+          ${MathFormatter.svgFraction(capW, capN, capD, 0, 0, { size: 18, color: '#ffffff', wholeColor: '#ffffff', align: 'center' })}
+          <text x="32" y="6" font-size="16" fill="#ffffff" font-weight="bold">L</text>
+        </g>
 
         <!-- 水龍頭符號 -->
-        <path d="M 120 20 L 140 20 L 140 38" fill="none" stroke="#b0bec5" stroke-width="6"/>
-        <circle cx="140" cy="46" r="3" fill="#64d2ff"/>
+        <path d="M 115 20 L 135 20 L 135 38" fill="none" stroke="#b0bec5" stroke-width="6"/>
+        <circle cx="135" cy="46" r="3" fill="#64d2ff"/>
 
         <!-- 右側運算引導 -->
-        <g transform="translate(230, 50)">
-          <text x="0" y="20" font-size="14" fill="#ffd60a">💧 ${isZh ? '每分鐘注水：' : 'Rate / min:'}</text>
-          <text x="20" y="42" font-size="16" fill="#64d2ff">${rateW}又${rateN}/${rateD} L/min</text>
-          <text x="0" y="70" font-size="14" fill="#30d158">⏱️ ${isZh ? '注滿時間 ＝ 總量 ÷ 速率' : 'Time = Total ÷ Rate'}</text>
+        <g transform="translate(225, 45)">
+          <text x="0" y="16" font-size="14" fill="#ffd60a">💧 ${isZh ? '每分鐘注水：' : 'Rate / min:'}</text>
+          <g transform="translate(10, 42)">
+            ${MathFormatter.svgFraction(rateW, rateN, rateD, 20, 0, { size: 16, color: '#64d2ff', wholeColor: '#64d2ff', align: 'left' })}
+            <text x="75" y="5" font-size="14" fill="#64d2ff" font-weight="bold">L/min</text>
+          </g>
+          <text x="0" y="78" font-size="14" fill="#30d158">⏱️ ${isZh ? '注滿時間 ＝ 總量 ÷ 速率' : 'Time = Total ÷ Rate'}</text>
         </g>
       </svg>
     `;
@@ -210,9 +205,13 @@ class DiagramRenderer {
         
         <!-- 頂部總重標註 -->
         <path d="M 50 45 L 50 35 L 205 35 L 205 25 L 205 35 L 360 35 L 360 45" fill="none" stroke="#ff9f0a" stroke-width="2"/>
-        <text x="205" y="20" font-size="14" fill="#ff9f0a" text-anchor="middle">
-          ${isZh ? `全段長 ${lenW}又${lenN}/${lenD} m ➡️ 重 ${wtN}/${wtD} kg` : `Length: ${lenW} ${lenN}/${lenD} m ➡️ Weight: ${wtN}/${wtD} kg`}
-        </text>
+        <g transform="translate(70, 20)">
+          <text x="0" y="4" font-size="13" fill="#ff9f0a">${isZh ? '全段長 ' : 'Length: '}</text>
+          ${MathFormatter.svgFraction(lenW, lenN, lenD, 55, 0, { size: 15, color: '#ff9f0a', wholeColor: '#ff9f0a', align: 'left' })}
+          <text x="110" y="4" font-size="13" fill="#ff9f0a">m ➡️ 重 </text>
+          ${MathFormatter.svgFraction(0, wtN, wtD, 185, 0, { size: 15, color: '#ff9f0a', align: 'left' })}
+          <text x="225" y="4" font-size="13" fill="#ff9f0a">kg</text>
+        </g>
 
         <!-- 底部 1 公尺標註 -->
         <path d="M 50 85 L 50 95 L 140 95 L 140 105 L 140 95 L 230 95 L 230 85" fill="none" stroke="#30d158" stroke-width="2"/>
@@ -227,7 +226,6 @@ class DiagramRenderer {
   static renderBaseAmount(data, lang) {
     const { part, num, den } = data;
     const isZh = lang === 'zh';
-    const fillPercent = (num / den) * 100;
     return `
       <svg viewBox="0 0 420 150" class="scaffold-svg">
         <rect width="420" height="150" rx="10" fill="#1b242e" stroke="#3a4f66" stroke-width="2"/>
@@ -238,34 +236,52 @@ class DiagramRenderer {
         <!-- 部分著色 -->
         <rect x="50" y="55" width="${(320 * num) / den}" height="30" rx="6" fill="#007aff" opacity="0.8"/>
         
-        <text x="${50 + (160 * num) / den}" y="75" font-size="14" fill="#ffffff" text-anchor="middle" font-weight="bold">
-          ${part} (${num}/${den})
-        </text>
+        <g transform="translate(${50 + (160 * num) / den}, 70)">
+          <text x="-24" y="4" font-size="13" fill="#ffffff" font-weight="bold">${part} (</text>
+          ${MathFormatter.svgFraction(0, num, den, 2, 0, { size: 13, color: '#ffffff', align: 'left' })}
+          <text x="24" y="4" font-size="13" fill="#ffffff" font-weight="bold">)</text>
+        </g>
 
-        <text x="210" y="35" font-size="14" fill="#64d2ff" text-anchor="middle">
-          ${isZh ? `部分是 ${part}，佔全部的 ${num}/${den}` : `Portion: ${part}, representing ${num}/${den}`}
-        </text>
+        <g transform="translate(135, 30)">
+          <text x="0" y="4" font-size="14" fill="#64d2ff">${isZh ? `部分是 ${part}，佔全部的 ` : `Portion: ${part}, ratio: `}</text>
+          ${MathFormatter.svgFraction(0, num, den, isZh ? 140 : 150, 0, { size: 15, color: '#64d2ff', align: 'left' })}
+        </g>
 
-        <text x="210" y="125" font-size="14" fill="#ffd60a" text-anchor="middle" font-weight="bold">
-          ${isZh ? `全部基準量 ＝ 部分 ÷ 比率 ＝ ${part} ÷ ${num}/${den} ＝ ？` : `Total = Portion ÷ Ratio = ${part} ÷ ${num}/${den} = ?`}
-        </text>
+        <g transform="translate(60, 126)">
+          <text x="0" y="4" font-size="14" fill="#ffd60a" font-weight="bold">
+            ${isZh ? `全部基準量 ＝ 部分 ÷ 比率 ＝ ${part} ÷ ` : `Total = Portion ÷ Ratio = ${part} ÷ `}
+          </text>
+          ${MathFormatter.svgFraction(0, num, den, isZh ? 245 : 230, 0, { size: 15, color: '#ffd60a', align: 'left' })}
+          <text x="${isZh ? 280 : 265}" y="4" font-size="14" fill="#ffd60a" font-weight="bold"> ＝ ？</text>
+        </g>
       </svg>
     `;
   }
 
   // 8. 旁路閥門比較圖解 (Bypass Gauge)
   static renderBypassGauge(data, lang) {
-    const { k, divStr, relation } = data;
+    const { k, divStr } = data;
     const isZh = lang === 'zh';
+    const hasSlash = String(divStr).includes('/');
+    let divNum = divStr, divDen = 1;
+    if (hasSlash) {
+      const parts = divStr.split('/');
+      divNum = parts[0];
+      divDen = parts[1];
+    }
     return `
       <svg viewBox="0 0 420 160" class="scaffold-svg">
         <rect width="420" height="160" rx="10" fill="#1b242e" stroke="#3a4f66" stroke-width="2"/>
         
-        <g transform="translate(50, 45)">
-          <text x="40" y="30" font-size="22" fill="#64d2ff" font-weight="bold">${k} ÷ ${divStr}</text>
-          <circle cx="160" cy="22" r="22" fill="#2c3e50" stroke="#ffd60a" stroke-width="2"/>
-          <text x="160" y="30" font-size="24" fill="#ffd60a" text-anchor="middle" font-weight="bold">？</text>
-          <text x="235" y="30" font-size="22" fill="#64d2ff" font-weight="bold">${k}</text>
+        <g transform="translate(45, 45)">
+          <text x="20" y="24" font-size="22" fill="#64d2ff" font-weight="bold">${k} ÷</text>
+          ${hasSlash ? 
+            MathFormatter.svgFraction(0, divNum, divDen, 80, 18, { size: 22, color: '#64d2ff', align: 'left' }) :
+            `<text x="75" y="24" font-size="22" fill="#64d2ff" font-weight="bold">${divStr}</text>`
+          }
+          <circle cx="170" cy="18" r="22" fill="#2c3e50" stroke="#ffd60a" stroke-width="2"/>
+          <text x="170" y="26" font-size="24" fill="#ffd60a" text-anchor="middle" font-weight="bold">？</text>
+          <text x="235" y="24" font-size="22" fill="#64d2ff" font-weight="bold">${k}</text>
         </g>
 
         <!-- 比較法則指針 -->
@@ -289,14 +305,18 @@ class DiagramRenderer {
         <!-- 長方形本體 -->
         <rect x="70" y="35" width="230" height="85" fill="#1c3a4f" stroke="#00e5ff" stroke-width="2"/>
         
-        <text x="185" y="80" font-size="15" fill="#ffd60a" text-anchor="middle" font-weight="bold">
-          ${isZh ? `面積：${areaW}又${areaN}/${areaD} m²` : `Area: ${areaW} ${areaN}/${areaD} m²`}
-        </text>
+        <g transform="translate(130, 80)">
+          <text x="0" y="4" font-size="14" fill="#ffd60a" font-weight="bold">${isZh ? '面積：' : 'Area: '}</text>
+          ${MathFormatter.svgFraction(areaW, areaN, areaD, 50, 0, { size: 16, color: '#ffd60a', wholeColor: '#ffd60a', align: 'left' })}
+          <text x="100" y="4" font-size="14" fill="#ffd60a" font-weight="bold">m²</text>
+        </g>
 
         <!-- 長與寬標註 -->
-        <text x="185" y="25" font-size="13" fill="#64d2ff" text-anchor="middle">
-          ${isZh ? `長：${lenW}又${lenN}/${lenD} m` : `Length: ${lenW} ${lenN}/${lenD} m`}
-        </text>
+        <g transform="translate(130, 22)">
+          <text x="0" y="4" font-size="13" fill="#64d2ff">${isZh ? '長：' : 'Length: '}</text>
+          ${MathFormatter.svgFraction(lenW, lenN, lenD, 35, 0, { size: 15, color: '#64d2ff', wholeColor: '#64d2ff', align: 'left' })}
+          <text x="80" y="4" font-size="13" fill="#64d2ff">m</text>
+        </g>
         <text x="45" y="82" font-size="14" fill="#30d158" text-anchor="middle" font-weight="bold">
           寬: ？
         </text>

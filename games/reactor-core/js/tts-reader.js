@@ -66,13 +66,16 @@ class TTSReader {
     if (!text) return '';
     let cleaned = text;
 
+    // 移除 HTML 標籤
+    cleaned = cleaned.replace(/<[^>]+>/g, ' ');
+
     // 移除括號與操作提示
     cleaned = cleaned.replace(/（[^）]*）/g, ' ');
     cleaned = cleaned.replace(/\([^)]*\)/g, ' ');
     cleaned = cleaned.replace(/【|】|『|』|「|」/g, ' ');
 
     if (lang === 'zh') {
-      // 處理帶分數：例如 1又1/6 -> 一又六分之一
+      // 處理帶分數：例如 1又1/6 -> 1又6分之1
       cleaned = cleaned.replace(/(\d+)\s*又\s*(\d+)\/(\d+)/g, '$1又$3分之$2');
       // 處理真假分數：例如 7/8 -> 八分之七
       cleaned = cleaned.replace(/(\d+)\/(\d+)/g, '$2分之$1');
@@ -89,6 +92,9 @@ class TTSReader {
       cleaned = cleaned.replace(/m²/g, '平方公尺');
       cleaned = cleaned.replace(/⋯/g, '依此類推');
     } else {
+      // 英文分數口語化
+      cleaned = cleaned.replace(/(\d+)\s+(?:and\s+)?(\d+)\/(\d+)/g, '$1 and $2 over $3');
+      cleaned = cleaned.replace(/(\d+)\/(\d+)/g, '$1 over $2');
       cleaned = cleaned.replace(/÷/g, ' divided by ');
       cleaned = cleaned.replace(/×/g, ' multiplied by ');
       cleaned = cleaned.replace(/=/g, ' equals ');
