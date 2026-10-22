@@ -46,6 +46,7 @@ class ReactorConsole {
     if (this.currentMode === 'bypass') {
       return { mode: 'bypass', value: this.bypassSelection };
     }
+    this._syncFromInputs();
     return {
       mode: 'fraction',
       whole: this.whole,
@@ -106,13 +107,22 @@ class ReactorConsole {
           </div>
 
           <div class="valves-dashboard">
-            <!-- 整數槽 (Whole Stepper) -->
+            <!-- 整數槽 (Whole Stepper & Direct Input) -->
             <div class="valve-module whole-module">
               <div class="module-title">${isZh ? '整數盤' : 'Whole'}</div>
               <div class="stepper-cluster">
-                <button type="button" class="step-btn" data-target="whole" data-delta="1">▲</button>
-                <div class="digit-window" id="disp-whole">${this.whole}</div>
-                <button type="button" class="step-btn" data-target="whole" data-delta="-1">▼</button>
+                <button type="button" class="step-btn" data-target="whole" data-delta="1" title="${isZh ? '增加整數' : '+1'}">▲</button>
+                <input type="text"
+                       inputmode="numeric"
+                       pattern="[0-9]*"
+                       class="digit-window digit-input"
+                       id="disp-whole"
+                       data-target="whole"
+                       value="${this.whole}"
+                       maxlength="4"
+                       aria-label="${isZh ? '整數盤輸入' : 'Whole number input'}"
+                       autocomplete="off">
+                <button type="button" class="step-btn" data-target="whole" data-delta="-1" title="${isZh ? '減少整數' : '-1'}">▼</button>
               </div>
             </div>
 
@@ -120,9 +130,18 @@ class ReactorConsole {
             <div class="valve-module fraction-module">
               <div class="module-title">${isZh ? '分子閥門' : 'Numerator'}</div>
               <div class="stepper-cluster">
-                <button type="button" class="step-btn" data-target="num" data-delta="1">▲</button>
-                <div class="digit-window" id="disp-num">${this.num}</div>
-                <button type="button" class="step-btn" data-target="num" data-delta="-1">▼</button>
+                <button type="button" class="step-btn" data-target="num" data-delta="1" title="${isZh ? '增加分子' : '+1'}">▲</button>
+                <input type="text"
+                       inputmode="numeric"
+                       pattern="[0-9]*"
+                       class="digit-window digit-input"
+                       id="disp-num"
+                       data-target="num"
+                       value="${this.num}"
+                       maxlength="3"
+                       aria-label="${isZh ? '分子閥門輸入' : 'Numerator input'}"
+                       autocomplete="off">
+                <button type="button" class="step-btn" data-target="num" data-delta="-1" title="${isZh ? '減少分子' : '-1'}">▼</button>
               </div>
 
               <!-- 分數能量隔板 (Fraction Division Bar) -->
@@ -132,9 +151,18 @@ class ReactorConsole {
 
               <div class="module-title">${isZh ? '分母閥門' : 'Denominator'}</div>
               <div class="stepper-cluster">
-                <button type="button" class="step-btn" data-target="den" data-delta="1">▲</button>
-                <div class="digit-window" id="disp-den">${this.den}</div>
-                <button type="button" class="step-btn" data-target="den" data-delta="-1">▼</button>
+                <button type="button" class="step-btn" data-target="den" data-delta="1" title="${isZh ? '增加分母' : '+1'}">▲</button>
+                <input type="text"
+                       inputmode="numeric"
+                       pattern="[0-9]*"
+                       class="digit-window digit-input"
+                       id="disp-den"
+                       data-target="den"
+                       value="${this.den}"
+                       maxlength="3"
+                       aria-label="${isZh ? '分母閥門輸入' : 'Denominator input'}"
+                       autocomplete="off">
+                <button type="button" class="step-btn" data-target="den" data-delta="-1" title="${isZh ? '減少分母' : '-1'}">▼</button>
               </div>
             </div>
 
@@ -189,10 +217,85 @@ class ReactorConsole {
       });
     });
 
+    // 數值輸入格直接鍵盤輸入 (支援實體鍵盤、平板螢幕鍵盤與快捷按鍵)
+    const digitInputs = this.container.querySelectorAll('.digit-input');
+    digitInputs.forEach(input => {
+      const target = input.getAttribute('data-target');
+
+      // 點擊或聚焦自動全選，使用者可直接鍵入新數值
+      input.addEventListener('focus', () => {
+        input.select();
+      });
+      input.addEventListener('click', () => {
+        input.select();
+      });
+
+      // 即時過濾非數字字元並即時同步讀數
+      input.addEventListener('input', () => {
+        const cleaned = input.value.replace(/[^0-9]/g, '');
+        input.value = cleaned;
+
+        if (cleaned !== '') {
+          let val = parseInt(cleaned, 10);
+          if (target === 'whole') {
+            val = Math.max(0, Math.min(9999, val));
+          } else if (target === 'num') {
+            val = Math.max(0, Math.min(999, val));
+          } else if (target === 'den') {
+            val = Math.max(0, Math.min(999, val));
+          }
+          this[target] = val;
+        } else {
+          if (target === 'whole') this.whole = 0;
+          else if (target === 'num') this.num = 0;
+          else if (target === 'den') this.den = 1;
+        }
+        this._updatePreview();
+      });
+
+      // 失焦時進行嚴格邊界校正與格式化
+      input.addEventListener('blur', () => {
+        let val = parseInt(input.value, 10);
+        if (isNaN(val)) {
+          val = (target === 'den') ? 1 : 0;
+        }
+        if (target === 'whole') {
+          this.whole = Math.max(0, Math.min(9999, val));
+          input.value = this.whole;
+        } else if (target === 'num') {
+          this.num = Math.max(0, Math.min(999, val));
+          input.value = this.num;
+        } else if (target === 'den') {
+          // 分母不可為 0，最低為 1
+          this.den = Math.max(1, Math.min(999, val));
+          input.value = this.den;
+        }
+        this._updatePreview();
+      });
+
+      // 鍵盤導航：Enter 鍵直接發射拉桿，上下鍵步進微調
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          input.blur();
+          this.pullLever();
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          this._updateStepper(target, 1);
+          input.select();
+        } else if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          this._updateStepper(target, -1);
+          input.select();
+        }
+      });
+    });
+
     // 逆流翻轉開關
     const invBtn = this.container.querySelector('#inverter-btn');
     if (invBtn) {
       invBtn.addEventListener('click', () => {
+        this._syncFromInputs();
         if (this.num === 0) return;
         const temp = this.num;
         this.num = this.den;
@@ -215,25 +318,48 @@ class ReactorConsole {
     }
   }
 
+  _syncFromInputs() {
+    const wEl = this.container.querySelector('#disp-whole');
+    const nEl = this.container.querySelector('#disp-num');
+    const dEl = this.container.querySelector('#disp-den');
+
+    if (wEl && wEl.value !== '') {
+      const v = parseInt(wEl.value, 10);
+      if (!isNaN(v)) this.whole = Math.max(0, Math.min(9999, v));
+    }
+    if (nEl && nEl.value !== '') {
+      const v = parseInt(nEl.value, 10);
+      if (!isNaN(v)) this.num = Math.max(0, Math.min(999, v));
+    }
+    if (dEl && dEl.value !== '') {
+      const v = parseInt(dEl.value, 10);
+      if (!isNaN(v)) this.den = Math.max(1, Math.min(999, v));
+    }
+  }
+
   _updateStepper(target, delta) {
     if (target === 'whole') {
-      this.whole = Math.max(0, Math.min(99, this.whole + delta));
+      this.whole = Math.max(0, Math.min(9999, this.whole + delta));
     } else if (target === 'num') {
-      this.num = Math.max(0, Math.min(99, this.num + delta));
+      this.num = Math.max(0, Math.min(999, this.num + delta));
     } else if (target === 'den') {
-      this.den = Math.max(1, Math.min(99, this.den + delta));
+      this.den = Math.max(1, Math.min(999, this.den + delta));
     }
 
     // 即時更新 DOM 避免整頁重繪
     const wEl = this.container.querySelector('#disp-whole');
     const nEl = this.container.querySelector('#disp-num');
     const dEl = this.container.querySelector('#disp-den');
+
+    if (wEl) wEl.value = this.whole;
+    if (nEl) nEl.value = this.num;
+    if (dEl) dEl.value = this.den;
+
+    this._updatePreview();
+  }
+
+  _updatePreview() {
     const prevEl = this.container.querySelector('#res-val-preview');
-
-    if (wEl) wEl.textContent = this.whole;
-    if (nEl) nEl.textContent = this.num;
-    if (dEl) dEl.textContent = this.den;
-
     if (prevEl) {
       prevEl.innerHTML = this.getFormattedPreview();
     }
@@ -248,8 +374,44 @@ class ReactorConsole {
     return `${this.whole}`;
   }
 
+  setDisabled(disabled) {
+    this.isLeverPulling = disabled;
+    const injectBtn = this.container.querySelector('#inject-btn');
+    const leverWrapper = this.container.querySelector('#heavy-lever-wrapper');
+    const bypassBtns = this.container.querySelectorAll('.bypass-btn');
+    const stepBtns = this.container.querySelectorAll('.step-btn');
+    const invBtn = this.container.querySelector('#inverter-btn');
+    const digitInputs = this.container.querySelectorAll('.digit-input');
+
+    if (injectBtn) {
+      injectBtn.disabled = disabled;
+      injectBtn.style.pointerEvents = disabled ? 'none' : '';
+      injectBtn.style.opacity = disabled ? '0.6' : '';
+    }
+    if (leverWrapper) {
+      leverWrapper.style.pointerEvents = disabled ? 'none' : '';
+      leverWrapper.style.opacity = disabled ? '0.6' : '';
+    }
+    bypassBtns.forEach(btn => {
+      btn.disabled = disabled;
+      btn.style.pointerEvents = disabled ? 'none' : '';
+    });
+    stepBtns.forEach(btn => {
+      btn.disabled = disabled;
+      btn.style.pointerEvents = disabled ? 'none' : '';
+    });
+    if (invBtn) {
+      invBtn.disabled = disabled;
+      invBtn.style.pointerEvents = disabled ? 'none' : '';
+    }
+    digitInputs.forEach(input => {
+      input.disabled = disabled;
+    });
+  }
+
   pullLever() {
     if (this.isLeverPulling) return;
+    this._syncFromInputs();
     this.isLeverPulling = true;
     this.audio?.playLeverPull();
 
