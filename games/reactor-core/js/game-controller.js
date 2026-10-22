@@ -19,6 +19,7 @@ class ReactorGameController {
     this.chamberMistakes = 0;
     this.startTime = null;
     this.isGameActive = false;
+    this.isTransitioning = false;
 
     this.init();
   }
@@ -240,6 +241,9 @@ class ReactorGameController {
     const chamber = this.getCurrentChamber();
     if (!chamber) return;
 
+    this.isTransitioning = false;
+    this.console?.setDisabled(false);
+
     // 關卡切換時確保置頂
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     document.documentElement.scrollTop = 0;
@@ -286,6 +290,7 @@ class ReactorGameController {
 
   // 處理拉桿加壓驗證
   handleInject(userInput) {
+    if (this.isTransitioning) return;
     const chamber = this.getCurrentChamber();
     if (!chamber) return;
 
@@ -338,6 +343,11 @@ class ReactorGameController {
   }
 
   handleSuccess() {
+    if (this.isTransitioning) return;
+    this.isTransitioning = true;
+    const expectedIdx = this.currentChamberIdx;
+    this.console?.setDisabled(true);
+
     this.audio.playUnlockSuccess();
     this.audio.playSteamRelease(1.2);
     this.fx.triggerVictoryWave();
@@ -363,10 +373,12 @@ class ReactorGameController {
     }
 
     setTimeout(() => {
-      if (this.currentChamberIdx >= 9) {
+      if (this.currentChamberIdx !== expectedIdx) return;
+      if (expectedIdx >= 9) {
         this.showVictoryCertificate();
+        this.isTransitioning = false;
       } else {
-        this.currentChamberIdx++;
+        this.currentChamberIdx = expectedIdx + 1;
         this.renderCurrentChamber();
       }
     }, 1800);

@@ -452,6 +452,37 @@ class RatioConsole {
     }
   }
 
+  setDisabled(disabled) {
+    this.isLeverPulling = disabled;
+    const actionBtn = this.container.querySelector('#harmonize-btn');
+    const leverWrapper = this.container.querySelector('#heavy-lever-wrapper');
+    const stepBtns = this.container.querySelectorAll('.step-btn');
+    const pipeBtns = this.container.querySelectorAll('.pipe-btn');
+    const bestBtns = this.container.querySelectorAll('.best-btn');
+
+    if (actionBtn) {
+      actionBtn.disabled = disabled;
+      actionBtn.style.pointerEvents = disabled ? 'none' : '';
+      actionBtn.style.opacity = disabled ? '0.6' : '';
+    }
+    if (leverWrapper) {
+      leverWrapper.style.pointerEvents = disabled ? 'none' : '';
+      leverWrapper.style.opacity = disabled ? '0.6' : '';
+    }
+    stepBtns.forEach(btn => {
+      btn.disabled = disabled;
+      btn.style.pointerEvents = disabled ? 'none' : '';
+    });
+    pipeBtns.forEach(btn => {
+      btn.disabled = disabled;
+      btn.style.pointerEvents = disabled ? 'none' : '';
+    });
+    bestBtns.forEach(btn => {
+      btn.disabled = disabled;
+      btn.style.pointerEvents = disabled ? 'none' : '';
+    });
+  }
+
   pullLever() {
     if (this.isLeverPulling) return;
     this.isLeverPulling = true;

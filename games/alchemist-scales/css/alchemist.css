@@ -834,6 +834,15 @@ body {
   transform: translateY(1px);
 }
 
+.btn-pull-shackle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.6);
+  transform: none;
+  box-shadow: none;
+}
+
 /* 11. 浮動提示 Toast */
 .game-toast {
   position: fixed;

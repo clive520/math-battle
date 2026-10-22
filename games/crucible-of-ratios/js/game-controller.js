@@ -24,6 +24,7 @@ class CrucibleGameController {
     this.chamberOrder = [];
     this.wrongCount = 0;
     this.chamberMistakes = 0;
+    this.isTransitioning = false;
 
     this._init();
   }
@@ -226,6 +227,9 @@ class CrucibleGameController {
     const chamber = this.getCurrentChamber();
     if (!chamber) return;
 
+    this.isTransitioning = false;
+    this.console?.setDisabled(false);
+
     // 雙重保證置頂
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     document.documentElement.scrollTop = 0;
@@ -272,6 +276,7 @@ class CrucibleGameController {
 
   // 驗證拉桿調和
   handleHarmonize(userInput) {
+    if (this.isTransitioning) return;
     const chamber = this.getCurrentChamber();
     if (!chamber) return;
 
@@ -362,6 +367,11 @@ class CrucibleGameController {
   }
 
   handleSuccess() {
+    if (this.isTransitioning) return;
+    this.isTransitioning = true;
+    const expectedIdx = this.currentChamberIdx;
+    this.console?.setDisabled(true);
+
     this.audio.playUnlockSuccess();
     this.fx.triggerVictoryWave();
     this.fx.setState('stabilized');
@@ -382,10 +392,12 @@ class CrucibleGameController {
     }
 
     setTimeout(() => {
-      if (this.currentChamberIdx >= 9) {
+      if (this.currentChamberIdx !== expectedIdx) return;
+      if (expectedIdx >= 9) {
         this.showVictoryCertificate();
+        this.isTransitioning = false;
       } else {
-        this.currentChamberIdx++;
+        this.currentChamberIdx = expectedIdx + 1;
         this.renderCurrentChamber();
       }
     }, 1800);

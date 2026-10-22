@@ -22,6 +22,7 @@ class GameController {
     this.chamberWrongCount = 0;
     this.startTime = null;
     this.isReviving = false;
+    this.isTransitioning = false;
 
     this.STORAGE_KEY = 'alchemist_escape_save_v1';
   }
@@ -268,6 +269,7 @@ class GameController {
 
     this.currentChamberIdx = idx;
     this.chamberWrongCount = 0;
+    this.isTransitioning = false;
     this.saveProgress();
 
     const chamber = this.chambers[idx];
@@ -296,10 +298,14 @@ class GameController {
   }
 
   handleUnlockAttempt(isCorrect, valueEntered) {
+    if (this.isTransitioning) return;
     const current = this.chambers[this.currentChamberIdx];
     const isEn = (this.lang === 'en');
 
     if (isCorrect) {
+      this.isTransitioning = true;
+      const expectedChamberIdx = this.currentChamberIdx;
+
       // 答對處理
       // 計算理智回血（方案 3：精準解鎖加成）
       let heal = 10;
@@ -324,10 +330,24 @@ class GameController {
       // 觸發鋼門開啟與長廊推進動效
       if (this.fx) {
         this.fx.triggerVaultOpen(() => {
-          this.loadChamber(this.currentChamberIdx + 1);
+          if (this.currentChamberIdx !== expectedChamberIdx) return;
+          if (expectedChamberIdx + 1 >= this.chambers.length) {
+            this.triggerVictory();
+            this.isTransitioning = false;
+          } else {
+            this.loadChamber(expectedChamberIdx + 1);
+          }
         });
       } else {
-        setTimeout(() => this.loadChamber(this.currentChamberIdx + 1), 1000);
+        setTimeout(() => {
+          if (this.currentChamberIdx !== expectedChamberIdx) return;
+          if (expectedChamberIdx + 1 >= this.chambers.length) {
+            this.triggerVictory();
+            this.isTransitioning = false;
+          } else {
+            this.loadChamber(expectedChamberIdx + 1);
+          }
+        }, 1000);
       }
 
     } else {

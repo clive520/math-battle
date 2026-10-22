@@ -154,6 +154,16 @@ class DungeonLockSystem {
     window.audioMgr?.playDialTick();
   }
 
+  setDisabled(disabled) {
+    this.isAnimating = disabled;
+    const pullBtn = this.container.querySelector('#btnPullShackle');
+    if (pullBtn) {
+      pullBtn.disabled = disabled;
+      pullBtn.style.pointerEvents = disabled ? 'none' : '';
+      pullBtn.style.opacity = disabled ? '0.6' : '';
+    }
+  }
+
   // 嘗試解鎖
   triggerUnlockAttempt() {
     if (this.isAnimating) return;
@@ -162,10 +172,17 @@ class DungeonLockSystem {
 
     const shackle = this.container.querySelector('#lockShackle');
     const lockBody = this.container.querySelector('#lockBody');
+    const pullBtn = this.container.querySelector('#btnPullShackle');
+
+    this.isAnimating = true;
+    if (pullBtn) {
+      pullBtn.disabled = true;
+      pullBtn.style.pointerEvents = 'none';
+      pullBtn.style.opacity = '0.6';
+    }
 
     if (isCorrect) {
-      // 成功解鎖動畫
-      this.isAnimating = true;
+      // 成功解鎖動畫 - 保持鎖定狀態防止過場期間連點跳題
       shackle?.classList.add('unlocked-shackle');
       lockBody?.classList.add('unlocked-glow');
       window.audioMgr?.playUnlockSuccess();
@@ -175,13 +192,17 @@ class DungeonLockSystem {
       }, 700);
     } else {
       // 失敗卡死震動
-      this.isAnimating = true;
       lockBody?.classList.add('lock-rattle-fail');
       window.audioMgr?.playWrongAnswer();
 
       setTimeout(() => {
         lockBody?.classList.remove('lock-rattle-fail');
         this.isAnimating = false;
+        if (pullBtn) {
+          pullBtn.disabled = false;
+          pullBtn.style.pointerEvents = '';
+          pullBtn.style.opacity = '';
+        }
         this.onAttemptUnlock(false, currentCode);
       }, 600);
     }

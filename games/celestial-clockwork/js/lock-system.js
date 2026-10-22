@@ -169,6 +169,16 @@ class ClockworkLockSystem {
     }
   }
 
+  setDisabled(disabled) {
+    this.isAnimating = disabled;
+    const unlockBtn = this.container.querySelector('#btnPullShackle');
+    if (unlockBtn) {
+      unlockBtn.disabled = disabled;
+      unlockBtn.style.pointerEvents = disabled ? 'none' : '';
+      unlockBtn.style.opacity = disabled ? '0.6' : '';
+    }
+  }
+
   attemptUnlock() {
     if (this.isAnimating) return;
     const currentCode = this.getCurrentInput();
@@ -177,6 +187,12 @@ class ClockworkLockSystem {
     this.isAnimating = true;
     const shackle = this.container.querySelector('#lockShackle');
     const lockBody = this.container.querySelector('#lockBody');
+    const unlockBtn = this.container.querySelector('#btnPullShackle');
+    if (unlockBtn) {
+      unlockBtn.disabled = true;
+      unlockBtn.style.pointerEvents = 'none';
+      unlockBtn.style.opacity = '0.6';
+    }
 
     if (isCorrect) {
       if (shackle) shackle.classList.add('shackle-unlocked');
@@ -187,7 +203,7 @@ class ClockworkLockSystem {
       }
 
       setTimeout(() => {
-        this.isAnimating = false;
+        // Keep this.isAnimating = true and button disabled to prevent rapid multi-click during room transition!
         if (typeof this.onAttemptUnlock === 'function') {
           this.onAttemptUnlock(true, currentCode);
         }
@@ -202,6 +218,11 @@ class ClockworkLockSystem {
       setTimeout(() => {
         if (lockBody) lockBody.classList.remove('lock-body-shake');
         this.isAnimating = false;
+        if (unlockBtn) {
+          unlockBtn.disabled = false;
+          unlockBtn.style.pointerEvents = '';
+          unlockBtn.style.opacity = '';
+        }
         if (typeof this.onAttemptUnlock === 'function') {
           this.onAttemptUnlock(false, currentCode);
         }

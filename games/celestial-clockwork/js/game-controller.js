@@ -22,6 +22,7 @@ class ClockworkGameController {
     this.chamberWrongCount = 0;
     this.startTime = null;
     this.isReviving = false;
+    this.isTransitioning = false;
 
     this.STORAGE_KEY = 'celestial_clockwork_save_v1';
   }
@@ -218,6 +219,7 @@ class ClockworkGameController {
     if (idx < 0 || idx >= this.chambers.length) return;
     this.currentChamberIdx = idx;
     this.chamberWrongCount = 0;
+    this.isTransitioning = false;
 
     const chamber = this.chambers[idx];
     const isEn = (this.lang === 'en');
@@ -246,7 +248,12 @@ class ClockworkGameController {
   }
 
   handleUnlockAttempt(isCorrect, enteredCode) {
+    if (this.isTransitioning) return;
+
     if (isCorrect) {
+      this.isTransitioning = true;
+      const expectedChamberIdx = this.currentChamberIdx;
+
       // 計算回血加成
       let recovery = 10;
       if (this.chamberWrongCount === 0) recovery = 25;
@@ -264,11 +271,15 @@ class ClockworkGameController {
 
       // 觸發星門開門過場特效
       this.fx.triggerDoorOpen(() => {
-        if (this.currentChamberIdx + 1 >= this.chambers.length) {
+        // 快照防護：若關卡序號已被改變，直接阻斷作廢
+        if (this.currentChamberIdx !== expectedChamberIdx) return;
+
+        if (expectedChamberIdx + 1 >= this.chambers.length) {
           // 通關脫出！
           this.triggerVictory();
+          this.isTransitioning = false;
         } else {
-          this.loadChamber(this.currentChamberIdx + 1);
+          this.loadChamber(expectedChamberIdx + 1);
           this._saveProgress();
           this.showToast(this.lang === 'en' ? '✨ Mechanism unlocked! Advancing...' : '✨ 機關破譯成功！進入下一密室...');
         }

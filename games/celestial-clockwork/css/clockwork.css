@@ -641,6 +641,15 @@ body {
   transform: translateY(0);
 }
 
+.btn-pull-shackle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.6);
+  transform: none;
+  box-shadow: none;
+}
+
 /* -------------------------------------------------------------
    C. 模態視窗與彈窗 (Modal Overlays)
    ------------------------------------------------------------- */

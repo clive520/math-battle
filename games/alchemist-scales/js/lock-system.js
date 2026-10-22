@@ -327,10 +327,27 @@ class AlchemistLockSystem {
     gem.classList.add('gem-flash');
   }
 
+  setDisabled(disabled) {
+    this.isAnimating = disabled;
+    const shackleBtn = this.container.querySelector('#btnPullShackle');
+    if (shackleBtn) {
+      shackleBtn.disabled = disabled;
+      shackleBtn.style.pointerEvents = disabled ? 'none' : '';
+      shackleBtn.style.opacity = disabled ? '0.6' : '';
+    }
+  }
+
   // 嘗試解鎖驗證
   attemptUnlock() {
     if (this.isAnimating) return;
     this.isAnimating = true;
+
+    const shackleBtn = this.container.querySelector('#btnPullShackle');
+    if (shackleBtn) {
+      shackleBtn.disabled = true;
+      shackleBtn.style.pointerEvents = 'none';
+      shackleBtn.style.opacity = '0.6';
+    }
 
     const studentValue = this.getCurrentValue();
     const isCorrect = Math.abs(studentValue - this.targetNumber) < 0.0001;
@@ -339,7 +356,7 @@ class AlchemistLockSystem {
     const lockBody = this.container.querySelector('#lockBody');
 
     if (isCorrect) {
-      // 成功開鎖
+      // 成功開鎖 - 保持鎖定狀態防止過場重複連點
       this.isLocked = false;
       this._flashGemstone();
       if (shackle) shackle.classList.add('unlocked');
@@ -348,7 +365,6 @@ class AlchemistLockSystem {
       if (this.audio) this.audio.playStoneDoor();
 
       setTimeout(() => {
-        this.isAnimating = false;
         if (this.onAttemptUnlock) this.onAttemptUnlock(true, studentValue);
       }, 900);
 
@@ -362,6 +378,11 @@ class AlchemistLockSystem {
 
       setTimeout(() => {
         this.isAnimating = false;
+        if (shackleBtn) {
+          shackleBtn.disabled = false;
+          shackleBtn.style.pointerEvents = '';
+          shackleBtn.style.opacity = '';
+        }
         if (this.onAttemptUnlock) this.onAttemptUnlock(false, studentValue);
       }, 650);
     }

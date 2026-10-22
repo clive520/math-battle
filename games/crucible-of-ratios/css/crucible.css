@@ -848,6 +848,15 @@ body {
   transform: translateY(-1px);
 }
 
+.harmonize-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.6);
+  transform: none;
+  box-shadow: none;
+}
+
 /* ============================================================
    標準數學排版符號 (Math Fraction & Ratio Typography)
    ============================================================ */

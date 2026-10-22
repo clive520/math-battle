@@ -17,6 +17,7 @@ class DungeonEscapeController {
     this.wrongCount = 0;
     this.chamberWrongCount = 0;
     this.lockSystem = null;
+    this.isTransitioning = false;
     this.lang = localStorage.getItem('curse_of_numbers_lang') || 'zh'; // 'zh' 或 'en'
     this.ttsReader = new DungeonSpeechReader();
 
@@ -351,6 +352,7 @@ class DungeonEscapeController {
     const chamber = this.chambers[index];
     this.currentChamberIdx = index;
     this.chamberWrongCount = 0; // 重置該關的失誤次數
+    this.isTransitioning = false;
     this._saveProgress();
 
     // 停止上一題的語音報讀
@@ -400,10 +402,13 @@ class DungeonEscapeController {
 
   // 處理開鎖嘗試
   _handleUnlockAttempt(isSuccess, code) {
+    if (this.isTransitioning) return;
     const chamber = this.chambers[this.currentChamberIdx];
     const isEn = (this.lang === 'en');
 
     if (isSuccess) {
+      this.isTransitioning = true;
+      const expectedChamberIdx = this.currentChamberIdx;
       this.ttsReader.stop();
 
       // 方案 3：精準解鎖加成動態恢復理智
@@ -435,7 +440,13 @@ class DungeonEscapeController {
 
       this._showWhisper(msg, 'success');
       this._animateGateOpen(() => {
-        this._loadChamber(this.currentChamberIdx + 1);
+        if (this.currentChamberIdx !== expectedChamberIdx) return;
+        if (expectedChamberIdx + 1 >= this.chambers.length) {
+          this._triggerVictory();
+          this.isTransitioning = false;
+        } else {
+          this._loadChamber(expectedChamberIdx + 1);
+        }
       });
     } else {
       this.wrongCount++;
