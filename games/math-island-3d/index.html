@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>🏝️ 3D 數學立體群島大冒險 | 國小六年級五芒星數域試煉</title>
+  <meta name="description" content="專為國小六年級設計的 3D 微縮玩具風闖關群島！涵蓋最大公因數最小公倍數、分數除法、數量關係、小數除法與比和比值五大單元同構相似題試煉。">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏝️</text></svg>">
+
+  <!-- Google Fonts: Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/quiz-modal.css">
+
+  <!-- Three.js & Controls (本地化極速無依賴加載，相容離線與 GitHub Pages) -->
+  <script src="lib/three.min.js"></script>
+  <script src="lib/OrbitControls.js"></script>
+  <script src="lib/tween.umd.js"></script>
+</head>
+<body>
+
+  <!-- 3D WebGL 渲染畫布容器 -->
+  <div id="canvasContainer"></div>
+
+  <!-- HUD 浮動導覽與狀態列 -->
+  <div id="hudContainer"></div>
+
+  <!-- 考題試煉互動彈窗容器 -->
+  <div id="modalContainer"></div>
+
+  <!-- 全通關數域宗師慶祝典禮容器 -->
+  <div id="victoryContainer"></div>
+
+  <!-- 主邏輯 ES Module -->
+  <script type="module" src="js/main.js"></script>
+
+</body>
+</html>

@@ -139,6 +139,85 @@ body {
   background: linear-gradient(90deg, #00d2ff, #30d158, #ff9f0a);
 }
 
+/* 👑 旗艦 3D 數學立體群島推薦卡片 */
+.game-card.theme-island-3d {
+  grid-column: 1 / -1;
+  background: radial-gradient(circle at 85% 20%, rgba(2, 132, 199, 0.25) 0%, rgba(30, 41, 59, 0.95) 100%), #1e293b;
+  border: 2px solid rgba(56, 189, 248, 0.4);
+  box-shadow: 0 15px 40px rgba(2, 132, 199, 0.25);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: center;
+}
+
+.game-card.theme-island-3d::before {
+  height: 6px;
+  background: linear-gradient(90deg, #38bdf8, #818cf8, #f43f5e, #fbbf24, #10b981);
+}
+
+.game-card.theme-island-3d:hover {
+  border-color: #38bdf8;
+  box-shadow: 0 25px 60px rgba(14, 165, 233, 0.4);
+  transform: translateY(-6px);
+}
+
+.flagship-badge {
+  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+  color: #ffffff !important;
+  font-weight: 900;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+}
+
+.flagship-grid-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.flagship-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid rgba(56, 189, 248, 0.3);
+  min-width: 200px;
+}
+
+.flagship-cta .cta-tag {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 1px;
+}
+
+.flagship-cta .cta-btn-main {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  padding: 14px 28px;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 900;
+  box-shadow: 0 8px 24px rgba(2, 132, 199, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .game-card.theme-island-3d {
+    grid-template-columns: 1fr;
+  }
+  .flagship-cta {
+    width: 100%;
+  }
+}
+
 .game-card.theme-clockwork::before {
   background: linear-gradient(90deg, #f59e0b, #38bdf8, #8b5cf6);
 }

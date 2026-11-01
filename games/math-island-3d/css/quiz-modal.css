@@ -1,0 +1,533 @@
+/* =========================================================
+   3D 數學立體群島大冒險 - 答題試煉彈窗與動態圖解樣式表
+   ========================================================= */
+
+.quiz-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.quiz-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.quiz-modal-box {
+  background: #ffffff;
+  border-radius: 28px;
+  border: 3px solid #e2e8f0;
+  width: 100%;
+  max-width: 780px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+/* 頂部 Header */
+.quiz-header {
+  padding: 18px 24px;
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.quiz-badge-row {
+  display: flex;
+  gap: 8px;
+}
+
+.quiz-pill {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.pill-unit {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1.5px solid #bae6fd;
+}
+
+.pill-type {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1.5px solid #fde68a;
+}
+
+.quiz-close-btn {
+  background: #f1f5f9;
+  border: 2px solid #cbd5e1;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.quiz-close-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+  border-color: #fca5a5;
+  transform: rotate(90deg);
+}
+
+/* 彈窗內容區 (滾動) */
+.quiz-body {
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.quiz-title {
+  font-size: 1.45rem;
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+/* RPG 劇情引導框 */
+.quiz-story-box {
+  background: #fffbeb;
+  border: 1.5px dashed #f59e0b;
+  border-radius: 16px;
+  padding: 12px 18px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.story-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.story-text {
+  font-size: 0.95rem;
+  color: #78350f;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+/* 題目本體框 */
+.quiz-question-box {
+  background: #f8fafc;
+  border-radius: 18px;
+  border: 2px solid #e2e8f0;
+  padding: 18px;
+}
+
+.q-label {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #0284c7;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.question-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.7;
+}
+
+/* 四選一選項網格 */
+.quiz-options-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.option-card {
+  background: #ffffff;
+  border: 2.5px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 14px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.option-card:hover {
+  transform: translateY(-2px);
+  border-color: #38bdf8;
+  background: #f0f9ff;
+}
+
+.option-card.selected {
+  border-color: #0284c7;
+  background: #e0f2fe;
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.18);
+  transform: translateY(-2px);
+}
+
+.opt-letter {
+  width: 36px;
+  height: 36px;
+  background: #f1f5f9;
+  border: 2px solid #cbd5e1;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.option-card.selected .opt-letter {
+  background: #0284c7;
+  border-color: #0284c7;
+  color: #ffffff;
+}
+
+.opt-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.5;
+}
+
+/* 動態向量圖解鷹架開關 */
+.scaffold-control {
+  margin-top: 4px;
+}
+
+.btn-scaffold-toggle {
+  background: #f8fafc;
+  border: 2px dashed #94a3b8;
+  border-radius: 14px;
+  padding: 10px 16px;
+  width: 100%;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-scaffold-toggle:hover, .btn-scaffold-toggle.active {
+  border-color: #f59e0b;
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.scaffold-container {
+  margin-top: 12px;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 14px;
+  overflow-x: auto;
+}
+
+.scaffold-svg {
+  width: 100%;
+  height: auto;
+  max-height: 240px;
+  display: block;
+}
+
+/* 反饋結果卡片 */
+.quiz-feedback-box {
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.quiz-feedback-box.success {
+  background: #f0fdf4;
+  border: 2px solid #86efac;
+}
+
+.quiz-feedback-box.error {
+  background: #fef2f2;
+  border: 2px solid #fca5a5;
+}
+
+.feedback-header {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.feedback-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.feedback-title h3 {
+  font-size: 1.15rem;
+  font-weight: 900;
+  margin-bottom: 4px;
+}
+
+.quiz-feedback-box.success .feedback-title h3 {
+  color: #166534;
+}
+
+.quiz-feedback-box.error .feedback-title h3 {
+  color: #991b1b;
+}
+
+.feedback-sub {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #374151;
+}
+
+.solution-text {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1.5px dashed #86efac;
+  font-size: 0.92rem;
+}
+
+.solution-text pre {
+  margin-top: 8px;
+  background: #ffffff;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 12px;
+  white-space: pre-wrap;
+  font-family: inherit;
+  line-height: 1.6;
+  color: #14532d;
+}
+
+.error-tip {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #b91c1c;
+}
+
+/* 底部操作列 */
+.quiz-footer {
+  padding: 16px 24px;
+  background: #f8fafc;
+  border-top: 2px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.quiz-btn-primary {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  border: none;
+  color: #ffffff;
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-size: 1.05rem;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.35);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.quiz-btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(2, 132, 199, 0.45);
+}
+
+.quiz-btn-primary:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* =========================================================
+   數域宗師全通關頒獎典禮 Overlay
+   ========================================================= */
+.victory-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 150;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.victory-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.victory-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.victory-card {
+  position: relative;
+  z-index: 2;
+  background: #ffffff;
+  border-radius: 32px;
+  border: 4px solid #fde047;
+  max-width: 640px;
+  width: 100%;
+  padding: 36px 32px;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+}
+
+.trophy-badge {
+  font-size: 4rem;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.victory-title {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: 1px;
+}
+
+.victory-subtitle {
+  font-size: 1rem;
+  color: #64748b;
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.stats-showcase {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 22px 0;
+}
+
+.stat-pill {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  padding: 10px 18px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  min-width: 100px;
+}
+
+.stat-pill.gold {
+  background: #fffbeb;
+  border-color: #fcd34d;
+}
+
+.stat-num {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #0284c7;
+}
+
+.stat-pill.gold .stat-num {
+  color: #d97706;
+}
+
+.stat-lbl {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.teacher-letter-box {
+  background: #fffbeb;
+  border: 2px dashed #f59e0b;
+  border-radius: 18px;
+  padding: 18px;
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.teacher-letter-box h4 {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #b45309;
+  margin-bottom: 6px;
+}
+
+.teacher-letter-box p {
+  font-size: 0.92rem;
+  color: #78350f;
+  line-height: 1.7;
+}
+
+.victory-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+.victory-btn {
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-weight: 900;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.victory-btn-primary {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.35);
+}
+
+.victory-btn-secondary {
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  color: #475569;
+}
+
+.victory-btn:hover {
+  transform: translateY(-2px);
+}
