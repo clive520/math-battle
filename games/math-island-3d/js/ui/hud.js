@@ -1,8 +1,9 @@
 /**
- * 3D 數學立體群島大冒險 - HUD 頂部與底部玩具風操作介面
+ * 3D 數學立體群島大冒險 - HUD 頂部與底部操作介面
+ * 增強功能：附帶當前島嶼 5 個關卡的「快速點擊膠囊按鈕」，確保平板與手機操作 100% 順暢直達！
  */
 
-import { ISLANDS_METADATA } from "../data/questions.js";
+import { ISLANDS_METADATA, QUESTIONS_DATA } from "../data/questions.js";
 import { sound } from "../audio.js";
 
 export class GameHUD {
@@ -36,7 +37,7 @@ export class GameHUD {
           </div>
           <!-- 通關進度 -->
           <div class="hud-badge hud-progress-badge" title="總通關進度">
-            🎯 <span id="hudProgressPercent">0%</span>
+            🎯 <span id="hudProgressPercent">0 / 25 關</span>
           </div>
 
           <!-- 右側功能按鈕群 -->
@@ -61,8 +62,14 @@ export class GameHUD {
         </div>
       </header>
 
-      <!-- 底部島嶼航行 Dock 快捷導覽列 -->
+      <!-- 底部島嶼與快速關卡導覽 Dock -->
       <nav class="hud-bottom-dock toy-pop">
+        <!-- 當前島嶼的 5 個關卡快速點擊膠囊 (手機/平板直達神器) -->
+        <div class="dock-quick-levels" id="dockQuickLevels">
+          <!-- 動態填充當前島嶼的 5 個關卡按鈕 -->
+        </div>
+
+        <!-- 5 座島嶼切換頁籤 -->
         <div class="dock-inner">
           ${ISLANDS_METADATA.map(meta => `
             <button class="dock-island-btn ${meta.id === 1 ? 'active' : ''}" data-island-id="${meta.id}">
@@ -76,13 +83,46 @@ export class GameHUD {
 
       <!-- 畫面中央操作提示浮條 (點擊後自動淡出) -->
       <div id="hudWelcomeTip" class="hud-center-tip toy-pop">
-        <span>🎮 拖曳滑鼠可 360° 旋轉視角、滾輪縮放；點擊島嶼上的「發光立標」即可進入考題試煉！</span>
+        <span>🎮 點擊任一島嶼即可平滑放大！無作答順序限制，任選關卡自由挑戰！</span>
         <button id="btnCloseWelcomeTip" class="btn-tip-close">✕</button>
       </div>
 
       <!-- 全域 Toast 訊息浮層 -->
       <div id="hudToast" class="hud-toast"></div>
     `;
+
+    this.renderQuickLevels(1);
+  }
+
+  renderQuickLevels(islandId) {
+    const container = document.getElementById("dockQuickLevels");
+    if (!container) return;
+
+    const islandQuestions = QUESTIONS_DATA.filter(q => q.unitId === islandId);
+    container.innerHTML = `
+      <div class="quick-levels-label">
+        <span>島嶼 0${islandId} 快速傳送：</span>
+      </div>
+      <div class="quick-levels-row">
+        ${islandQuestions.map(q => `
+          <button class="quick-level-pill" data-level-id="${q.id}">
+            <span class="pill-no">${q.unitId}-${q.levelNum}</span>
+            <span class="pill-name">${q.title.split('（')[0]}</span>
+            <span class="pill-star" id="pillStar_${q.id}">☆</span>
+          </button>
+        `).join("")}
+      </div>
+    `;
+
+    // 綁定快速進入關卡事件
+    container.querySelectorAll(".quick-level-pill").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const levelId = btn.getAttribute("data-level-id");
+        if (this.callbacks.onDirectOpenLevel) {
+          this.callbacks.onDirectOpenLevel(levelId);
+        }
+      });
+    });
   }
 
   bindEvents() {
@@ -173,6 +213,7 @@ export class GameHUD {
       const id = parseInt(btn.getAttribute("data-island-id"), 10);
       btn.classList.toggle("active", id === islandId);
     });
+    this.renderQuickLevels(islandId);
   }
 
   updateStats(progress) {
@@ -180,10 +221,10 @@ export class GameHUD {
     const progEl = document.getElementById("hudProgressPercent");
 
     const totalStars = progress.getTotalStars();
-    const percent = Math.round((progress.getClearedCount() / 25) * 100);
+    const cleared = progress.getClearedCount();
 
     if (starEl) starEl.innerText = `${totalStars} / 75`;
-    if (progEl) progEl.innerText = `${percent}%`;
+    if (progEl) progEl.innerText = `${cleared} / 25 關`;
 
     // 更新底部各島星級顯示
     ISLANDS_METADATA.forEach(meta => {
@@ -197,6 +238,17 @@ export class GameHUD {
         dockStarEl.innerText = starsStr;
       }
     });
+
+    // 更新當前快速關卡按鈕星級
+    for (let l = 1; l <= 5; l++) {
+      const id = `u${this.currentIslandId}_l${l}`;
+      const pillStar = document.getElementById(`pillStar_${id}`);
+      if (pillStar) {
+        const s = progress.getLevelStars(id);
+        pillStar.innerText = s > 0 ? "★".repeat(s) : "☆";
+        pillStar.style.color = s > 0 ? "#f59e0b" : "#94a3b8";
+      }
+    }
   }
 
   showToast(message, type = "info") {

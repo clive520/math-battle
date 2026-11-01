@@ -1,5 +1,9 @@
 /**
  * 3D 數學立體群島大冒險 - 主程式控制器與狀態中樞
+ * 響應用戶需求：
+ * 1. 手機/平板全面可點擊
+ * 2. 點擊島嶼本體自然平滑飛入放大
+ * 3. 毫無順序限制，任意關卡自由作答，全數答完即可獲得結業證書
  */
 
 import { WorldScene } from "./3d/scene.js";
@@ -14,7 +18,7 @@ import { sound } from "./audio.js";
 
 class GameProgress {
   constructor() {
-    this.storageKey = "math_3d_island_save_v1";
+    this.storageKey = "math_3d_island_save_free_v2";
     this.data = this.load();
   }
 
@@ -24,10 +28,8 @@ class GameProgress {
       if (raw) return JSON.parse(raw);
     } catch (e) {}
 
-    // 初始存檔：第一島第 1 關預設解鎖
     return {
-      unlockedLevels: ["u1_l1"],
-      levelStars: {}
+      levelStars: {} // 記錄各關卡獲得星級 (1~3 星)
     };
   }
 
@@ -37,8 +39,9 @@ class GameProgress {
     } catch (e) {}
   }
 
+  // ⭐ 無任何順序限制：全部關卡永遠開放自由挑戰！
   isLevelUnlocked(levelId) {
-    return this.data.unlockedLevels.includes(levelId);
+    return true;
   }
 
   getLevelStars(levelId) {
@@ -46,20 +49,8 @@ class GameProgress {
   }
 
   completeLevel(levelId, stars) {
-    // 記錄或覆蓋更高星級
     const currentStars = this.data.levelStars[levelId] || 0;
     this.data.levelStars[levelId] = Math.max(currentStars, stars);
-
-    // 解鎖下一關
-    const currentIndex = QUESTIONS_DATA.findIndex(q => q.id === levelId);
-    if (currentIndex >= 0 && currentIndex + 1 < QUESTIONS_DATA.length) {
-      const nextId = QUESTIONS_DATA[currentIndex + 1].id;
-      if (!this.data.unlockedLevels.includes(nextId)) {
-        this.data.unlockedLevels.push(nextId);
-        sound.playUnlock();
-      }
-    }
-
     this.save();
   }
 
@@ -72,10 +63,7 @@ class GameProgress {
   }
 
   reset() {
-    this.data = {
-      unlockedLevels: ["u1_l1"],
-      levelStars: {}
-    };
+    this.data = { levelStars: {} };
     this.save();
   }
 }
@@ -97,22 +85,24 @@ class App {
     // 1. 啟動 Three.js 場景
     this.scene = new WorldScene(canvasContainer);
 
-    // 2. 構建 5 座主題幾何島嶼
+    // 2. 構建 5 座精緻主題幾何島嶼
     this.islands = new IslandsBuilder(this.scene.scene);
 
     // 3. 相機俯衝運鏡控制器
     this.cameraFlight = new CameraFlightController(this.scene.camera, this.scene.controls);
 
-    // 4. 建立關卡 3D 浮標
+    // 4. 建立關卡 3D 浮標與島嶼點擊放大監聽
     this.markers = new LevelMarkers(
       this.scene.scene,
       this.scene.camera,
       this.scene.renderer.domElement,
-      (question, markerPos) => this.onSelectLevelMarker(question, markerPos)
+      this.islands,
+      (question, markerPos) => this.onSelectLevelMarker(question, markerPos),
+      islandMeta => this.onSelectIslandMesh(islandMeta)
     );
     this.markers.updateProgress(this.progress);
 
-    // 5. 初始化 HUD 介面
+    // 5. 初始化 HUD 介面 (附帶手機/平板快速關卡切換列)
     this.hud = new GameHUD(hudContainer, {
       onResetCamera: () => this.cameraFlight.flyToOverview(),
       onChangeTimeMode: mode => this.scene.setTimeMode(mode),
@@ -121,11 +111,18 @@ class App {
         if (meta) {
           this.cameraFlight.flyToIsland(meta.islandPos);
         }
+      },
+      onDirectOpenLevel: levelId => {
+        const q = QUESTIONS_DATA.find(item => item.id === levelId);
+        if (q) {
+          sound.playClick();
+          this.modal.open(q);
+        }
       }
     });
     this.hud.updateStats(this.progress);
 
-    // 6. 初始化試煉視窗與通關典禮
+    // 6. 初始化試煉視窗與結業證書典禮
     this.modal = new QuizModal(modalContainer, (levelId, stars) => {
       this.onLevelCompleted(levelId, stars);
     });
@@ -141,21 +138,22 @@ class App {
     this.animate();
   }
 
-  onSelectLevelMarker(question, markerPos) {
-    if (!this.progress.isLevelUnlocked(question.id)) {
-      sound.playWrong();
-      this.hud.showToast(`🔒 關卡 ${question.unitId}-${question.levelNum} 尚未解鎖！請先突破前方試煉。`, "warning");
-      return;
-    }
-
+  // 點擊島嶼本體：相機自然平滑飛入放大該島嶼！
+  onSelectIslandMesh(islandMeta) {
     sound.playClick();
-    // 相機平滑推鏡聚焦該立標
-    this.cameraFlight.flyToMarker(markerPos, 1000);
+    this.hud.setActiveIsland(islandMeta.id);
+    this.cameraFlight.flyToIsland(islandMeta.islandPos, 1400);
+    this.hud.showToast(`🔍 已平滑聚焦到：島嶼 0${islandMeta.id}【${islandMeta.name}】`, "info");
+  }
 
-    // 稍候 0.4 秒彈出試煉視窗，體驗絕佳推鏡儀式感
+  // 點擊關卡地標：無限制自由進入作答
+  onSelectLevelMarker(question, markerPos) {
+    sound.playClick();
+    this.cameraFlight.flyToMarker(markerPos, 900);
+
     setTimeout(() => {
       this.modal.open(question);
-    }, 450);
+    }, 380);
   }
 
   onLevelCompleted(levelId, stars) {
@@ -163,13 +161,15 @@ class App {
     this.markers.updateProgress(this.progress);
     this.hud.updateStats(this.progress);
 
-    // 檢查是否全 25 關全數通關
-    if (this.progress.getClearedCount() >= QUESTIONS_DATA.length) {
+    const clearedCount = this.progress.getClearedCount();
+
+    // 檢查是否全 25 關全數通關 (頒發結業證書！)
+    if (clearedCount >= QUESTIONS_DATA.length) {
       setTimeout(() => {
         this.victory.show(this.progress.getTotalStars());
-      }, 600);
+      }, 500);
     } else {
-      this.hud.showToast(`✨ 恭喜通過！獲得 ${stars} 顆星！通往下一關的航道已開啟！`, "success");
+      this.hud.showToast(`✨ 恭喜通過！獲得 ${stars} 顆星！累計已完成 ${clearedCount} / 25 關！`, "success");
     }
   }
 
@@ -179,24 +179,14 @@ class App {
     const delta = this.clock.getDelta();
     const elapsedTime = this.clock.getElapsedTime();
 
-    // 更新相機飛行插值
     this.cameraFlight.update();
-
-    // 更新海洋、雲朵與控制器
     this.scene.update(delta);
-
-    // 更新島嶼動態組件 (齒輪、水輪、天平)
     this.islands.update(elapsedTime);
-
-    // 更新 3D 地標晶石自轉浮動
     this.markers.update(elapsedTime);
-
-    // 渲染場景
     this.scene.render();
   }
 }
 
-// 頁面載入完成後啟動
 window.addEventListener("DOMContentLoaded", () => {
   new App();
 });

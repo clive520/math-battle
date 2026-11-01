@@ -405,129 +405,253 @@
   z-index: 1;
 }
 
-.victory-card {
+/* =========================================================
+   數域宗師全通關頒獎典禮 & 官方結業證書
+   ========================================================= */
+.certificate-container {
   position: relative;
   z-index: 2;
-  background: #ffffff;
-  border-radius: 32px;
-  border: 4px solid #fde047;
-  max-width: 640px;
+  max-width: 760px;
   width: 100%;
-  padding: 36px 32px;
-  text-align: center;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
-}
-
-.trophy-badge {
-  font-size: 4rem;
-  line-height: 1;
-  margin-bottom: 12px;
-}
-
-.victory-title {
-  font-size: 2rem;
-  font-weight: 900;
-  color: #0f172a;
-  letter-spacing: 1px;
-}
-
-.victory-subtitle {
-  font-size: 1rem;
-  color: #64748b;
-  margin-top: 6px;
-  font-weight: 600;
-}
-
-.stats-showcase {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  margin: 22px 0;
-}
-
-.stat-pill {
-  background: #f8fafc;
-  border: 2px solid #e2e8f0;
-  padding: 10px 18px;
-  border-radius: 20px;
+  max-height: 94vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  min-width: 100px;
+  gap: 16px;
 }
 
-.stat-pill.gold {
-  background: #fffbeb;
-  border-color: #fcd34d;
+.cert-border-outer {
+  background: #fffdf5;
+  border: 10px solid #b45309;
+  border-radius: 24px;
+  padding: 8px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
 }
 
-.stat-num {
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: #0284c7;
+.cert-border-inner {
+  border: 3px double #d97706;
+  border-radius: 14px;
+  padding: 26px 22px;
+  text-align: center;
+  background: radial-gradient(circle at 50% 30%, #ffffff 0%, #fffbeb 100%);
+  position: relative;
 }
 
-.stat-pill.gold .stat-num {
-  color: #d97706;
+.cert-header {
+  margin-bottom: 18px;
 }
 
-.stat-lbl {
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: #64748b;
-  margin-top: 2px;
-}
-
-.teacher-letter-box {
-  background: #fffbeb;
-  border: 2px dashed #f59e0b;
-  border-radius: 18px;
-  padding: 18px;
-  text-align: left;
-  margin-bottom: 24px;
-}
-
-.teacher-letter-box h4 {
-  font-size: 1rem;
-  font-weight: 900;
-  color: #b45309;
+.cert-crown-icon {
+  font-size: 3rem;
+  line-height: 1;
   margin-bottom: 6px;
 }
 
-.teacher-letter-box p {
-  font-size: 0.92rem;
+.cert-title {
+  font-size: 2.1rem;
+  font-weight: 900;
   color: #78350f;
-  line-height: 1.7;
+  letter-spacing: 2px;
 }
 
-.victory-actions {
+.cert-eng-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #b45309;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.cert-student-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 18px;
+}
+
+.cert-input {
+  border: none;
+  border-bottom: 2.5px solid #b45309;
+  background: rgba(254, 243, 199, 0.4);
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #0369a1;
+  text-align: center;
+  padding: 2px 6px;
+  outline: none;
+}
+
+.cert-class { width: 110px; }
+.cert-seat { width: 50px; }
+.cert-name { width: 150px; }
+
+.cert-body-text {
+  font-size: 1.02rem;
+  line-height: 1.9;
+  color: #451a03;
+  text-align: justify;
+  text-justify: inter-ideograph;
+  margin-bottom: 20px;
+  font-weight: 600;
+  padding: 0 8px;
+}
+
+.cert-stats-row {
   display: flex;
   justify-content: center;
   gap: 14px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
 }
 
-.victory-btn {
+.cert-stat-badge {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+}
+
+.cert-stat-badge.gold {
+  background: #fefce8;
+  border-color: #fde047;
+}
+
+.cert-stat-badge span {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.cert-stat-badge strong {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #0284c7;
+  margin-top: 2px;
+}
+
+.cert-stat-badge.gold strong {
+  color: #d97706;
+}
+
+.cert-signatures-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 10px;
+  padding-top: 14px;
+  border-top: 1.5px dashed #d97706;
+}
+
+.cert-sig-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.sig-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #78350f;
+}
+
+.sig-name, .sig-date {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #1e293b;
+}
+
+/* 官方紅色考核專用章 */
+.cert-seal {
+  width: 88px;
+  height: 88px;
+  border: 3.5px solid #dc2626;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #dc2626;
+  font-weight: 900;
+  transform: rotate(-8deg);
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+}
+
+.seal-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.74rem;
+  line-height: 1.3;
+  letter-spacing: 1px;
+}
+
+.cert-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cert-btn {
   padding: 12px 24px;
   border-radius: 30px;
-  font-weight: 900;
   font-size: 1rem;
-  text-decoration: none;
+  font-weight: 900;
   cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   transition: all 0.2s ease;
-}
-
-.victory-btn-primary {
-  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-  color: #ffffff;
   border: none;
-  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.35);
 }
 
-.victory-btn-secondary {
+.cert-btn-gold {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(180, 83, 9, 0.4);
+}
+
+.cert-btn-secondary {
   background: #ffffff;
   border: 2px solid #cbd5e1;
   color: #475569;
 }
 
-.victory-btn:hover {
+.cert-btn-dark {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+.cert-btn:hover {
   transform: translateY(-2px);
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printableCertificate, #printableCertificate * {
+    visibility: visible;
+  }
+  #printableCertificate {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: 100%;
+    box-shadow: none;
+  }
+  .no-print {
+    display: none !important;
+  }
 }

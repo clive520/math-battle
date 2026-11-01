@@ -1,6 +1,7 @@
 /**
- * 3D 數學立體群島大冒險 - 全通關「數域宗師」榮譽頒獎典禮
- * 當學生完成全卷 25 個關卡時觸發，附帶五彩禮花特效與老師鼓勵卷軸
+ * 3D 數學立體群島大冒險 - 正式「數域宗師結業證書」頒發系統
+ * 當學生完成全卷 25 個關卡（不限順序）時隆重頒發
+ * 支援學生即時輸入姓名、班級、座號，並可一鍵列印或截圖留念！
  */
 
 import { sound } from "../audio.js";
@@ -14,44 +15,93 @@ export class VictoryCelebration {
   }
 
   render() {
+    const today = new Date();
+    const dateStr = `${today.getFullYear()} 年 ${today.getMonth() + 1} 月 ${today.getDate()} 日`;
+
     this.container.innerHTML = `
       <div id="victoryOverlay" class="victory-overlay">
         <canvas id="victoryConfettiCanvas" class="victory-canvas"></canvas>
 
-        <div class="victory-card toy-pop">
-          <div class="trophy-badge">🏆</div>
-          <h2 class="victory-title">數域宗師・試煉大圓滿</h2>
-          <p class="victory-subtitle">恭喜你突破五芒星數域試煉塔，成功解開五大單元全部 25 道數學封印！</p>
+        <div class="certificate-container toy-pop" id="printableCertificate">
+          <!-- 證書外框古典邊條 -->
+          <div class="cert-border-outer">
+            <div class="cert-border-inner">
+              
+              <!-- 頂部徽章與榮譽標題 -->
+              <div class="cert-header">
+                <div class="cert-crown-icon">👑</div>
+                <h1 class="cert-title">數域宗師・結業證書</h1>
+                <div class="cert-eng-title">CERTIFICATE OF MATHEMATICS MASTERY</div>
+              </div>
 
-          <div class="stats-showcase">
-            <div class="stat-pill">
-              <span class="stat-num">5 / 5</span>
-              <span class="stat-lbl">探索島嶼</span>
-            </div>
-            <div class="stat-pill">
-              <span class="stat-num">25 / 25</span>
-              <span class="stat-lbl">解鎖關卡</span>
-            </div>
-            <div class="stat-pill gold">
-              <span class="stat-num" id="victoryTotalStars">75</span>
-              <span class="stat-lbl">累計星級</span>
+              <!-- 學生姓名班級編輯區 -->
+              <div class="cert-student-row">
+                <span>茲證明</span>
+                <input type="text" id="certClassName" class="cert-input cert-class" value="六年一班" placeholder="班級" />
+                <span>座號</span>
+                <input type="text" id="certSeatNo" class="cert-input cert-seat" value="01" placeholder="座號" />
+                <span>姓名</span>
+                <input type="text" id="certStudentName" class="cert-input cert-name" value="數學小勇者" placeholder="姓名" />
+                <span>同學</span>
+              </div>
+
+              <!-- 褒獎內文 -->
+              <div class="cert-body-text">
+                於本學期<strong>「五芒星數域試煉塔」3D 群島立體闖關</strong>評量中，憑藉卓越的邏輯思維與不懈毅力，
+                成功解開<strong>最大公因數與最小公倍數、分數除法、數量關係、小數除法與比和比值</strong>五大單元全部 25 道數學封印，
+                思維敏銳，融會貫通，成績優異，特頒此證，以茲嘉勉！
+              </div>
+
+              <!-- 榮譽數據欄 -->
+              <div class="cert-stats-row">
+                <div class="cert-stat-badge">
+                  <span>完成進度</span>
+                  <strong>25 / 25 全關卡</strong>
+                </div>
+                <div class="cert-stat-badge gold">
+                  <span>榮譽星級</span>
+                  <strong id="certTotalStars">75 / 75 ⭐</strong>
+                </div>
+                <div class="cert-stat-badge">
+                  <span>數域稱號</span>
+                  <strong>鑽石級數域宗師</strong>
+                </div>
+              </div>
+
+              <!-- 印信與簽署欄 -->
+              <div class="cert-signatures-row">
+                <div class="cert-sig-item">
+                  <span class="sig-label">命題評量導師</span>
+                  <div class="sig-name">高志賢 老師 ✍️</div>
+                </div>
+
+                <!-- 官方紅色考核專用章 -->
+                <div class="cert-seal">
+                  <div class="seal-inner">
+                    <span>鹿陽國小</span>
+                    <span>數域試煉</span>
+                    <span>考核合格</span>
+                  </div>
+                </div>
+
+                <div class="cert-sig-item">
+                  <span class="sig-label">頒發日期</span>
+                  <div class="sig-date">${dateStr}</div>
+                </div>
+              </div>
+
             </div>
           </div>
 
-          <!-- 鹿陽國小高志賢老師的原卷給小勇者感言 (同構重現) -->
-          <div class="teacher-letter-box">
-            <h4>📜 給完成試煉的小勇者：</h4>
-            <p>
-              恭喜你一路運用智慧與耐心，解開了質源石門、水力導管、時光規律、小數天秤與黃金比例聖門，成功抵達「數域試煉之塔」的終點！
-              數學就像一場精彩的冒險，有時候題目看起來像一座高牆，但只要你靜下心來、看清線索、一步一步推理，沒有任何難關能難倒你！老師為你今天的認真與努力感到無比驕傲！
-            </p>
-          </div>
-
-          <div class="victory-actions">
-            <button id="btnVictoryReplay" class="victory-btn victory-btn-secondary">
+          <!-- 操作按鈕列 (列印時自動隱藏) -->
+          <div class="cert-actions no-print">
+            <button id="btnPrintCertificate" class="cert-btn cert-btn-gold">
+              🖨️ 列印 / 另存 PDF 證書
+            </button>
+            <button id="btnVictoryReplay" class="cert-btn cert-btn-secondary">
               🔄 重新挑戰全島
             </button>
-            <a href="../../index.html" class="victory-btn victory-btn-primary">
+            <a href="../../index.html" class="cert-btn cert-btn-dark">
               🏠 返回遊戲大廳
             </a>
           </div>
@@ -61,9 +111,15 @@ export class VictoryCelebration {
   }
 
   bindEvents() {
+    // 列印/存為 PDF
+    document.getElementById("btnPrintCertificate").addEventListener("click", () => {
+      window.print();
+    });
+
+    // 重新遊玩
     document.getElementById("btnVictoryReplay").addEventListener("click", () => {
       sound.playClick();
-      if (confirm("確定要重置所有闖關進度，重新體驗 3D 數學群島大冒險嗎？")) {
+      if (confirm("確定要重置目前的所有闖關進度，重新體驗 3D 數學立體群島大冒險嗎？")) {
         if (this.onResetGame) this.onResetGame();
         this.close();
       }
@@ -71,7 +127,7 @@ export class VictoryCelebration {
   }
 
   show(totalStars) {
-    document.getElementById("victoryTotalStars").innerText = `${totalStars} / 75`;
+    document.getElementById("certTotalStars").innerText = `${totalStars} / 75 ⭐`;
     const overlay = document.getElementById("victoryOverlay");
     overlay.classList.add("active");
     sound.playFanfare();
@@ -92,16 +148,16 @@ export class VictoryCelebration {
     canvas.height = window.innerHeight;
 
     const pieces = [];
-    const colors = ["#f59e0b", "#38bdf8", "#10b981", "#ec4899", "#8b5cf6", "#ef4444"];
+    const colors = ["#f59e0b", "#38bdf8", "#10b981", "#ec4899", "#8b5cf6", "#ef4444", "#eab308"];
 
-    for (let i = 0; i < 120; i++) {
+    for (let i = 0; i < 140; i++) {
       pieces.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height - canvas.height,
-        size: Math.random() * 8 + 4,
+        size: Math.random() * 9 + 4,
         color: colors[Math.floor(Math.random() * colors.length)],
-        speedY: Math.random() * 3 + 2,
-        speedX: (Math.random() - 0.5) * 2,
+        speedY: Math.random() * 3.5 + 2,
+        speedX: (Math.random() - 0.5) * 2.5,
         rot: Math.random() * 360,
         rotSpeed: (Math.random() - 0.5) * 6
       });
