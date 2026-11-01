@@ -304,12 +304,112 @@
 
 .quiz-feedback-box.success {
   background: #f0fdf4;
-  border: 2px solid #86efac;
+  border: 2.5px solid #4ade80;
+  box-shadow: 0 8px 24px rgba(34, 197, 94, 0.15);
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 16px;
 }
 
 .quiz-feedback-box.error {
   background: #fef2f2;
   border: 2px solid #fca5a5;
+  margin-top: 16px;
+}
+
+.feedback-hero-banner {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  border: 2px solid #86efac;
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+
+.hero-top-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hero-icon {
+  font-size: 2.4rem;
+  line-height: 1;
+  animation: bounceMini 1s infinite alternate ease-in-out;
+}
+
+@keyframes bounceMini {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-4px) scale(1.08); }
+}
+
+.hero-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hero-main-title {
+  color: #15803d;
+  font-size: 1.45rem;
+  font-weight: 900;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.hero-stars-pill {
+  font-size: 1.15rem;
+  letter-spacing: 2px;
+}
+
+.hero-reason {
+  margin: 10px 0 0 0;
+  color: #166534;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.solution-card {
+  background: #ffffff;
+  border: 2px solid #86efac;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(22, 101, 52, 0.06);
+}
+
+.solution-card-header {
+  background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+  color: #ffffff;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.solution-badge-icon {
+  font-size: 1.3rem;
+}
+
+.solution-card-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin: 0;
+  color: #ffffff;
+}
+
+.solution-card-body {
+  padding: 16px 18px;
+  background: #fbfdfc;
+}
+
+.solution-steps-text {
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: inherit;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: #14532d;
+  font-weight: 600;
 }
 
 .feedback-header {
@@ -329,10 +429,6 @@
   margin-bottom: 4px;
 }
 
-.quiz-feedback-box.success .feedback-title h3 {
-  color: #166534;
-}
-
 .quiz-feedback-box.error .feedback-title h3 {
   color: #991b1b;
 }
@@ -341,25 +437,6 @@
   font-size: 0.95rem;
   line-height: 1.5;
   color: #374151;
-}
-
-.solution-text {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1.5px dashed #86efac;
-  font-size: 0.92rem;
-}
-
-.solution-text pre {
-  margin-top: 8px;
-  background: #ffffff;
-  border: 1.5px solid #bbf7d0;
-  border-radius: 12px;
-  padding: 12px;
-  white-space: pre-wrap;
-  font-family: inherit;
-  line-height: 1.6;
-  color: #14532d;
 }
 
 .error-tip {

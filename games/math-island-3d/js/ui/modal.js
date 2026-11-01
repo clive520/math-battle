@@ -236,29 +236,45 @@ export class QuizModal {
       if (this.attempts >= 3) stars = 1;
       const starStr = "⭐".repeat(stars);
 
-      // 3. 填入綠色巨幅通過卡片
+      // 3. 更新頂部狀態徽章，明確告知學生「你答對了」
+      const statusBadge = document.getElementById("quizStatusBadge");
+      if (statusBadge) {
+        statusBadge.innerText = i18n.t("statusAnsweredCorrect", { s: stars });
+        statusBadge.className = "quiz-pill pill-status cleared";
+      }
+
+      // 4. 填入綠色醒目通過卡片與詳細解題步驟
       feedbackBox.className = "quiz-feedback-box success toy-pop";
       feedbackBox.innerHTML = `
-        <div class="feedback-header">
-          <span class="feedback-icon">🎉</span>
-          <div class="feedback-title">
-            <h3 style="color: #15803d; font-size: 1.3rem;">${i18n.t("correctTitle")}${starStr}</h3>
-            <span class="feedback-sub" style="color: #166534; font-size: 1.05rem; font-weight: 700;">${reasonText}</span>
+        <div class="feedback-hero-banner">
+          <div class="hero-top-row">
+            <span class="hero-icon">🎉</span>
+            <div class="hero-title-group">
+              <h2 class="hero-main-title">${i18n.t("correctBanner")}</h2>
+              <div class="hero-stars-pill">${starStr}</div>
+            </div>
           </div>
+          <p class="hero-reason">✓ ${reasonText}</p>
         </div>
-        <div class="solution-text">
-          <strong>${i18n.t("solutionTitle")}</strong>
-          <pre>${solutionText}</pre>
+
+        <div class="solution-card">
+          <div class="solution-card-header">
+            <span class="solution-badge-icon">📝</span>
+            <h3 class="solution-card-title">${i18n.t("solutionTitle")}</h3>
+          </div>
+          <div class="solution-card-body">
+            <pre class="solution-steps-text">${solutionText}</pre>
+          </div>
         </div>
       `;
       feedbackBox.style.display = "block";
 
-      // 4. 自動平滑滾動使反饋卡進入視線
+      // 5. 自動平滑滾動至反饋卡片頂端，確保解法與「你答對了」立即映入眼簾
       setTimeout(() => {
-        feedbackBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }, 100);
+        feedbackBox.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 80);
 
-      // 5. 底部按鈕改為「完成本關試煉」
+      // 6. 底部按鈕改為「完成本關試煉」
       submitBtn.innerText = i18n.t("submitNext");
       submitBtn.className = "quiz-btn-primary success-btn";
       submitBtn.onclick = () => {
