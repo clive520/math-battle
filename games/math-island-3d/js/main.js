@@ -116,7 +116,8 @@ class App {
         const q = QUESTIONS_DATA.find(item => item.id === levelId);
         if (q) {
           sound.playClick();
-          this.modal.open(q);
+          const currentStars = this.progress.getLevelStars(q.id);
+          this.modal.open(q, currentStars);
         }
       }
     });
@@ -152,7 +153,8 @@ class App {
     this.cameraFlight.flyToMarker(markerPos, 900);
 
     setTimeout(() => {
-      this.modal.open(question);
+      const currentStars = this.progress.getLevelStars(question.id);
+      this.modal.open(question, currentStars);
     }, 380);
   }
 

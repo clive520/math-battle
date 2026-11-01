@@ -72,6 +72,23 @@
   border: 1.5px solid #fde68a;
 }
 
+.pill-status.cleared {
+  background: #fefce8;
+  color: #b45309;
+  border: 1.5px solid #fde047;
+}
+
+.pill-status.new {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1.5px solid #cbd5e1;
+}
+
+.quiz-btn-primary.success-btn {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%) !important;
+  box-shadow: 0 6px 18px rgba(22, 163, 74, 0.4) !important;
+}
+
 .quiz-close-btn {
   background: #f1f5f9;
   border: 2px solid #cbd5e1;
@@ -188,6 +205,66 @@
   background: #e0f2fe;
   box-shadow: 0 6px 18px rgba(2, 132, 199, 0.18);
   transform: translateY(-2px);
+}
+
+/* 答對時卡片狀態 (鮮綠色光環 + 勾選標籤) */
+.option-card.correct {
+  border-color: #16a34a !important;
+  background: #f0fdf4 !important;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.35), 0 8px 20px rgba(22, 163, 74, 0.25) !important;
+  transform: translateY(-2px);
+}
+
+.option-card.correct .opt-letter {
+  background: #16a34a !important;
+  border-color: #16a34a !important;
+  color: #ffffff !important;
+}
+
+/* 答錯時卡片狀態 (鮮紅色光環 + 抖動動畫) */
+.option-card.wrong {
+  border-color: #ef4444 !important;
+  background: #fef2f2 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.35), 0 8px 20px rgba(239, 68, 68, 0.2) !important;
+  animation: shakeOptionCard 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.option-card.wrong .opt-letter {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+  color: #ffffff !important;
+}
+
+/* 答題狀態標籤 (顯示於選項右側) */
+.opt-status-tag {
+  margin-left: auto;
+  font-size: 0.88rem;
+  font-weight: 900;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.opt-status-tag.correct {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1.5px solid #86efac;
+}
+
+.opt-status-tag.wrong {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1.5px solid #fca5a5;
+}
+
+@keyframes shakeOptionCard {
+  10%, 90% { transform: translate3d(-3px, -2px, 0); }
+  20%, 80% { transform: translate3d(5px, -2px, 0); }
+  30%, 50%, 70% { transform: translate3d(-5px, -2px, 0); }
+  40%, 60% { transform: translate3d(5px, -2px, 0); }
 }
 
 .opt-letter {
