@@ -296,50 +296,6 @@
   line-height: 1.5;
 }
 
-/* 動態向量圖解鷹架開關 */
-.scaffold-control {
-  margin-top: 4px;
-}
-
-.btn-scaffold-toggle {
-  background: #f8fafc;
-  border: 2px dashed #94a3b8;
-  border-radius: 14px;
-  padding: 10px 16px;
-  width: 100%;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: #475569;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.2s ease;
-}
-
-.btn-scaffold-toggle:hover, .btn-scaffold-toggle.active {
-  border-color: #f59e0b;
-  background: #fffbeb;
-  color: #b45309;
-}
-
-.scaffold-container {
-  margin-top: 12px;
-  background: #ffffff;
-  border: 2px solid #e2e8f0;
-  border-radius: 18px;
-  padding: 14px;
-  overflow-x: auto;
-}
-
-.scaffold-svg {
-  width: 100%;
-  height: auto;
-  max-height: 240px;
-  display: block;
-}
-
 /* 反饋結果卡片 */
 .quiz-feedback-box {
   border-radius: 18px;

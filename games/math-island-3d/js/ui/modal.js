@@ -7,7 +7,6 @@
  * 4. 頂部狀態標籤即時顯示星級
  */
 
-import { renderScaffoldSVG } from "./svg-renderer.js";
 import { sound } from "../audio.js";
 import { i18n } from "../i18n.js";
 
@@ -18,7 +17,6 @@ export class QuizModal {
     this.currentQuestion = null;
     this.selectedOptionIndex = -1;
     this.attempts = 0;
-    this.usedHint = false;
 
     this.renderContainer();
     this.bindEvents();
@@ -59,14 +57,6 @@ export class QuizModal {
 
             <!-- 作答結果反饋區 (答題後展開並自動滾動至可見區域) -->
             <div id="quizFeedbackBox" class="quiz-feedback-box" style="display: none;"></div>
-
-            <!-- 動態向量 SVG 圖解鷹架開關 -->
-            <div class="scaffold-control">
-              <button id="btnToggleScaffold" class="btn-scaffold-toggle">
-                💡 <span>展開動態向量思維圖解 (解答鷹架)</span>
-              </button>
-              <div id="quizScaffoldContainer" class="scaffold-container" style="display: none;"></div>
-            </div>
           </div>
 
           <!-- 底部操作列 -->
@@ -97,19 +87,6 @@ export class QuizModal {
       if (e.key === "Escape" && this.isOpen()) {
         this.close();
       }
-    });
-
-    const btnScaffold = document.getElementById("btnToggleScaffold");
-    const scaffoldBox = document.getElementById("quizScaffoldContainer");
-    btnScaffold.addEventListener("click", () => {
-      sound.playClick();
-      this.usedHint = true;
-      const isHidden = scaffoldBox.style.display === "none";
-      scaffoldBox.style.display = isHidden ? "block" : "none";
-      btnScaffold.classList.toggle("active", isHidden);
-      btnScaffold.innerHTML = isHidden
-        ? i18n.t("scaffoldClose")
-        : i18n.t("scaffoldOpen");
     });
 
     document.getElementById("btnQuizSubmit").addEventListener("click", () => {
@@ -154,14 +131,6 @@ export class QuizModal {
         statusBadge.className = "quiz-pill pill-status new";
       }
     }
-
-    // 重置圖解狀態
-    const scaffoldBox = document.getElementById("quizScaffoldContainer");
-    const btnScaffold = document.getElementById("btnToggleScaffold");
-    scaffoldBox.style.display = "none";
-    btnScaffold.classList.remove("active");
-    btnScaffold.innerHTML = i18n.t("scaffoldOpen");
-    scaffoldBox.innerHTML = renderScaffoldSVG(question.svgType);
 
     // 重置反饋區與送出按鈕
     const feedbackBox = document.getElementById("quizFeedbackBox");
@@ -261,10 +230,9 @@ export class QuizModal {
         selectedCard.appendChild(tag);
       }
 
-      // 2. 計算獲得星級
+      // 2. 計算獲得星級 (第 1 次答對得 3 星，第 2 次答對得 2 星，第 3 次以上答對得 1 星)
       let stars = 3;
-      if (this.attempts > 1) stars = 2;
-      if (this.usedHint) stars = Math.min(stars, 2);
+      if (this.attempts === 2) stars = 2;
       if (this.attempts >= 3) stars = 1;
       const starStr = "⭐".repeat(stars);
 
@@ -285,18 +253,12 @@ export class QuizModal {
       `;
       feedbackBox.style.display = "block";
 
-      // 4. 自動展開動態 SVG 思維圖解輔助觀念統整
-      document.getElementById("quizScaffoldContainer").style.display = "block";
-      const btnScaffold = document.getElementById("btnToggleScaffold");
-      btnScaffold.classList.add("active");
-      btnScaffold.innerHTML = i18n.t("scaffoldClose");
-
-      // 5. 自動平滑滾動使反饋卡進入視線
+      // 4. 自動平滑滾動使反饋卡進入視線
       setTimeout(() => {
         feedbackBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }, 100);
 
-      // 6. 底部按鈕改為「完成本關試煉」
+      // 5. 底部按鈕改為「完成本關試煉」
       submitBtn.innerText = i18n.t("submitNext");
       submitBtn.className = "quiz-btn-primary success-btn";
       submitBtn.onclick = () => {
