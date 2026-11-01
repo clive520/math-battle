@@ -9,6 +9,7 @@
 
 import { renderScaffoldSVG } from "./svg-renderer.js";
 import { sound } from "../audio.js";
+import { i18n } from "../i18n.js";
 
 export class QuizModal {
   constructor(container, onLevelCompleted) {
@@ -107,8 +108,8 @@ export class QuizModal {
       scaffoldBox.style.display = isHidden ? "block" : "none";
       btnScaffold.classList.toggle("active", isHidden);
       btnScaffold.innerHTML = isHidden
-        ? "💡 <span>收合思維圖解</span>"
-        : "💡 <span>展開動態向量思維圖解 (解答鷹架)</span>";
+        ? i18n.t("scaffoldClose")
+        : i18n.t("scaffoldOpen");
     });
 
     document.getElementById("btnQuizSubmit").addEventListener("click", () => {
@@ -122,21 +123,34 @@ export class QuizModal {
     this.attempts = 0;
     this.usedHint = false;
 
+    const lang = i18n.getLang();
+
     // 填入題目基本資訊
-    document.getElementById("quizUnitBadge").innerText = `${question.unitId}-0${question.levelNum} | 第 0${question.unitId} 單元`;
-    document.getElementById("quizTypeBadge").innerText = question.type;
-    document.getElementById("quizTitle").innerText = question.title;
-    document.getElementById("quizStoryText").innerText = question.story;
-    document.getElementById("quizQuestionText").innerText = question.question;
+    const unitText = lang === "en" 
+      ? `${question.unitId}-0${question.levelNum} | Unit 0${question.unitId}`
+      : `${question.unitId}-0${question.levelNum} | 第 0${question.unitId} 單元`;
+    const typeText = lang === "en" ? (question.type_en || question.type) : question.type;
+    const titleText = lang === "en" ? (question.title_en || question.title) : question.title;
+    const storyText = lang === "en" ? (question.story_en || question.story) : question.story;
+    const questionText = lang === "en" ? (question.question_en || question.question) : question.question;
+
+    document.getElementById("quizUnitBadge").innerText = unitText;
+    document.getElementById("quizTypeBadge").innerText = typeText;
+    document.getElementById("quizTitle").innerText = titleText;
+    document.getElementById("quizStoryText").innerText = storyText;
+    document.getElementById("quizQuestionText").innerText = questionText;
+
+    const qLabel = document.querySelector(".quiz-question-box .q-label");
+    if (qLabel) qLabel.innerText = i18n.t("qLabel");
 
     // 更新狀態徽章
     const statusBadge = document.getElementById("quizStatusBadge");
     if (statusBadge) {
       if (currentStars > 0) {
-        statusBadge.innerText = `⭐ 已獲 ${currentStars} 星`;
+        statusBadge.innerText = i18n.t("statusCleared", { s: currentStars });
         statusBadge.className = "quiz-pill pill-status cleared";
       } else {
-        statusBadge.innerText = `🎯 尚未挑戰`;
+        statusBadge.innerText = i18n.t("statusNew");
         statusBadge.className = "quiz-pill pill-status new";
       }
     }
@@ -146,7 +160,7 @@ export class QuizModal {
     const btnScaffold = document.getElementById("btnToggleScaffold");
     scaffoldBox.style.display = "none";
     btnScaffold.classList.remove("active");
-    btnScaffold.innerHTML = "💡 <span>展開動態向量思維圖解 (解答鷹架)</span>";
+    btnScaffold.innerHTML = i18n.t("scaffoldOpen");
     scaffoldBox.innerHTML = renderScaffoldSVG(question.svgType);
 
     // 重置反饋區與送出按鈕
@@ -155,7 +169,7 @@ export class QuizModal {
     feedbackBox.className = "quiz-feedback-box";
     const submitBtn = document.getElementById("btnQuizSubmit");
     submitBtn.disabled = true;
-    submitBtn.innerText = "⚡ 提交驗證解答";
+    submitBtn.innerText = i18n.t("submitBtn");
 
     // 渲染選項
     this.renderOptions();
@@ -173,13 +187,17 @@ export class QuizModal {
   renderOptions() {
     const list = document.getElementById("quizOptionsList");
     const letters = ["A", "B", "C", "D"];
+    const lang = i18n.getLang();
 
-    list.innerHTML = this.currentQuestion.options.map((opt, idx) => `
+    list.innerHTML = this.currentQuestion.options.map((opt, idx) => {
+      const optText = lang === "en" ? (opt.text_en || opt.text) : opt.text;
+      return `
       <div class="option-card" data-idx="${idx}">
         <span class="opt-letter">${letters[idx]}</span>
-        <div class="opt-text">${opt.text}</div>
+        <div class="opt-text">${optText}</div>
       </div>
-    `).join("");
+      `;
+    }).join("");
 
     list.querySelectorAll(".option-card").forEach(card => {
       card.addEventListener("click", () => {
@@ -204,7 +222,7 @@ export class QuizModal {
 
     const submitBtn = document.getElementById("btnQuizSubmit");
     submitBtn.disabled = false;
-    submitBtn.innerText = "⚡ 提交驗證解答";
+    submitBtn.innerText = i18n.t("submitBtn");
     submitBtn.className = "quiz-btn-primary";
     submitBtn.onclick = () => this.submitAnswer();
   }
@@ -217,6 +235,9 @@ export class QuizModal {
     const feedbackBox = document.getElementById("quizFeedbackBox");
     const submitBtn = document.getElementById("btnQuizSubmit");
     const selectedCard = document.querySelector(`.option-card[data-idx="${this.selectedOptionIndex}"]`);
+    const lang = i18n.getLang();
+    const reasonText = lang === "en" ? (chosen.reason_en || chosen.reason) : chosen.reason;
+    const solutionText = lang === "en" ? (this.currentQuestion.solution_en || this.currentQuestion.solution) : this.currentQuestion.solution;
 
     // 先清除卡片原有標籤
     if (selectedCard) {
@@ -236,7 +257,7 @@ export class QuizModal {
         selectedCard.classList.add("correct");
         const tag = document.createElement("span");
         tag.className = "opt-status-tag correct";
-        tag.innerHTML = "✓ 答對了！";
+        tag.innerHTML = i18n.t("tagCorrect");
         selectedCard.appendChild(tag);
       }
 
@@ -253,13 +274,13 @@ export class QuizModal {
         <div class="feedback-header">
           <span class="feedback-icon">🎉</span>
           <div class="feedback-title">
-            <h3 style="color: #15803d; font-size: 1.3rem;">太棒了！答對了！獲得 ${starStr}</h3>
-            <span class="feedback-sub" style="color: #166534; font-size: 1.05rem; font-weight: 700;">${chosen.reason}</span>
+            <h3 style="color: #15803d; font-size: 1.3rem;">${i18n.t("correctTitle")}${starStr}</h3>
+            <span class="feedback-sub" style="color: #166534; font-size: 1.05rem; font-weight: 700;">${reasonText}</span>
           </div>
         </div>
         <div class="solution-text">
-          <strong>【完整解題步驟與觀念覆盤】</strong>
-          <pre>${this.currentQuestion.solution}</pre>
+          <strong>${i18n.t("solutionTitle")}</strong>
+          <pre>${solutionText}</pre>
         </div>
       `;
       feedbackBox.style.display = "block";
@@ -268,7 +289,7 @@ export class QuizModal {
       document.getElementById("quizScaffoldContainer").style.display = "block";
       const btnScaffold = document.getElementById("btnToggleScaffold");
       btnScaffold.classList.add("active");
-      btnScaffold.innerHTML = "💡 <span>收合思維圖解</span>";
+      btnScaffold.innerHTML = i18n.t("scaffoldClose");
 
       // 5. 自動平滑滾動使反饋卡進入視線
       setTimeout(() => {
@@ -276,7 +297,7 @@ export class QuizModal {
       }, 100);
 
       // 6. 底部按鈕改為「完成本關試煉」
-      submitBtn.innerText = "✓ 完成本關試煉（進入下一關）";
+      submitBtn.innerText = i18n.t("submitNext");
       submitBtn.className = "quiz-btn-primary success-btn";
       submitBtn.onclick = () => {
         this.close();
@@ -296,7 +317,7 @@ export class QuizModal {
         selectedCard.classList.add("wrong");
         const tag = document.createElement("span");
         tag.className = "opt-status-tag wrong";
-        tag.innerHTML = "✕ 答案錯誤";
+        tag.innerHTML = i18n.t("tagWrong");
         selectedCard.appendChild(tag);
       }
 
@@ -306,11 +327,11 @@ export class QuizModal {
         <div class="feedback-header">
           <span class="feedback-icon">❌</span>
           <div class="feedback-title">
-            <h3 style="color: #b91c1c; font-size: 1.3rem;">答案錯誤！請再想想看</h3>
-            <span class="feedback-sub" style="color: #991b1b; font-size: 1.05rem; font-weight: 700;">${chosen.reason}</span>
+            <h3 style="color: #b91c1c; font-size: 1.3rem;">${i18n.t("wrongTitle")}</h3>
+            <span class="feedback-sub" style="color: #991b1b; font-size: 1.05rem; font-weight: 700;">${reasonText}</span>
           </div>
         </div>
-        <p class="error-tip">💡 仔細閱讀上方迷思陷阱說明，點擊「展開動態向量思維圖解」重新推導，換個選項再試一次！</p>
+        <p class="error-tip">${i18n.t("wrongTip")}</p>
       `;
       feedbackBox.style.display = "block";
 
@@ -320,7 +341,7 @@ export class QuizModal {
       }, 100);
 
       // 4. 底部按鈕提示換選項重試
-      submitBtn.innerText = "🔄 換個選項再試一次";
+      submitBtn.innerText = i18n.t("submitRetry");
       submitBtn.disabled = true; // 學生點擊其他選項時重新解鎖按鈕
     }
   }

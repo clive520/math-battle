@@ -15,6 +15,7 @@ import { QuizModal } from "./ui/modal.js";
 import { VictoryCelebration } from "./ui/victory.js";
 import { QUESTIONS_DATA, ISLANDS_METADATA } from "./data/questions.js";
 import { sound } from "./audio.js";
+import { i18n } from "./i18n.js";
 
 class GameProgress {
   constructor() {
@@ -102,8 +103,26 @@ class App {
     );
     this.markers.updateProgress(this.progress);
 
-    // 5. 初始化 HUD 介面 (附帶手機/平板快速關卡切換列)
+    // 5. 初始化 HUD 介面 (附帶手機/平板快速關卡切換列與中英雙語切換)
     this.hud = new GameHUD(hudContainer, {
+      onToggleLanguage: () => {
+        const newLang = i18n.toggle();
+        this.hud.render();
+        this.hud.bindEvents();
+        this.hud.updateStats(this.progress);
+        this.hud.setActiveIsland(this.hud.currentIslandId);
+        this.victory.render();
+        this.victory.bindEvents();
+
+        // 若目前作答視窗正開著，無縫換為新語言
+        if (this.modal.isOpen() && this.modal.currentQuestion) {
+          const currentStars = this.progress.getLevelStars(this.modal.currentQuestion.id);
+          this.modal.open(this.modal.currentQuestion, currentStars);
+        }
+
+        const toastMsg = newLang === "en" ? "🌐 Switched to: English" : "🌐 已切換為：繁體中文";
+        this.hud.showToast(toastMsg, "info");
+      },
       onResetCamera: () => this.cameraFlight.flyToOverview(),
       onChangeTimeMode: mode => this.scene.setTimeMode(mode),
       onSelectIsland: islandId => {
@@ -144,7 +163,8 @@ class App {
     sound.playClick();
     this.hud.setActiveIsland(islandMeta.id);
     this.cameraFlight.flyToIsland(islandMeta.islandPos, 1400);
-    this.hud.showToast(`🔍 已平滑聚焦到：島嶼 0${islandMeta.id}【${islandMeta.name}】`, "info");
+    const islandName = i18n.getLang() === "en" ? (islandMeta.name_en || islandMeta.name) : islandMeta.name;
+    this.hud.showToast(i18n.t("focusToast", { id: islandMeta.id, name: islandName }), "info");
   }
 
   // 點擊關卡地標：無限制自由進入作答
@@ -171,7 +191,7 @@ class App {
         this.victory.show(this.progress.getTotalStars());
       }, 500);
     } else {
-      this.hud.showToast(`✨ 恭喜通過！獲得 ${stars} 顆星！累計已完成 ${clearedCount} / 25 關！`, "success");
+      this.hud.showToast(i18n.t("clearToast", { s: stars, c: clearedCount }), "success");
     }
   }
 

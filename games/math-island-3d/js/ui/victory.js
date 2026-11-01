@@ -5,6 +5,7 @@
  */
 
 import { sound } from "../audio.js";
+import { i18n } from "../i18n.js";
 
 export class VictoryCelebration {
   constructor(container, onResetGame) {
@@ -16,7 +17,14 @@ export class VictoryCelebration {
 
   render() {
     const today = new Date();
-    const dateStr = `${today.getFullYear()} 年 ${today.getMonth() + 1} 月 ${today.getDate()} 日`;
+    const lang = i18n.getLang();
+    const months = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+    const dateStr = lang === "en"
+      ? `${months[today.getMonth()]} ${today.getDate()}, ${today.getFullYear()}`
+      : `${today.getFullYear()} 年 ${today.getMonth() + 1} 月 ${today.getDate()} 日`;
 
     this.container.innerHTML = `
       <div id="victoryOverlay" class="victory-overlay">
@@ -30,62 +38,60 @@ export class VictoryCelebration {
               <!-- 頂部徽章與榮譽標題 -->
               <div class="cert-header">
                 <div class="cert-crown-icon">👑</div>
-                <h1 class="cert-title">數域宗師・結業證書</h1>
-                <div class="cert-eng-title">CERTIFICATE OF MATHEMATICS MASTERY</div>
+                <h1 class="cert-title">${i18n.t("certTitle")}</h1>
+                <div class="cert-eng-title">${i18n.t("certEngTitle")}</div>
               </div>
 
               <!-- 學生姓名班級編輯區 -->
               <div class="cert-student-row">
-                <span>茲證明</span>
-                <input type="text" id="certClassName" class="cert-input cert-class" value="六年一班" placeholder="班級" />
-                <span>座號</span>
-                <input type="text" id="certSeatNo" class="cert-input cert-seat" value="01" placeholder="座號" />
-                <span>姓名</span>
-                <input type="text" id="certStudentName" class="cert-input cert-name" value="數學小勇者" placeholder="姓名" />
-                <span>同學</span>
+                <span>${i18n.t("certPrefix")}</span>
+                <input type="text" id="certClassName" class="cert-input cert-class" value="${i18n.t("certClassDefault")}" placeholder="${i18n.t("certClassLbl")}" />
+                <span>${i18n.t("certSeatLbl")}</span>
+                <input type="text" id="certSeatNo" class="cert-input cert-seat" value="${i18n.t("certSeatDefault")}" placeholder="${i18n.t("certSeatLbl")}" />
+                <span>${i18n.t("certNameLbl")}</span>
+                <input type="text" id="certStudentName" class="cert-input cert-name" value="${i18n.t("certNameDefault")}" placeholder="${i18n.t("certNameLbl")}" />
+                ${i18n.t("certSuffix") ? `<span>${i18n.t("certSuffix")}</span>` : ""}
               </div>
 
               <!-- 褒獎內文 -->
               <div class="cert-body-text">
-                於本學期<strong>「五芒星數域試煉塔」3D 群島立體闖關</strong>評量中，憑藉卓越的邏輯思維與不懈毅力，
-                成功解開<strong>最大公因數與最小公倍數、分數除法、數量關係、小數除法與比和比值</strong>五大單元全部 25 道數學封印，
-                思維敏銳，融會貫通，成績優異，特頒此證，以茲嘉勉！
+                ${i18n.t("certBody")}
               </div>
 
               <!-- 榮譽數據欄 -->
               <div class="cert-stats-row">
                 <div class="cert-stat-badge">
-                  <span>完成進度</span>
-                  <strong>25 / 25 全關卡</strong>
+                  <span>${i18n.t("certProgressLbl")}</span>
+                  <strong>${i18n.t("certFullLevels")}</strong>
                 </div>
                 <div class="cert-stat-badge gold">
-                  <span>榮譽星級</span>
+                  <span>${i18n.t("certStarsLbl")}</span>
                   <strong id="certTotalStars">75 / 75 ⭐</strong>
                 </div>
                 <div class="cert-stat-badge">
-                  <span>數域稱號</span>
-                  <strong>鑽石級數域宗師</strong>
+                  <span>${i18n.t("certRankLbl")}</span>
+                  <strong>${i18n.t("certRankVal")}</strong>
                 </div>
               </div>
 
               <!-- 印信與簽署欄 -->
               <div class="cert-signatures-row">
                 <div class="cert-sig-item">
-                  <span class="sig-label">命題評量導師</span>
-                  <div class="sig-name">高志賢 老師 ✍️</div>
+                  <span class="sig-label">${i18n.t("certTeacherLbl")}</span>
+                  <div class="sig-name">${i18n.t("certTeacherVal")}</div>
                 </div>
 
                 <!-- 官方紅色考核專用章 -->
                 <div class="cert-seal">
                   <div class="seal-inner">
-                    <span>鹿陽國小</span>
-                    <span>數域試煉</span>
-                    <span>考核合格</span>
+                    <span>${i18n.t("certSealLine1")}</span>
+                    <span>${i18n.t("certSealLine2")}</span>
+                    <span>${i18n.t("certSealLine3")}</span>
                   </div>
                 </div>
 
                 <div class="cert-sig-item">
-                  <span class="sig-label">頒發日期</span>
+                  <span class="sig-label">${i18n.t("certDateLbl")}</span>
                   <div class="sig-date">${dateStr}</div>
                 </div>
               </div>
@@ -96,13 +102,13 @@ export class VictoryCelebration {
           <!-- 操作按鈕列 (列印時自動隱藏) -->
           <div class="cert-actions no-print">
             <button id="btnPrintCertificate" class="cert-btn cert-btn-gold">
-              🖨️ 列印 / 另存 PDF 證書
+              ${i18n.t("certPrintBtn")}
             </button>
             <button id="btnVictoryReplay" class="cert-btn cert-btn-secondary">
-              🔄 重新挑戰全島
+              ${i18n.t("certReplayBtn")}
             </button>
             <a href="../../index.html" class="cert-btn cert-btn-dark">
-              🏠 返回遊戲大廳
+              ${i18n.t("certHomeBtn")}
             </a>
           </div>
         </div>
@@ -112,18 +118,24 @@ export class VictoryCelebration {
 
   bindEvents() {
     // 列印/存為 PDF
-    document.getElementById("btnPrintCertificate").addEventListener("click", () => {
-      window.print();
-    });
+    const printBtn = document.getElementById("btnPrintCertificate");
+    if (printBtn) {
+      printBtn.addEventListener("click", () => {
+        window.print();
+      });
+    }
 
     // 重新遊玩
-    document.getElementById("btnVictoryReplay").addEventListener("click", () => {
-      sound.playClick();
-      if (confirm("確定要重置目前的所有闖關進度，重新體驗 3D 數學立體群島大冒險嗎？")) {
-        if (this.onResetGame) this.onResetGame();
-        this.close();
-      }
-    });
+    const replayBtn = document.getElementById("btnVictoryReplay");
+    if (replayBtn) {
+      replayBtn.addEventListener("click", () => {
+        sound.playClick();
+        if (confirm(i18n.t("certResetConfirm"))) {
+          if (this.onResetGame) this.onResetGame();
+          this.close();
+        }
+      });
+    }
   }
 
   show(totalStars) {

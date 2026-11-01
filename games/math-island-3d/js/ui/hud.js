@@ -5,6 +5,7 @@
 
 import { ISLANDS_METADATA, QUESTIONS_DATA } from "../data/questions.js";
 import { sound } from "../audio.js";
+import { i18n } from "../i18n.js";
 
 export class GameHUD {
   constructor(container, callbacks) {
@@ -17,16 +18,18 @@ export class GameHUD {
   }
 
   render() {
+    const lang = i18n.getLang();
+
     this.container.innerHTML = `
       <!-- 頂部浮動玩具狀態列 -->
       <header class="hud-top-bar toy-pop">
         <div class="hud-brand-group">
           <a href="../../index.html" class="hud-btn hud-btn-home" title="回到遊戲大廳">
-            🏠 <span>大廳</span>
+            🏠 <span>${i18n.t("home")}</span>
           </a>
           <div class="hud-title-box">
-            <h1 class="hud-title">🏝️ 3D 數學立體群島大冒險</h1>
-            <span class="hud-subtitle">國小六年級第一次定期評量・五芒星數域試煉</span>
+            <h1 class="hud-title">${i18n.t("title")}</h1>
+            <span class="hud-subtitle">${i18n.t("subtitle")}</span>
           </div>
         </div>
 
@@ -37,25 +40,29 @@ export class GameHUD {
           </div>
           <!-- 通關進度 -->
           <div class="hud-badge hud-progress-badge" title="總通關進度">
-            🎯 <span id="hudProgressPercent">0 / 25 關</span>
+            🎯 <span id="hudProgressPercent">0 / 25 ${i18n.t("levelsUnit")}</span>
           </div>
 
           <!-- 右側功能按鈕群 -->
           <div class="hud-actions">
+            <!-- 🌐 中英雙語無縫切換按鈕 -->
+            <button id="btnToggleLang" class="hud-lang-btn" title="切換繁體中文 / Switch to English">
+              ${i18n.t("langBtn")}
+            </button>
             <!-- 視角復位 -->
-            <button id="btnResetCamera" class="hud-icon-btn" title="重返群島全景視角 (快捷鍵 R)">
+            <button id="btnResetCamera" class="hud-icon-btn" title="${i18n.t("resetCam")}">
               🗺️
             </button>
             <!-- 晝夜切換 -->
-            <button id="btnTimeMode" class="hud-icon-btn" title="切換白天/夕陽/星空氛圍">
+            <button id="btnTimeMode" class="hud-icon-btn" title="${i18n.t("timeMode")}">
               ☀️
             </button>
             <!-- 音效開關 -->
-            <button id="btnToggleSound" class="hud-icon-btn" title="開啟/關閉音效 (快捷鍵 M)">
+            <button id="btnToggleSound" class="hud-icon-btn" title="${i18n.t("soundOn")}">
               🔊
             </button>
             <!-- 全螢幕 -->
-            <button id="btnFullscreen" class="hud-icon-btn" title="切換全螢幕模式 (快捷鍵 F)">
+            <button id="btnFullscreen" class="hud-icon-btn" title="${i18n.t("fullscreen")}">
               ⛶
             </button>
           </div>
@@ -71,19 +78,22 @@ export class GameHUD {
 
         <!-- 5 座島嶼切換頁籤 -->
         <div class="dock-inner">
-          ${ISLANDS_METADATA.map(meta => `
-            <button class="dock-island-btn ${meta.id === 1 ? 'active' : ''}" data-island-id="${meta.id}">
-              <span class="dock-island-num">島嶼 0${meta.id}</span>
-              <span class="dock-island-name">${meta.name}</span>
+          ${ISLANDS_METADATA.map(meta => {
+            const islandName = lang === "en" ? (meta.name_en || meta.name) : meta.name;
+            return `
+            <button class="dock-island-btn ${meta.id === this.currentIslandId ? 'active' : ''}" data-island-id="${meta.id}">
+              <span class="dock-island-num">${i18n.t("islandPrefix")} 0${meta.id}</span>
+              <span class="dock-island-name">${islandName}</span>
               <div class="dock-stars" id="dockStars_${meta.id}">☆☆☆☆☆</div>
             </button>
-          `).join("")}
+            `;
+          }).join("")}
         </div>
       </nav>
 
       <!-- 畫面中央操作提示浮條 (點擊後自動淡出) -->
       <div id="hudWelcomeTip" class="hud-center-tip toy-pop">
-        <span>🎮 點擊任一島嶼即可平滑放大！無作答順序限制，任選關卡自由挑戰！</span>
+        <span>${i18n.t("welcomeTip")}</span>
         <button id="btnCloseWelcomeTip" class="btn-tip-close">✕</button>
       </div>
 
@@ -91,26 +101,31 @@ export class GameHUD {
       <div id="hudToast" class="hud-toast"></div>
     `;
 
-    this.renderQuickLevels(1);
+    this.renderQuickLevels(this.currentIslandId);
   }
 
   renderQuickLevels(islandId) {
     const container = document.getElementById("dockQuickLevels");
     if (!container) return;
 
+    const lang = i18n.getLang();
     const islandQuestions = QUESTIONS_DATA.filter(q => q.unitId === islandId);
     container.innerHTML = `
       <div class="quick-levels-label">
-        <span>島嶼 0${islandId} 快速傳送：</span>
+        <span>${i18n.t("islandPrefix")} 0${islandId} ${i18n.t("fastTravel")}</span>
       </div>
       <div class="quick-levels-row">
-        ${islandQuestions.map(q => `
+        ${islandQuestions.map(q => {
+          const rawTitle = lang === "en" ? (q.title_en || q.title) : q.title;
+          const cleanTitle = rawTitle.split('（')[0].split('(')[0].trim();
+          return `
           <button class="quick-level-pill" data-level-id="${q.id}">
             <span class="pill-no">${q.unitId}-${q.levelNum}</span>
-            <span class="pill-name">${q.title.split('（')[0]}</span>
+            <span class="pill-name">${cleanTitle}</span>
             <span class="pill-star" id="pillStar_${q.id}">☆</span>
           </button>
-        `).join("")}
+          `;
+        }).join("")}
       </div>
     `;
 
@@ -126,6 +141,17 @@ export class GameHUD {
   }
 
   bindEvents() {
+    // 0. 中英雙語即時切換按鈕
+    const btnLang = document.getElementById("btnToggleLang");
+    if (btnLang) {
+      btnLang.addEventListener("click", () => {
+        sound.playClick();
+        if (this.callbacks.onToggleLanguage) {
+          this.callbacks.onToggleLanguage();
+        }
+      });
+    }
+
     // 1. 重返全景視角
     const btnReset = document.getElementById("btnResetCamera");
     btnReset.addEventListener("click", () => {
@@ -224,7 +250,7 @@ export class GameHUD {
     const cleared = progress.getClearedCount();
 
     if (starEl) starEl.innerText = `${totalStars} / 75`;
-    if (progEl) progEl.innerText = `${cleared} / 25 關`;
+    if (progEl) progEl.innerText = `${cleared} / 25 ${i18n.t("levelsUnit")}`;
 
     // 更新底部各島星級顯示
     ISLANDS_METADATA.forEach(meta => {
